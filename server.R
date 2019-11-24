@@ -10,6 +10,18 @@ source("include.R")
 rctsDAT <- as.data.frame(read_excel("RCTs-template.xls"), stringsAsFactors=FALSE)
 names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control")
 
+# Default sizes for forest plots, by file type
+defPltSize <- list(
+  width = c(png=700, tiff=700, cairo_pdf=7, cairo_ps=7),
+  min_width = c(png=400, tiff=400, cairo_pdf=4, cairo_ps=4),
+  max_width = c(png=5000, tiff=5000, cairo_pdf=20, cairo_ps=20),
+  height = c(png=900, tiff=900, cairo_pdf=9, cairo_ps=9),
+  min_height = c(png=500, tiff=500, cairo_pdf=4, cairo_ps=4),
+  max_height = c(png=6000, tiff=6000, cairo_pdf=20, cairo_ps=20),
+  pointsize = c(png=12, tiff=12, cairo_pdf=12, cairo_ps=12),
+  min_pointsize = c(png=4, tiff=4, cairo_pdf=4, cairo_ps=4),
+  max_pointsize = c(png=20, tiff=20, cairo_pdf=20, cairo_ps=20)
+)
 
 shinyServer(function(input, output, session) {
   
@@ -108,6 +120,59 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  # REACTIVE: render the plot dimension setting controls
+  output$rctPlOpt_dims <- renderUI({
+    cat(input$setDefaultForestSize)
+    splitLayout(
+      numericInput("rctPlOpt_width", "Width", 
+          defPltSize$width[input$rctPlOpt_fileType], 
+          min=defPltSize$min_width[input$rctPlOpt_fileType], 
+          max=defPltSize$max_width[input$rctPlOpt_fileType]),
+      numericInput("rctPlOpt_height", "Height", 
+          defPltSize$height[input$rctPlOpt_fileType], 
+          min=defPltSize$min_height[input$rctPlOpt_fileType], 
+          max=defPltSize$max_height[input$rctPlOpt_fileType]),
+      numericInput("rctPlOpt_pointsize", "Pointsize", 
+          defPltSize$pointsize[input$rctPlOpt_fileType], 
+          min=defPltSize$min_pointsize[input$rctPlOpt_fileType], 
+          max=defPltSize$max_pointsize[input$rctPlOpt_fileType]),
+      cellArgs = list(style = "padding: 6px; text-align:center")
+    )
+  })
+  
+  # Get and filter input for plot dimensions
+  rcts_pltDim <- reactive({
+    res <- list(
+      width = input$rctPlOpt_width,
+      height = input$rctPlOpt_height,
+      pointsize = input$rctPlOpt_pointsize
+    )
+    if (is.na(res$width)) {
+      res$width <- defPltSize$width[input$rctPlOpt_fileType]
+    } else if (res$width < defPltSize$min_width[input$rctPlOpt_fileType]) {
+      res$width <- defPltSize$min_width[input$rctPlOpt_fileType]
+    } else if (res$width > defPltSize$max_width[input$rctPlOpt_fileType]) {
+      res$width <- defPltSize$max_width[input$rctPlOpt_fileType]
+    }
+    if (is.na(res$height)) {
+      res$height <- defPltSize$height[input$rctPlOpt_fileType]
+    } else if (res$height < defPltSize$min_height[input$rctPlOpt_fileType]) {
+      res$height <- defPltSize$min_height[input$rctPlOpt_fileType]
+    } else if (res$height > defPltSize$max_height[input$rctPlOpt_fileType]) {
+      res$height <- defPltSize$max_height[input$rctPlOpt_fileType]
+    }
+    if (is.na(res$pointsize)) {
+      res$pointsize <- defPltSize$pointsize[input$rctPlOpt_fileType]
+    } else if (res$pointsize < defPltSize$min_pointsize[input$rctPlOpt_fileType]) {
+      res$pointsize <- defPltSize$min_pointsize[input$rctPlOpt_fileType]
+    } else if (res$pointsize > defPltSize$max_pointsize[input$rctPlOpt_fileType]) {
+      res$pointsize <- defPltSize$max_pointsize[input$rctPlOpt_fileType]
+    }
+    res
+  })
+  
+  
+  
   output$rctsForestPlotUI <- renderUI({
     nr <- nrow(rcts_dat())
     if (!is.numeric(nr)) nr <- 5
@@ -117,10 +182,14 @@ shinyServer(function(input, output, session) {
   # Download the forest plot
   output$rctsForestDownload <- downloadHandler(
     filename = function() {
-      "forest.pdf"
+      sprintf("forest.%s", gsub("cairo_", "", input$rctPlOpt_fileType, fixed=TRUE))
     },
     content = function(file) {
-      cairo_pdf(file, width=7, height=9)
+      fileOptions <- list(filename=file, 
+        width=rcts_pltDim()$width, height=rcts_pltDim()$height, 
+        pointsize=rcts_pltDim()$pointsize)
+      if (input$rctPlOpt_fileType=="tiff") fileOptions$compression <- "lzw"
+      do.call(input$rctPlOpt_fileType, fileOptions)
       forest_rct()
       dev.off()
     }

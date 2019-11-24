@@ -2,7 +2,7 @@ library(shiny)
 library(markdown)
 library(rhandsontable)
 
-# Define UI for application that draws a histogram
+
 shinyUI(fluidPage(
   
   # Application title
@@ -62,6 +62,21 @@ shinyUI(fluidPage(
               )
             ),
             tabPanel("Plot options",
+              checkboxInput("rctPlOpt_showDownloadOptions", "Download options"),
+              conditionalPanel("input.rctPlOpt_showDownloadOptions",
+                wellPanel(
+                  selectInput("rctPlOpt_fileType", "File type", 
+                    c("pdf"="cairo_pdf", "tiff"="tiff", "png"="png", "ps"="cairo_ps")),
+#                   splitLayout(
+#                     numericInput("rctPlOpt_width", "Width", 7, min=4, max=20),
+#                     numericInput("rctPlOpt_height", "Height", 9, min=4, max=20),
+#                     numericInput("rctPlOpt_pointsize", "Pointsize", 12, min=4, max=20),
+#                     cellArgs = list(style = "padding: 6px; text-align:center")
+#                   ),
+                  uiOutput("rctPlOpt_dims"),
+                  actionButton("setDefaultForestSize", "Set default size")
+                )
+              ),
               selectInput("rctPlotOpt_col", "Colour", c("black","red","blue"))
             ),
             tabPanel("GRADE output",
