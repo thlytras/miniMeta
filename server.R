@@ -110,7 +110,14 @@ shinyServer(function(input, output, session) {
   
   forest_rct <- function(new=TRUE) {
     cilayout("(", " - ")
-    forest(m(), new=new, leftcols="studlab", col.study=input$rctPlotOpt_col)
+    lcols <- c("studlab")
+    if (input$rctPlOpt_inclAbsNum) lcols <- c(lcols, "event.e", "n.e", "event.c", "n.c")
+    forest(m(), new=new, leftcols=lcols, col.study=input$rctPlotOpt_col,
+      print.I2 = input$rctPlOpt_printI2, 
+      print.Q = input$rctPlOpt_printQ,
+      print.pval.Q = input$rctPlOpt_printPval,
+      print.tau2 = input$rctPlOpt_printTau2
+    )
   }
   
   # REACTIVE: render the forest plot
@@ -122,21 +129,19 @@ shinyServer(function(input, output, session) {
   
   # REACTIVE: render the plot dimension setting controls
   output$rctPlOpt_dims <- renderUI({
-    cat(input$setDefaultForestSize)
-    splitLayout(
-      numericInput("rctPlOpt_width", "Width", 
+    fluidRow(
+      column(4, numericInput("rctPlOpt_width", "Width", 
           defPltSize$width[input$rctPlOpt_fileType], 
           min=defPltSize$min_width[input$rctPlOpt_fileType], 
-          max=defPltSize$max_width[input$rctPlOpt_fileType]),
-      numericInput("rctPlOpt_height", "Height", 
+          max=defPltSize$max_width[input$rctPlOpt_fileType])),
+      column(4, numericInput("rctPlOpt_height", "Height", 
           defPltSize$height[input$rctPlOpt_fileType], 
           min=defPltSize$min_height[input$rctPlOpt_fileType], 
-          max=defPltSize$max_height[input$rctPlOpt_fileType]),
-      numericInput("rctPlOpt_pointsize", "Pointsize", 
+          max=defPltSize$max_height[input$rctPlOpt_fileType])),
+      column(4, numericInput("rctPlOpt_pointsize", "Pointsize", 
           defPltSize$pointsize[input$rctPlOpt_fileType], 
           min=defPltSize$min_pointsize[input$rctPlOpt_fileType], 
-          max=defPltSize$max_pointsize[input$rctPlOpt_fileType]),
-      cellArgs = list(style = "padding: 6px; text-align:center")
+          max=defPltSize$max_pointsize[input$rctPlOpt_fileType]))
     )
   })
   
