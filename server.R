@@ -8,15 +8,16 @@ source("include.R")
 
 # Load some data in advance!
 rctsDAT <- as.data.frame(read_excel("RCTs-template.xls"), stringsAsFactors=FALSE)
-names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control")
+rctsDAT$group <- ""
+names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
 
 # Default sizes for forest plots, by file type
 defPltSize <- list(
-  width = c(png=700, tiff=700, cairo_pdf=7, cairo_ps=7),
-  min_width = c(png=400, tiff=400, cairo_pdf=4, cairo_ps=4),
-  max_width = c(png=5000, tiff=5000, cairo_pdf=20, cairo_ps=20),
-  height = c(png=900, tiff=900, cairo_pdf=9, cairo_ps=9),
-  min_height = c(png=500, tiff=500, cairo_pdf=4, cairo_ps=4),
+  width = c(png=2100, tiff=2100, cairo_pdf=7, cairo_ps=7),
+  min_width = c(png=600, tiff=600, cairo_pdf=4, cairo_ps=4),
+  max_width = c(png=6000, tiff=6000, cairo_pdf=20, cairo_ps=20),
+  height = c(png=2700, tiff=2700, cairo_pdf=9, cairo_ps=9),
+  min_height = c(png=600, tiff=600, cairo_pdf=4, cairo_ps=4),
   max_height = c(png=6000, tiff=6000, cairo_pdf=20, cairo_ps=20),
   pointsize = c(png=12, tiff=12, cairo_pdf=12, cairo_ps=12),
   min_pointsize = c(png=4, tiff=4, cairo_pdf=4, cairo_ps=4),
@@ -58,14 +59,15 @@ shinyServer(function(input, output, session) {
     if (is.null(input$rctsLoadExcel)) return()
     inFile <- input$rctsLoadExcel
     tempDat <- as.data.frame(read_excel(inFile$datapath), stringsAsFactors=FALSE)
-    while(ncol(tempDat)<5) {
+    while(ncol(tempDat)<6) {
       tempDat <- cbind(tempDat, NA)
     }
-    tempDat <- tempDat[,1:5]
+    tempDat <- tempDat[,1:6]
     tempDat[,1] <- as.character(tempDat[,1])
     suppressWarnings(for (i in 2:5) tempDat[,i] <- as.numeric(tempDat[,i]))
+    tempDat[,6] <- as.character(tempDat[,6])
     tempDat <- tempDat[getNonEmptyDFrows(tempDat),]
-    names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control")
+    names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
     rctsDAT <<- tempDat
     if(!is.data.frame(rctsDAT)) return()
     values$rctsFileReady <- TRUE
@@ -78,7 +80,7 @@ shinyServer(function(input, output, session) {
     }
     rhandsontable(rctsDAT, stretchH="all", rowHeaders=NULL, overflow="hidden") %>% 
       hot_col("events.Intervention", format="0") %>% hot_col("N.Intervention", format="0") %>% 
-      hot_col("events.Control", format="0") %>% hot_col("N.Control", format="0")
+      hot_col("events.Control", format="0") %>% hot_col("N.Control", format="0")  %>% hot_col("Group")
   })
   
   # Code to add rows to the widget
@@ -92,7 +94,7 @@ shinyServer(function(input, output, session) {
   # REACTIVE: return the table if it has changed
   rcts_dat <- reactive({
     datt <- values$rctsDAT
-    colnames(datt) <- c("Study", "e.e", "n.e", "e.c", "n.c")
+    colnames(datt) <- c("Study", "e.e", "n.e", "e.c", "n.c", "group")
     datt[getNonEmptyDFrows(datt, ignore.studlab=FALSE),]
   })
   
@@ -105,11 +107,16 @@ shinyServer(function(input, output, session) {
   m <- reactive({
     if (rcts_chk()) {
       optIncr <- input$rctOpt_incr; if (optIncr!="TACC") optIncr <- as.numeric(optIncr)
-      
+      grp <- trimws(as.character(rcts_dat()$group)); grp[grp==""] <- NA
+      if (sum(is.na(grp))==0 & length(unique(grp))>1) {
+        byVar <- factor(grp)
+      } else {
+        byVar <- NULL
+      }
       return(metabin(e.e, n.e, e.c, n.c, data=rcts_dat(), studlab=Study, 
         method=input$rctOpt_method, method.tau=input$rctOpt_methodTau,
         comb.fixed=input$rctOpt_combFixed, comb.random=input$rctOpt_combRandom,
-        incr=optIncr, sm=input$rctOpt_sm, hakn=input$rctOpt_hakn
+        byvar=byVar, incr=optIncr, sm=input$rctOpt_sm, hakn=input$rctOpt_hakn
       ))
     }
   })
@@ -224,6 +231,7 @@ shinyServer(function(input, output, session) {
         width=rcts_pltDim()$width, height=rcts_pltDim()$height, 
         pointsize=rcts_pltDim()$pointsize)
       if (input$rctPlOpt_fileType=="tiff") fileOptions$compression <- "lzw"
+      if (input$rctPlOpt_fileType %in% c("png", "tiff")) fileOptions$res <- 300
       do.call(input$rctPlOpt_fileType, fileOptions)
       forest_rct()
       dev.off()
@@ -248,7 +256,7 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       dummy <- rcts_dat()
-      names(dummy) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control")
+      names(dummy) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
       WriteXLS(dummy, file, "RCTs")
     }
   )

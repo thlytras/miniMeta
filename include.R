@@ -4,7 +4,7 @@ checkRCTValidity <- function(rctDAT) {
   if (nrow(rctDAT)==0) {
     msg <- c(msg, "Empty data -- cannot perform meta-analysis")
   } else {
-    if (sum(is.na(rctDAT[,-1]))>0) msg <- c(msg, "Blank cells not allowed.")
+    if (sum(is.na(rctDAT[,2:5]))>0) msg <- c(msg, "Blank cells not allowed.")
     a <- with(rctDAT, which(e.e>n.e | e.c>n.c))
     if (length(a)>0) msg <- c(msg, paste("Number of events cannot be higher than the number randomized.\n   Check studies: '", paste(rctDAT[a,1], collapse="', '"), "'.", sep=""))
     a <- with(rctDAT, which(n.e==0 | n.c==0))
@@ -37,9 +37,9 @@ gradeRR <- function(dat, m) {
 
 getNonEmptyDFrows <- function(dat, ignore.studlab=FALSE) {
   if (ignore.studlab) {
-    apply(dat[,-1], 1, function(x) !sum(is.na(unlist(x)))==4)
+    apply(dat[,2:5], 1, function(x) !sum(is.na(unlist(x)))==4)
   } else {
-    apply(dat, 1, function(x) (sum(is.na(unlist(x))) + sum(unlist(x)=="", na.rm=TRUE))<5)
+    apply(dat[,1:5], 1, function(x) (sum(is.na(unlist(x))) + sum(unlist(x)=="", na.rm=TRUE))<5)
   }
 }
 
