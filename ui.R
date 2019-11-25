@@ -76,7 +76,7 @@ shinyUI(fluidPage(
               )
             ),
             tabPanel("Plot options",
-              checkboxInput("rctPlOpt_showDownloadOptions", "Show download options", TRUE),
+              checkboxInput("rctPlOpt_showDownloadOptions", "Download options", FALSE),
               conditionalPanel("input.rctPlOpt_showDownloadOptions",
                 wellPanel(
                   selectInput("rctPlOpt_fileType", "File type", 
@@ -85,7 +85,7 @@ shinyUI(fluidPage(
                   actionButton("setDefaultForestSize", "Set default size")
                 )
               ),
-              checkboxInput("rctPlOpt_showContentOptions", "Show content options", TRUE),
+              checkboxInput("rctPlOpt_showContentOptions", "Content options", FALSE),
               conditionalPanel("input.rctPlOpt_showContentOptions",
                 wellPanel(
                   checkboxInput("rctPlOpt_inclAbsNum", "Show absolute numbers by arm", TRUE),
@@ -97,12 +97,19 @@ shinyUI(fluidPage(
                   )
                 )
               ),
-              checkboxInput("rctPlOpt_showFormattingOptions", "Show formatting options", TRUE),
+              checkboxInput("rctPlOpt_showFormattingOptions", "Formatting options", FALSE),
               conditionalPanel("input.rctPlOpt_showFormattingOptions",
                 wellPanel(
                 )
               ),
-              selectInput("rctPlotOpt_col", "Colour", c("black","red","blue"))
+              checkboxInput("rctPlOpt_showAdvancedOptions", "Advanced options", FALSE),
+              conditionalPanel("input.rctPlOpt_showAdvancedOptions",
+                wellPanel(
+                  textAreaInput("rctPlOpt_advParInput", "Additional parameters for forest.meta()",
+                    placeholder="Enter a comma-separated list of parameters..."),
+                  verbatimTextOutput("rctPlOpt_advParOutput")
+                )
+              )
             ),
             tabPanel("GRADE output",
               verbatimTextOutput("uncpanel")

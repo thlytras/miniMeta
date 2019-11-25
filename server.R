@@ -23,6 +23,12 @@ defPltSize <- list(
   max_pointsize = c(png=20, tiff=20, cairo_pdf=20, cairo_ps=20)
 )
 
+# List of forest.meta() arguments, excluding some that we don't want the user to touch
+forest_args <- formalArgs("forest.meta")
+forest_args <- forest_args[!(forest_args %in% 
+  c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
+
+
 shinyServer(function(input, output, session) {
   
   values <- reactiveValues(
@@ -108,16 +114,36 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  forest_rct <- function(new=TRUE) {
-    cilayout("(", " - ")
+  # REACTIVE: get all plot options in a list
+  rcts_pltOpt <- reactive({
     lcols <- c("studlab")
     if (input$rctPlOpt_inclAbsNum) lcols <- c(lcols, "event.e", "n.e", "event.c", "n.c")
-    forest(m(), new=new, leftcols=lcols, col.study=input$rctPlotOpt_col,
+    plOpts <- list(
+      leftcols=lcols,
       print.I2 = input$rctPlOpt_printI2, 
       print.Q = input$rctPlOpt_printQ,
       print.pval.Q = input$rctPlOpt_printPval,
       print.tau2 = input$rctPlOpt_printTau2
     )
+    if (class(rcts_pltAdvOpt())!="try-error" && length(rcts_pltAdvOpt())>0) {
+      plOpts <- rev(c(plOpts, rcts_pltAdvOpt()))
+      plOpts <- rev(plOpts[!duplicated(names(plOpts))])
+    }
+    return(plOpts)
+  })
+  
+  # REACTIVE: parse all advanced plot options
+  rcts_pltAdvOpt <- reactive({
+    res <- readAdvParameters(input$rctPlOpt_advParInput)
+    if (class(res)!="try-error" && length(res)>0) {
+      res <- res[names(res) %in% forest_args]
+    }
+    res
+  })
+  
+  forest_rct <- function(new=TRUE) {
+    cilayout("(", " - ")
+    do.call(forest, c(list(x=m(), new=new), rcts_pltOpt()))
   }
   
   # REACTIVE: render the forest plot
@@ -176,7 +202,11 @@ shinyServer(function(input, output, session) {
     res
   })
   
-  
+  output$rctPlOpt_advParOutput <- renderText({
+    if (class(rcts_pltAdvOpt())=="try-error") return(as.character(attr(rcts_pltAdvOpt(), "condition")))
+    if (length(rcts_pltAdvOpt())==0) return("No extra parameters provided (or parameters unknown to forest.meta())")
+    return(gsub("^list\\(|\\)$", "", deparse(rcts_pltAdvOpt())))
+  })
   
   output$rctsForestPlotUI <- renderUI({
     nr <- nrow(rcts_dat())
