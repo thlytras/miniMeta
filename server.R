@@ -139,6 +139,9 @@ shinyServer(function(input, output, session) {
     cilayout("(", " - ")
     pars <- c(list(x=m(), new=new), rcts_pltOpt(),
       list(
+        text.fixed = "Fixed-effects model",
+        text.random = "Random-effects model",
+        col.diamond = "black",
         fontsize = pointsize,
         plotwidth = sprintf("%.2fcm", 8*pointsize/12),
         colgap = sprintf("%.2fmm", 2*pointsize/12),
@@ -192,9 +195,9 @@ shinyServer(function(input, output, session) {
   
   # Clear empty rows from TabWidget
   observeEvent(input$setDefaultForestSize, {
-    updateSliderInput(session, "rctPlOpt_width", value=7)
-    updateSliderInput(session, "rctPlOpt_height", value=9)
-    updateSliderInput(session, "rctPlOpt_pointsize", value=12)
+    updateSliderInput(session, "rctPlOpt_width", value=10)
+    updateSliderInput(session, "rctPlOpt_height", value=6)
+    updateSliderInput(session, "rctPlOpt_pointsize", value=10)
     updateSliderInput(session, "rctPlOpt_res", value=300)
     updateSliderInput(session, "rctPlOpt_lwd", value=1)
     updateSliderInput(session, "rctPlOpt_spacing", value=1)
@@ -248,8 +251,8 @@ shinyServer(function(input, output, session) {
       pool.sd <- sqrt(
         (abs(diff(eff["AC", c("lo","hi")]))/(2*qnorm(0.975)))^2 + 
         (abs(diff(eff["BC", c("lo","hi")]))/(2*qnorm(0.975)))^2)
-      symm.ac <- (abs(diff(eff["AC", c("est","hi")]))/abs(diff(eff["AC", c("lo","est")]))-1)<0.05
-      symm.bc <- (abs(diff(eff["BC", c("est","hi")]))/abs(diff(eff["BC", c("lo","est")]))-1)<0.05
+      symm.ac <- abs(abs(diff(eff["AC", c("est","hi")]))/abs(diff(eff["AC", c("lo","est")]))-1)<0.05
+      symm.bc <- abs(abs(diff(eff["BC", c("est","hi")]))/abs(diff(eff["BC", c("lo","est")]))-1)<0.05
       output <- c(
         if (input$buch_type=="exp") "Exponentiated measure - converting to log:\n" else "",
         sprintf("Point estimate, A vs C: %.3f", eff["AC", "est"]),

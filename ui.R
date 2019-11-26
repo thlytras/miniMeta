@@ -83,13 +83,13 @@ shinyUI(fluidPage(
                     column(8, selectInput("rctPlOpt_fileType", "File type", 
                       c("pdf"="cairo_pdf", "tiff"="tiff", "png"="png", "ps"="cairo_ps"))),
                     column(4, sliderInput("rctPlOpt_res", "Resolution (dpi)",
-                      100, 1200, 300, step=100, ticks=FALSE))
+                      100, 1200, 600, step=100, ticks=FALSE))
                   ),
                   fluidRow(
                     column(6, sliderInput("rctPlOpt_width", "Width (in)", 
-                        4, 20, 8, step=1, ticks=FALSE)),
+                        4, 20,10, step=1, ticks=FALSE)),
                     column(6, sliderInput("rctPlOpt_height", "Height (in)", 
-                        3, 30, 5, step=1, ticks=FALSE))
+                        3, 30, 6, step=1, ticks=FALSE))
                   ),
                   conditionalPanel("input.rctPlOpt_showDownloadOptionsMore", fluidRow(
                     column(4, sliderInput("rctPlOpt_lwd", "Line width", 
@@ -158,7 +158,7 @@ shinyUI(fluidPage(
               ),
               radioButtons("buch_type", "What kind of effect measure is this?", choices = list(
                 "Relative Risk / Odds Ratio / Other exponentiated measure" = "exp", 
-                "logRR / logOR / other absolute measure" = "abs"
+                "logRR / logOR / Other absolute measure" = "abs"
               ), width="100%")
             ),
             column(6, verbatimTextOutput("buch_output"))
