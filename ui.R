@@ -87,9 +87,9 @@ shinyUI(fluidPage(
                   ),
                   fluidRow(
                     column(6, sliderInput("rctPlOpt_width", "Width (in)", 
-                        4, 20, 7, step=1, ticks=FALSE)),
+                        4, 20, 8, step=1, ticks=FALSE)),
                     column(6, sliderInput("rctPlOpt_height", "Height (in)", 
-                        5, 22, 9, step=1, ticks=FALSE))
+                        3, 30, 5, step=1, ticks=FALSE))
                   ),
                   conditionalPanel("input.rctPlOpt_showDownloadOptionsMore", fluidRow(
                     column(4, sliderInput("rctPlOpt_lwd", "Line width", 
@@ -97,7 +97,7 @@ shinyUI(fluidPage(
                     column(4, sliderInput("rctPlOpt_spacing", "Spacing", 
                         0.5, 5, 1, step=0.25, ticks=FALSE)),
                     column(4, sliderInput("rctPlOpt_pointsize", "Pointsize", 
-                        6, 24, 12, step=1, ticks=FALSE))
+                        4, 24, 10, step=1, ticks=FALSE))
                   )),
                   fluidRow(
                     column(6, actionButton("setDefaultForestSize", "Set default size")),
@@ -140,6 +140,31 @@ shinyUI(fluidPage(
       )
     ),
     tabPanel("Observational studies module"),
-    tabPanel("Tools")
+    tabPanel("Tools", br(),
+      tabsetPanel(
+        tabPanel("Bucher method",
+          h3("Adjusted Indirect Comparisons (Bucher method)"),
+          fluidRow(
+            column(6,
+              fluidRow(
+                column(4, numericInput("buch_AC_est", "A vs C", NA)),
+                column(4, numericInput("buch_AC_lo", "95%CI LL", NA)),
+                column(4, numericInput("buch_AC_hi", "95%CI UL", NA))
+              ),
+              fluidRow(
+                column(4, numericInput("buch_BC_est", "B vs C", NA)),
+                column(4, numericInput("buch_BC_lo", "95%CI LL", NA)),
+                column(4, numericInput("buch_BC_hi", "95%CI UL", NA))
+              ),
+              radioButtons("buch_type", "What kind of effect measure is this?", choices = list(
+                "Relative Risk / Odds Ratio / Other exponentiated measure" = "exp", 
+                "logRR / logOR / other absolute measure" = "abs"
+              ), width="100%")
+            ),
+            column(6, verbatimTextOutput("buch_output"))
+          )
+        )
+      )
+    )
   )
 ))
