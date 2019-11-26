@@ -11,19 +11,6 @@ rctsDAT <- as.data.frame(read_excel("RCTs-template.xls"), stringsAsFactors=FALSE
 rctsDAT$group <- ""
 names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
 
-# Default sizes for forest plots, by file type
-defPltSize <- list(
-  width = c(png=2100, tiff=2100, cairo_pdf=7, cairo_ps=7),
-  min_width = c(png=600, tiff=600, cairo_pdf=4, cairo_ps=4),
-  max_width = c(png=6000, tiff=6000, cairo_pdf=20, cairo_ps=20),
-  height = c(png=2700, tiff=2700, cairo_pdf=9, cairo_ps=9),
-  min_height = c(png=600, tiff=600, cairo_pdf=4, cairo_ps=4),
-  max_height = c(png=6000, tiff=6000, cairo_pdf=20, cairo_ps=20),
-  pointsize = c(png=12, tiff=12, cairo_pdf=12, cairo_ps=12),
-  min_pointsize = c(png=4, tiff=4, cairo_pdf=4, cairo_ps=4),
-  max_pointsize = c(png=20, tiff=20, cairo_pdf=20, cairo_ps=20)
-)
-
 # List of forest.meta() arguments, excluding some that we don't want the user to touch
 forest_args <- formalArgs("forest.meta")
 forest_args <- forest_args[!(forest_args %in% 
@@ -148,9 +135,18 @@ shinyServer(function(input, output, session) {
     res
   })
   
-  forest_rct <- function(new=TRUE) {
+  forest_rct <- function(new=TRUE, pointsize=12, lwd=1, spacing=1) {
     cilayout("(", " - ")
-    do.call(forest, c(list(x=m(), new=new), rcts_pltOpt()))
+    pars <- c(list(x=m(), new=new), rcts_pltOpt(),
+      list(
+        fontsize = pointsize,
+        plotwidth = sprintf("%.2fcm", 8*pointsize/12),
+        colgap = sprintf("%.2fmm", 2*pointsize/12),
+        lwd = lwd,
+        spacing = spacing
+      ))
+    pars <- pars[!duplicated(names(pars))]
+    do.call(forest, pars)
   }
   
   # REACTIVE: render the forest plot
@@ -158,55 +154,6 @@ shinyServer(function(input, output, session) {
     if (rcts_chk()) {
       forest_rct(new=TRUE)
     }
-  })
-  
-  # REACTIVE: render the plot dimension setting controls
-  output$rctPlOpt_dims <- renderUI({
-    fluidRow(
-      column(4, numericInput("rctPlOpt_width", "Width", 
-          defPltSize$width[input$rctPlOpt_fileType], 
-          min=defPltSize$min_width[input$rctPlOpt_fileType], 
-          max=defPltSize$max_width[input$rctPlOpt_fileType])),
-      column(4, numericInput("rctPlOpt_height", "Height", 
-          defPltSize$height[input$rctPlOpt_fileType], 
-          min=defPltSize$min_height[input$rctPlOpt_fileType], 
-          max=defPltSize$max_height[input$rctPlOpt_fileType])),
-      column(4, numericInput("rctPlOpt_pointsize", "Pointsize", 
-          defPltSize$pointsize[input$rctPlOpt_fileType], 
-          min=defPltSize$min_pointsize[input$rctPlOpt_fileType], 
-          max=defPltSize$max_pointsize[input$rctPlOpt_fileType]))
-    )
-  })
-  
-  # Get and filter input for plot dimensions
-  rcts_pltDim <- reactive({
-    res <- list(
-      width = input$rctPlOpt_width,
-      height = input$rctPlOpt_height,
-      pointsize = input$rctPlOpt_pointsize
-    )
-    if (is.na(res$width)) {
-      res$width <- defPltSize$width[input$rctPlOpt_fileType]
-    } else if (res$width < defPltSize$min_width[input$rctPlOpt_fileType]) {
-      res$width <- defPltSize$min_width[input$rctPlOpt_fileType]
-    } else if (res$width > defPltSize$max_width[input$rctPlOpt_fileType]) {
-      res$width <- defPltSize$max_width[input$rctPlOpt_fileType]
-    }
-    if (is.na(res$height)) {
-      res$height <- defPltSize$height[input$rctPlOpt_fileType]
-    } else if (res$height < defPltSize$min_height[input$rctPlOpt_fileType]) {
-      res$height <- defPltSize$min_height[input$rctPlOpt_fileType]
-    } else if (res$height > defPltSize$max_height[input$rctPlOpt_fileType]) {
-      res$height <- defPltSize$max_height[input$rctPlOpt_fileType]
-    }
-    if (is.na(res$pointsize)) {
-      res$pointsize <- defPltSize$pointsize[input$rctPlOpt_fileType]
-    } else if (res$pointsize < defPltSize$min_pointsize[input$rctPlOpt_fileType]) {
-      res$pointsize <- defPltSize$min_pointsize[input$rctPlOpt_fileType]
-    } else if (res$pointsize > defPltSize$max_pointsize[input$rctPlOpt_fileType]) {
-      res$pointsize <- defPltSize$max_pointsize[input$rctPlOpt_fileType]
-    }
-    res
   })
   
   output$rctPlOpt_advParOutput <- renderText({
@@ -228,15 +175,31 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       fileOptions <- list(filename=file, 
-        width=rcts_pltDim()$width, height=rcts_pltDim()$height, 
-        pointsize=rcts_pltDim()$pointsize)
-      if (input$rctPlOpt_fileType=="tiff") fileOptions$compression <- "lzw"
-      if (input$rctPlOpt_fileType %in% c("png", "tiff")) fileOptions$res <- 300
+        width=input$rctPlOpt_width, height=input$rctPlOpt_height, 
+        pointsize=input$rctPlOpt_pointsize)
+      if (input$rctPlOpt_fileType %in% c("png", "tiff")) {
+        fileOptions$res <- input$rctPlOpt_res
+        fileOptions$width <- fileOptions$width * fileOptions$res
+        fileOptions$height <- fileOptions$height * fileOptions$res
+        if (input$rctPlOpt_fileType=="tiff") fileOptions$compression <- "lzw"
+      }
       do.call(input$rctPlOpt_fileType, fileOptions)
-      forest_rct()
+      forest_rct(pointsize=input$rctPlOpt_pointsize, 
+        spacing=input$rctPlOpt_spacing, lwd=input$rctPlOpt_lwd)
       dev.off()
     }
   )
+  
+  # Clear empty rows from TabWidget
+  observeEvent(input$setDefaultForestSize, {
+    updateSliderInput(session, "rctPlOpt_width", value=7)
+    updateSliderInput(session, "rctPlOpt_height", value=9)
+    updateSliderInput(session, "rctPlOpt_pointsize", value=12)
+    updateSliderInput(session, "rctPlOpt_res", value=300)
+    updateSliderInput(session, "rctPlOpt_lwd", value=1)
+    updateSliderInput(session, "rctPlOpt_spacing", value=1)
+  })  
+
   
   # Clear empty rows from TabWidget
   observeEvent(input$trimRctsTabWidget, {

@@ -79,10 +79,30 @@ shinyUI(fluidPage(
               checkboxInput("rctPlOpt_showDownloadOptions", "Download options", FALSE),
               conditionalPanel("input.rctPlOpt_showDownloadOptions",
                 wellPanel(
-                  selectInput("rctPlOpt_fileType", "File type", 
-                    c("pdf"="cairo_pdf", "tiff"="tiff", "png"="png", "ps"="cairo_ps")),
-                  uiOutput("rctPlOpt_dims"),
-                  actionButton("setDefaultForestSize", "Set default size")
+                  fluidRow(
+                    column(8, selectInput("rctPlOpt_fileType", "File type", 
+                      c("pdf"="cairo_pdf", "tiff"="tiff", "png"="png", "ps"="cairo_ps"))),
+                    column(4, sliderInput("rctPlOpt_res", "Resolution (dpi)",
+                      100, 1200, 300, step=100, ticks=FALSE))
+                  ),
+                  fluidRow(
+                    column(6, sliderInput("rctPlOpt_width", "Width (in)", 
+                        4, 20, 7, step=1, ticks=FALSE)),
+                    column(6, sliderInput("rctPlOpt_height", "Height (in)", 
+                        5, 22, 9, step=1, ticks=FALSE))
+                  ),
+                  conditionalPanel("input.rctPlOpt_showDownloadOptionsMore", fluidRow(
+                    column(4, sliderInput("rctPlOpt_lwd", "Line width", 
+                        0.4, 3, 1, step=0.2, ticks=FALSE)),
+                    column(4, sliderInput("rctPlOpt_spacing", "Spacing", 
+                        0.5, 5, 1, step=0.25, ticks=FALSE)),
+                    column(4, sliderInput("rctPlOpt_pointsize", "Pointsize", 
+                        6, 24, 12, step=1, ticks=FALSE))
+                  )),
+                  fluidRow(
+                    column(6, actionButton("setDefaultForestSize", "Set default size")),
+                    column(6, checkboxInput("rctPlOpt_showDownloadOptionsMore", "More options", FALSE))
+                  )
                 )
               ),
               checkboxInput("rctPlOpt_showContentOptions", "Content options", FALSE),
