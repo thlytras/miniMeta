@@ -21,6 +21,7 @@ shinyServer(function(input, output, session) {
   
   values <- reactiveValues(
     rctsDAT = rctsDAT,
+    rctsImportReady = FALSE,
     rctsFileReady = FALSE# rctsTableReady = FALSE,  # tableready might not be needed,
   )
   
@@ -226,7 +227,81 @@ shinyServer(function(input, output, session) {
       WriteXLS(dummy, file, "RCTs")
     }
   )
+
   
+  # Code to import meta-analysis
+  observeEvent(input$rctsImport, {
+    values$rctsImportReady <- FALSE
+    if (is.null(input$rctsImport)) return()
+    inFile <- input$rctsImport
+    m <- readRDS(inFile$datapath)
+    updateSelectInput(session, "rctOpt_sm", 
+        selected = m$analysisOptions$sm)
+    updateCheckboxInput(session, "rctOpt_combFixed",
+        value = m$analysisOptions$combFixed)
+    updateCheckboxInput(session, "rctOpt_combRandom",
+        value = m$analysisOptions$combRandom)
+    updateSelectInput(session, "rctOpt_method", 
+        selected = m$analysisOptions$method)
+    updateSelectInput(session, "rctOpt_methodTau", 
+        selected = m$analysisOptions$methodTau)
+    updateSelectInput(session, "rctOpt_incr", 
+        selected = m$analysisOptions$incr)
+    updateCheckboxInput(session, "rctOpt_hakn",
+        value = m$analysisOptions$hakn)
+    updateSelectInput(session, "rctPlOpt_fileType", 
+        selected = m$plotOptions$fileType)
+    updateSliderInput(session, "rctPlOpt_res", 
+        value = m$plotOptions$res)
+    updateSliderInput(session, "rctPlOpt_width", 
+        value = m$plotOptions$width)
+    updateSliderInput(session, "rctPlOpt_height", 
+        value = m$plotOptions$height)
+    updateSliderInput(session, "rctPlOpt_lwd", 
+        value = m$plotOptions$lwd)
+    updateSliderInput(session, "rctPlOpt_spacing", 
+        value = m$plotOptions$spacing)
+    updateSliderInput(session, "rctPlOpt_pointsize", 
+        value = m$plotOptions$pointsize)
+    updateCheckboxInput(session, "rctPlOpt_inclAbsNum", 
+        value = m$plotOptions$inclAbsNum)
+    updateCheckboxInput(session, "rctPlOpt_printI2", 
+        value = m$plotOptions$printI2)
+    updateCheckboxInput(session, "rctPlOpt_printQ", 
+        value = m$plotOptions$printQ)
+    updateCheckboxInput(session, "rctPlOpt_printPval", 
+        value = m$plotOptions$printPval)
+    updateCheckboxInput(session, "rctPlOpt_printTau2", 
+        value = m$plotOptions$printTau2)
+    updateTextAreaInput(session, "rctPlOpt_advParInput",
+        value = m$plotOptions$advParInput)
+    values$rctsImportReady <- TRUE
+  })
+
+  # Export meta-analysis
+  output$rctsExport <- downloadHandler(
+    filename = function() {
+      "miniMeta_analysis.rds"
+    },
+    content = function(file) {
+      m <- list(
+        data = rcts_dat(),
+        meta = m(),
+        analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
+          "method", "methodTau", "incr", "hakn"), function(x) 
+          input[[paste0("rctOpt_", x)]], simplify=FALSE
+        ),
+        plotOptions = sapply(c("fileType", "res", "width", "height", 
+          "lwd", "spacing", "pointsize", "inclAbsNum", "printI2", 
+          "printQ", "printPval", "printTau2", "advParInput"), function(x)
+          input[[paste0("rctPlOpt_", x)]], simplify=FALSE
+        )
+      )
+      class(m) <- c("miniMeta", "list")
+      saveRDS(m, file=file)
+    }
+  )
+
   # REACTIVE: render the output panel
   output$uncpanel <- renderPrint({
     if (rcts_chk()) {

@@ -2,6 +2,7 @@ library(shiny)
 library(markdown)
 library(rhandsontable)
 
+source("miniFileInput.R")
 
 shinyUI(fluidPage(
   
@@ -10,11 +11,10 @@ shinyUI(fluidPage(
   span("A simple tool to run meta-analyses, with a focus on GRADE SoF tables"),
   tabsetPanel(
     tabPanel("RCT module",
-      fluidPage(fluidRow(br(),
-        actionButton("rctsImport", "Import meta-analysis"),
-        actionButton("rctsExport", "Export meta-analysis"),
-        br(), br()
-      )),
+      fluidPage(br(),fluidRow(
+        miniFileInput("rctsImport", "Import meta-analysis"),
+        downloadButton("rctsExport", "Export meta-analysis")
+      ), br()),
       sidebarLayout(
         sidebarPanel(
           fileInput('rctsLoadExcel', 'Load an Excel file with abstracted data',
@@ -143,7 +143,7 @@ shinyUI(fluidPage(
     tabPanel("Tools", br(),
       tabsetPanel(
         tabPanel("Bucher method",
-          h3("Adjusted Indirect Comparisons (Bucher method)"),
+          h4("Adjusted Indirect Comparisons (Bucher method)"),
           fluidRow(
             column(6,
               fluidRow(
