@@ -1,4 +1,7 @@
-rsconnect/
-deployMe.R
-notes.txt
+inst/shiny/miniMeta/rsconnect/
+inst/shiny/miniMeta/deployMe.R
 stack/
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
