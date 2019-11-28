@@ -4,6 +4,9 @@ library(rhandsontable)
 
 source("miniFileInput.R")
 
+source("modules/bucher.R")
+
+
 shinyUI(fluidPage(
   
   # Application title
@@ -142,28 +145,7 @@ shinyUI(fluidPage(
     tabPanel("Observational studies module"),
     tabPanel("Tools", br(),
       tabsetPanel(
-        tabPanel("Bucher method",
-          h4("Adjusted Indirect Comparisons (Bucher method)"),
-          fluidRow(
-            column(6,
-              fluidRow(
-                column(4, numericInput("buch_AC_est", "A vs C", NA)),
-                column(4, numericInput("buch_AC_lo", "95%CI LL", NA)),
-                column(4, numericInput("buch_AC_hi", "95%CI UL", NA))
-              ),
-              fluidRow(
-                column(4, numericInput("buch_BC_est", "B vs C", NA)),
-                column(4, numericInput("buch_BC_lo", "95%CI LL", NA)),
-                column(4, numericInput("buch_BC_hi", "95%CI UL", NA))
-              ),
-              radioButtons("buch_type", "What kind of effect measure is this?", choices = list(
-                "Relative Risk / Odds Ratio / Other exponentiated measure" = "exp", 
-                "logRR / logOR / Other absolute measure" = "abs"
-              ), width="100%")
-            ),
-            column(6, verbatimTextOutput("buch_output"))
-          )
-        )
+        bucher_moduleUI(id = "bucher")
       )
     )
   )
