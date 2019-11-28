@@ -1,10 +1,10 @@
 library(shiny)
 library(markdown)
-library(rhandsontable)
 
 source("miniFileInput.R")
 
-source("modules/bucher.R")
+source("modules/mod-bucher.R")
+source("modules/mod-rctLoadData.R")
 
 
 shinyUI(fluidPage(
@@ -20,16 +20,7 @@ shinyUI(fluidPage(
       ), br()),
       sidebarLayout(
         sidebarPanel(
-          fileInput('rctsLoadExcel', 'Load an Excel file with abstracted data',
-                    accept = c('application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')),
-          helpText("or place your values here:", style="font-weight:bold"),
-          rHandsontableOutput("rctsTabWidget"),
-          splitLayout(
-            actionButton("addRowToRctsTabWidget", "Add rows"),
-            actionButton("trimRctsTabWidget", "Clear empty rows"),
-            downloadButton("rctsSaveExcel", "Save as Excel"),
-            cellArgs = list(style = "padding: 6px; text-align:center")
-          ),
+          rctLoadDataUI(id = "rctLoadData"),
           checkboxInput("rctsShowOptions", "Show analysis options"),
           conditionalPanel("input.rctsShowOptions",
             wellPanel(

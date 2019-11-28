@@ -1,15 +1,10 @@
 library(shiny)
 library(meta)
 library(metafor)
-library(readxl)
 library(WriteXLS)
 
 source("include.R")
 
-# Load some data in advance!
-rctsDAT <- as.data.frame(read_excel("RCTs-template.xls"), stringsAsFactors=FALSE)
-rctsDAT$group <- ""
-names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
 
 # List of forest.meta() arguments, excluding some that we don't want the user to touch
 forest_args <- formalArgs("forest.meta")
@@ -19,72 +14,7 @@ forest_args <- forest_args[!(forest_args %in%
 
 shinyServer(function(input, output, session) {
   
-  values <- reactiveValues(
-    rctsDAT = rctsDAT,
-    rctsImportReady = FALSE,
-    rctsFileReady = FALSE# rctsTableReady = FALSE,  # tableready might not be needed,
-  )
-  
-  observe({
-    if (!is.null(input$rctsTabWidget)) {
-      rctsDAT <<- hot_to_r(input$rctsTabWidget)
-    }
-    values$rctsDAT <- rctsDAT
-    # Check if last value in the table
-    if (!is.na(rev(rctsDAT[,2])[1])) {
-      dummy <- rctsDAT[1:(nrow(rctsDAT)+1),]
-      rownames(dummy) <- NULL
-      rctsDAT <<- dummy
-      values$rctsFileReady <- TRUE
-    }
-    
-  })
-  
-  
-  # Code to load an Excel file
-  observeEvent(input$rctsLoadExcel, {
-    values$rctsFileReady <- FALSE
-    if (is.null(input$rctsLoadExcel)) return()
-    inFile <- input$rctsLoadExcel
-    tempDat <- as.data.frame(read_excel(inFile$datapath), stringsAsFactors=FALSE)
-    while(ncol(tempDat)<6) {
-      tempDat <- cbind(tempDat, NA)
-    }
-    tempDat <- tempDat[,1:6]
-    tempDat[,1] <- as.character(tempDat[,1])
-    suppressWarnings(for (i in 2:5) tempDat[,i] <- as.numeric(tempDat[,i]))
-    tempDat[,6] <- as.character(tempDat[,6])
-    tempDat <- tempDat[getNonEmptyDFrows(tempDat),]
-    names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
-    rctsDAT <<- tempDat
-    if(!is.data.frame(rctsDAT)) return()
-    values$rctsFileReady <- TRUE
-  })
-  
-  # Code to render the table in the widget, if values have changed
-  output$rctsTabWidget <- renderRHandsontable({
-    if (values$rctsFileReady) {
-      values$rctsFileReady <- FALSE
-    }
-    rhandsontable(rctsDAT, stretchH="all", rowHeaders=NULL, overflow="hidden") %>% 
-      hot_col("events.Intervention", format="0") %>% hot_col("N.Intervention", format="0") %>% 
-      hot_col("events.Control", format="0") %>% hot_col("N.Control", format="0")  %>% hot_col("Group")
-  })
-  
-  # Code to add rows to the widget
-  observeEvent(input$addRowToRctsTabWidget, {
-    dummy <- rctsDAT[1:(nrow(rctsDAT)+1),]
-    rownames(dummy) <- NULL
-    rctsDAT <<- dummy
-    values$rctsFileReady <- TRUE
-  })
-
-  # REACTIVE: return the table if it has changed
-  rcts_dat <- reactive({
-    datt <- values$rctsDAT
-    colnames(datt) <- c("Study", "e.e", "n.e", "e.c", "n.c", "group")
-    datt[getNonEmptyDFrows(datt, ignore.studlab=FALSE),]
-  })
+  rcts_dat <- callModule(module = rctLoadData, id="rctLoadData")
   
   # REACTIVE: check validity of the data
   rcts_chk <- reactive({
@@ -205,28 +135,6 @@ shinyServer(function(input, output, session) {
   })  
 
   
-  # Clear empty rows from TabWidget
-  observeEvent(input$trimRctsTabWidget, {
-    dummy <- rctsDAT
-    dummy <- dummy[getNonEmptyDFrows(dummy),]
-    dummy <- dummy[1:(nrow(dummy)+1),]
-    rownames(dummy) <- NULL
-    print(dummy[,1])
-    rctsDAT <<- dummy
-    values$rctsFileReady <- TRUE
-  })  
-  
-  # Download data as Excel
-  output$rctsSaveExcel <- downloadHandler(
-    filename = function() {
-      "studies.xls"
-    },
-    content = function(file) {
-      dummy <- rcts_dat()
-      names(dummy) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
-      WriteXLS(dummy, file, "RCTs")
-    }
-  )
 
   
   # Code to import meta-analysis
