@@ -27,7 +27,7 @@ rctLoadDataUI <- function(id) {
 }
 
 
-rctLoadData <- function(input, output, session) {
+rctLoadData <- function(input, output, session, dataset = NULL) {
 
   values <- reactiveValues(
     rctsDAT = rctsDAT,
@@ -69,6 +69,16 @@ rctLoadData <- function(input, output, session) {
     rctsDAT <<- tempDat
     if(!is.data.frame(rctsDAT)) return()
     values$rctsFileReady <- TRUE
+  })
+  
+  observe({
+    if (!is.null(dataset())) {
+      print(dataset())
+      tempDat <- dataset()[,1:6]
+      names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
+      rctsDAT <<- tempDat
+      values$rctsFileReady <- TRUE
+    }
   })
   
   # Code to render the table in the widget, if values have changed

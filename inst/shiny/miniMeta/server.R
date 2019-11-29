@@ -14,7 +14,13 @@ forest_args <- forest_args[!(forest_args %in%
 
 shinyServer(function(input, output, session) {
   
-  rcts_dat <- callModule(module = rctLoadData, id="rctLoadData")
+  values <- reactiveValues(
+    rctsImportReady = FALSE,
+    dataset = NULL
+  )
+  
+  rcts_dat <- callModule(module = rctLoadData, id="rctLoadData", 
+        dataset = reactive(values$dataset))
   
   # REACTIVE: check validity of the data
   rcts_chk <- reactive({
@@ -143,6 +149,8 @@ shinyServer(function(input, output, session) {
     if (is.null(input$rctsImport)) return()
     inFile <- input$rctsImport
     m <- readRDS(inFile$datapath)
+    values$dataset <- NULL
+    values$dataset <- m$data
     updateSelectInput(session, "rctOpt_sm", 
         selected = m$analysisOptions$sm)
     updateCheckboxInput(session, "rctOpt_combFixed",
