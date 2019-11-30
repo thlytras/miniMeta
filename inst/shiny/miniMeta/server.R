@@ -63,6 +63,19 @@ shinyServer(function(input, output, session) {
     return(plOpts)
   })
   
+  
+  rctPlOpt_downloadOpts <- reactiveValues(
+        fileType=NULL, width=NULL, height=NULL, pointsize=NULL,
+        res=NULL, lwd=NULL, spacing=NULL)
+  rctPlOpt_mod_downloadOpts <- callModule(module = plDownloadOpts, id="rctDownloadOpts", 
+        setOpts = rctPlOpt_downloadOpts)
+  
+  observeEvent(rctPlOpt_mod_downloadOpts$trigger, {
+    for (n in names(rctPlOpt_mod_downloadOpts)) {
+      rctPlOpt_downloadOpts[[n]] <- rctPlOpt_mod_downloadOpts[[n]]
+    }
+  })
+  
   # REACTIVE: parse all advanced plot options
   rcts_pltAdvOpt <- reactive({
     res <- readAdvParameters(input$rctPlOpt_advParInput)
@@ -111,34 +124,25 @@ shinyServer(function(input, output, session) {
   # Download the forest plot
   output$rctsForestDownload <- downloadHandler(
     filename = function() {
-      sprintf("forest.%s", gsub("cairo_", "", input$rctPlOpt_fileType, fixed=TRUE))
+      sprintf("forest.%s", gsub("cairo_", "", rctPlOpt_downloadOpts$fileType, fixed=TRUE))
     },
     content = function(file) {
       fileOptions <- list(filename=file, 
-        width=input$rctPlOpt_width, height=input$rctPlOpt_height, 
-        pointsize=input$rctPlOpt_pointsize)
-      if (input$rctPlOpt_fileType %in% c("png", "tiff")) {
-        fileOptions$res <- input$rctPlOpt_res
+        width=rctPlOpt_downloadOpts$width, height=rctPlOpt_downloadOpts$height, 
+        pointsize=rctPlOpt_downloadOpts$pointsize)
+      if (rctPlOpt_downloadOpts$fileType %in% c("png", "tiff")) {
+        fileOptions$res <- rctPlOpt_downloadOpts$res
         fileOptions$width <- fileOptions$width * fileOptions$res
         fileOptions$height <- fileOptions$height * fileOptions$res
-        if (input$rctPlOpt_fileType=="tiff") fileOptions$compression <- "lzw"
+        if (rctPlOpt_downloadOpts$fileType=="tiff") fileOptions$compression <- "lzw"
       }
-      do.call(input$rctPlOpt_fileType, fileOptions)
-      forest_rct(pointsize=input$rctPlOpt_pointsize, 
-        spacing=input$rctPlOpt_spacing, lwd=input$rctPlOpt_lwd)
+      do.call(rctPlOpt_downloadOpts$fileType, fileOptions)
+      forest_rct(pointsize=rctPlOpt_downloadOpts$pointsize, 
+        spacing=rctPlOpt_downloadOpts$spacing, lwd=rctPlOpt_downloadOpts$lwd)
       dev.off()
     }
   )
   
-  # Clear empty rows from TabWidget
-  observeEvent(input$setDefaultForestSize, {
-    updateSliderInput(session, "rctPlOpt_width", value=10)
-    updateSliderInput(session, "rctPlOpt_height", value=6)
-    updateSliderInput(session, "rctPlOpt_pointsize", value=10)
-    updateSliderInput(session, "rctPlOpt_res", value=300)
-    updateSliderInput(session, "rctPlOpt_lwd", value=1)
-    updateSliderInput(session, "rctPlOpt_spacing", value=1)
-  })  
 
   
 
@@ -165,20 +169,13 @@ shinyServer(function(input, output, session) {
         selected = m$analysisOptions$incr)
     updateCheckboxInput(session, "rctOpt_hakn",
         value = m$analysisOptions$hakn)
-    updateSelectInput(session, "rctPlOpt_fileType", 
-        selected = m$plotOptions$fileType)
-    updateSliderInput(session, "rctPlOpt_res", 
-        value = m$plotOptions$res)
-    updateSliderInput(session, "rctPlOpt_width", 
-        value = m$plotOptions$width)
-    updateSliderInput(session, "rctPlOpt_height", 
-        value = m$plotOptions$height)
-    updateSliderInput(session, "rctPlOpt_lwd", 
-        value = m$plotOptions$lwd)
-    updateSliderInput(session, "rctPlOpt_spacing", 
-        value = m$plotOptions$spacing)
-    updateSliderInput(session, "rctPlOpt_pointsize", 
-        value = m$plotOptions$pointsize)
+    rctPlOpt_downloadOpts$fileType <- m$plotOptions$fileType
+    rctPlOpt_downloadOpts$res <- m$plotOptions$res
+    rctPlOpt_downloadOpts$width <- m$plotOptions$width
+    rctPlOpt_downloadOpts$height <- m$plotOptions$height
+    rctPlOpt_downloadOpts$lwd <- m$plotOptions$lwd
+    rctPlOpt_downloadOpts$spacing <- m$plotOptions$spacing
+    rctPlOpt_downloadOpts$pointsize <- m$plotOptions$pointsize
     updateCheckboxInput(session, "rctPlOpt_inclAbsNum", 
         value = m$plotOptions$inclAbsNum)
     updateCheckboxInput(session, "rctPlOpt_printI2", 
@@ -207,10 +204,11 @@ shinyServer(function(input, output, session) {
           "method", "methodTau", "incr", "hakn"), function(x) 
           input[[paste0("rctOpt_", x)]], simplify=FALSE
         ),
-        plotOptions = sapply(c("fileType", "res", "width", "height", 
-          "lwd", "spacing", "pointsize", "inclAbsNum", "printI2", 
-          "printQ", "printPval", "printTau2", "advParInput"), function(x)
-          input[[paste0("rctPlOpt_", x)]], simplify=FALSE
+        plotOptions = c(reactiveValuesToList(rctPlOpt_downloadOpts),
+          sapply(c("inclAbsNum", "printI2", 
+            "printQ", "printPval", "printTau2", "advParInput"), function(x)
+            input[[paste0("rctPlOpt_", x)]], simplify=FALSE
+          )
         )
       )
       class(m) <- c("miniMeta", "list")

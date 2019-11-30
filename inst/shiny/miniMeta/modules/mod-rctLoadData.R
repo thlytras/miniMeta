@@ -73,7 +73,6 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
   
   observe({
     if (!is.null(dataset())) {
-      print(dataset())
       tempDat <- dataset()[,1:6]
       names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
       rctsDAT <<- tempDat

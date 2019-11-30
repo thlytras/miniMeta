@@ -5,11 +5,10 @@ source("miniFileInput.R")
 
 source("modules/mod-bucher.R")
 source("modules/mod-rctLoadData.R")
+source("modules/mod-plDownloadOpts.R")
 
 
 shinyUI(fluidPage(
-  
-  # Application title
   titlePanel("miniMeta"),
   span("A simple tool to run meta-analyses, with a focus on GRADE SoF tables"),
   tabsetPanel(
@@ -72,32 +71,7 @@ shinyUI(fluidPage(
             tabPanel("Plot options",
               checkboxInput("rctPlOpt_showDownloadOptions", "Download options", FALSE),
               conditionalPanel("input.rctPlOpt_showDownloadOptions",
-                wellPanel(
-                  fluidRow(
-                    column(8, selectInput("rctPlOpt_fileType", "File type", 
-                      c("pdf"="cairo_pdf", "tiff"="tiff", "png"="png", "ps"="cairo_ps"))),
-                    column(4, sliderInput("rctPlOpt_res", "Resolution (dpi)",
-                      100, 1200, 600, step=100, ticks=FALSE))
-                  ),
-                  fluidRow(
-                    column(6, sliderInput("rctPlOpt_width", "Width (in)", 
-                        4, 20,10, step=1, ticks=FALSE)),
-                    column(6, sliderInput("rctPlOpt_height", "Height (in)", 
-                        3, 30, 6, step=1, ticks=FALSE))
-                  ),
-                  conditionalPanel("input.rctPlOpt_showDownloadOptionsMore", fluidRow(
-                    column(4, sliderInput("rctPlOpt_lwd", "Line width", 
-                        0.4, 3, 1, step=0.2, ticks=FALSE)),
-                    column(4, sliderInput("rctPlOpt_spacing", "Spacing", 
-                        0.5, 5, 1, step=0.25, ticks=FALSE)),
-                    column(4, sliderInput("rctPlOpt_pointsize", "Pointsize", 
-                        4, 24, 10, step=1, ticks=FALSE))
-                  )),
-                  fluidRow(
-                    column(6, actionButton("setDefaultForestSize", "Set default size")),
-                    column(6, checkboxInput("rctPlOpt_showDownloadOptionsMore", "More options", FALSE))
-                  )
-                )
+                plDownloadOptsUI(id = "rctDownloadOpts")
               ),
               checkboxInput("rctPlOpt_showContentOptions", "Content options", FALSE),
               conditionalPanel("input.rctPlOpt_showContentOptions",
