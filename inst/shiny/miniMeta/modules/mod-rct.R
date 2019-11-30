@@ -115,6 +115,8 @@ rct_moduleUI <- function(id) {
 
 rct_module <- function(input, output, session) {
 
+  flagFirstRun <- FALSE # Ugly hack to avoid Cairo backend error
+
   values <- reactiveValues(
     rctsImportReady = FALSE,
     dataset = NULL
@@ -212,9 +214,11 @@ rct_module <- function(input, output, session) {
   output$rctsForestPlotUI <- renderUI({
     cat("Rendering...\n")
     nr <- nrow(rcts_dat())
-    cat(print(nr))
-    cat("\n")
     if (!is.numeric(nr)) nr <- 5
+    if (!flagFirstRun) {
+      flagFirstRun <<- TRUE
+      return()
+    }
     plotOutput(session$ns("rctsForestPlot"), height=paste0(12 + 1.1*nr, "em"), width="100%")
   })
   
