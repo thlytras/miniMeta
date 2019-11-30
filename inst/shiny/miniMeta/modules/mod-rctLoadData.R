@@ -1,7 +1,7 @@
 library(rhandsontable)
 library(readxl)
 
-source("include.R")
+source("modules/include.R")
 
 # Load some data in advance!
 rctsDAT <- as.data.frame(read_excel("RCTs-template.xls"), stringsAsFactors=FALSE)
