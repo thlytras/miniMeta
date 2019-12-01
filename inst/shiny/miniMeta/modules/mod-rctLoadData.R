@@ -30,8 +30,22 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
     }
   }
 
+  # Helper function
+  formatRctDat <- function(tempDat) {
+    while(ncol(tempDat)<6) {
+      tempDat <- cbind(tempDat, NA)
+    }
+    tempDat <- tempDat[,1:6]
+    tempDat[,1] <- as.character(tempDat[,1])
+    suppressWarnings(for (i in 2:5) tempDat[,i] <- as.numeric(tempDat[,i]))
+    tempDat[,6] <- as.character(tempDat[,6])
+    tempDat <- tempDat[getNonEmptyDFrows(tempDat),]
+    names(tempDat) <- c("Study", "Eff.measure", "95CI.LL", "95CI.UL", "SE", "Group")
+    tempDat
+  }
+
   # Load some data in advance!
-  rctsDAT <- as.data.frame(read_excel("RCTs-template.xls"), stringsAsFactors=FALSE)
+  rctsDAT <- as.data.frame(read_excel("examples/RCTs-template.xls"), stringsAsFactors=FALSE)
   rctsDAT$group <- ""
   names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
 
@@ -67,15 +81,7 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
         footer = modalButton("OK, got it"), size="s"))
       return()
     }
-    while(ncol(tempDat)<6) {
-      tempDat <- cbind(tempDat, NA)
-    }
-    tempDat <- tempDat[,1:6]
-    tempDat[,1] <- as.character(tempDat[,1])
-    suppressWarnings(for (i in 2:5) tempDat[,i] <- as.numeric(tempDat[,i]))
-    tempDat[,6] <- as.character(tempDat[,6])
-    tempDat <- tempDat[getNonEmptyDFrows(tempDat),]
-    names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
+    tempDat <- formatRctDat(tempDat)
     rctsDAT <<- tempDat
     if(!is.data.frame(rctsDAT)) return()
     if (!is.na(rev(rctsDAT[,2])[1])) {

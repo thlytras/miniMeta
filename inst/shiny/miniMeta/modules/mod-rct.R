@@ -150,8 +150,10 @@ rct_module <- function(input, output, session) {
         if (rctPlOpt_downloadOpts$fileType=="tiff") fileOptions$compression <- "lzw"
       }
       do.call(rctPlOpt_downloadOpts$fileType, fileOptions)
-      forest_rct(pointsize=rctPlOpt_downloadOpts$pointsize, 
-        spacing=rctPlOpt_downloadOpts$spacing, lwd=rctPlOpt_downloadOpts$lwd)
+      if (rcts_chk()) {
+        forest_rct(pointsize=rctPlOpt_downloadOpts$pointsize, 
+          spacing=rctPlOpt_downloadOpts$spacing, lwd=rctPlOpt_downloadOpts$lwd)
+      }
       dev.off()
     }
   )
