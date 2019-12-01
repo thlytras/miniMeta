@@ -9,10 +9,7 @@ source("modules/miniFileInput.R")
 # Load the UI of this module from separate file
 source("modules/mod-rct-ui.R")
 
-
-
-
-
+# Server logic of the module follows
 rct_module <- function(input, output, session) {
 
   # Helper functions for this module
@@ -165,10 +162,31 @@ rct_module <- function(input, output, session) {
   
   # Code to import meta-analysis
   observeEvent(input$rctsImport, {
-    values$rctsImportReady <- FALSE
+#     values$rctsImportReady <- FALSE
     if (is.null(input$rctsImport)) return()
     inFile <- input$rctsImport
-    m <- readRDS(inFile$datapath)
+    m <- try(readRDS(inFile$datapath), silent=TRUE)
+      # Has the file been read successfully?
+    if (length(m)==1 && class(m)=="try-error") {
+      showModal(modalDialog(title = "Whoops...", 
+        "Error while trying to read this file.", br(), "Is it an actual miniMeta file?", 
+        footer = modalButton("OK, got it"), size="s"))
+      return()
+    }
+      # Does it appear to be a correct miniMeta file
+    if (!isMiniMetaRct(m)) {
+      if (isMiniMetaObs(m)) {
+        showModal(modalDialog(title = "Info", 
+          "This is indeed a miniMeta file, but it contains a meta-analysis of observational studies.",
+          br(), "Please move to the Observational studies module and import it there. Thank you.", 
+          footer = modalButton("OK, got it"), size="s"))
+        return()
+      }
+      showModal(modalDialog(title = "Whoops...", 
+        "This is a serialized R object, but it does not appear to be a valid miniMeta file.",
+        footer = modalButton("OK, got it"), size="s"))
+      return()
+    }
     values$dataset <- NULL
     values$dataset <- m$data
     for (n in c("sm", "method", "methodTau", "incr")) {
@@ -187,7 +205,7 @@ rct_module <- function(input, output, session) {
     for (n in except(names(rctPlOpt_downloadOpts), "trigger")) {
       rctPlOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
     }
-    values$rctsImportReady <- TRUE
+#     values$rctsImportReady <- TRUE
   }, ignoreInit=TRUE)
 
   
