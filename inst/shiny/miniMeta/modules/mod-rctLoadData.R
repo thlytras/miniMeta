@@ -1,14 +1,6 @@
 library(rhandsontable)
 library(readxl)
 
-source("modules/include.R")
-
-# Load some data in advance!
-rctsDAT <- as.data.frame(read_excel("RCTs-template.xls"), stringsAsFactors=FALSE)
-rctsDAT$group <- ""
-names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
-
-
 
 rctLoadDataUI <- function(id) {
   ns <- NS(id)
@@ -29,10 +21,23 @@ rctLoadDataUI <- function(id) {
 
 rctLoadData <- function(input, output, session, dataset = NULL) {
 
+  # Helper function
+  getNonEmptyDFrows <- function(dat, ignore.studlab=FALSE) {
+    if (ignore.studlab) {
+      apply(dat[,2:5], 1, function(x) !sum(is.na(unlist(x)))==4)
+    } else {
+      apply(dat[,1:5], 1, function(x) (sum(is.na(unlist(x))) + sum(unlist(x)=="", na.rm=TRUE))<5)
+    }
+  }
+
+  # Load some data in advance!
+  rctsDAT <- as.data.frame(read_excel("RCTs-template.xls"), stringsAsFactors=FALSE)
+  rctsDAT$group <- ""
+  names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
+
   values <- reactiveValues(
     rctsDAT = rctsDAT,
-    rctsImportReady = FALSE,
-    rctsFileReady = FALSE# rctsTableReady = FALSE,  # tableready might not be needed,
+    rctsFileReady = FALSE
   )
   
   observe({
@@ -47,7 +52,6 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
       rctsDAT <<- dummy
       values$rctsFileReady <- TRUE
     }
-    
   })
   
   
@@ -68,14 +72,25 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
     names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
     rctsDAT <<- tempDat
     if(!is.data.frame(rctsDAT)) return()
+    if (!is.na(rev(rctsDAT[,2])[1])) {
+      dummy <- rctsDAT[1:(nrow(rctsDAT)+1),]
+      rownames(dummy) <- NULL
+      rctsDAT <<- dummy
+    }
     values$rctsFileReady <- TRUE
-  })
+  }, ignoreInit=TRUE)
   
   observe({
     if (!is.null(dataset())) {
       tempDat <- dataset()[,1:6]
       names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
       rctsDAT <<- tempDat
+      if(!is.data.frame(rctsDAT)) return()
+      if (!is.na(rev(rctsDAT[,2])[1])) {
+        dummy <- rctsDAT[1:(nrow(rctsDAT)+1),]
+        rownames(dummy) <- NULL
+        rctsDAT <<- dummy
+      }
       values$rctsFileReady <- TRUE
     }
   })
@@ -96,16 +111,7 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
     rownames(dummy) <- NULL
     rctsDAT <<- dummy
     values$rctsFileReady <- TRUE
-  })
-
-  # REACTIVE: return the table if it has changed
-  rcts_dat <- reactive({
-    datt <- values$rctsDAT
-    colnames(datt) <- c("Study", "e.e", "n.e", "e.c", "n.c", "group")
-    datt[getNonEmptyDFrows(datt, ignore.studlab=FALSE),]
-  })
-
-#   return(rcts_dat())
+  }, ignoreInit=TRUE)
 
   # Clear empty rows from TabWidget
   observeEvent(input$trimRctsTabWidget, {
@@ -115,7 +121,7 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
     rownames(dummy) <- NULL
     rctsDAT <<- dummy
     values$rctsFileReady <- TRUE
-  })  
+  }, ignoreInit=TRUE)  
   
   # Download data as Excel
   output$rctsSaveExcel <- downloadHandler(
@@ -130,11 +136,12 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
   )
 
   # REACTIVE: return the table if it has changed
-#   return(reactive({
-#     datt <- values$rctsDAT
-#     colnames(datt) <- c("Study", "e.e", "n.e", "e.c", "n.c", "group")
-#     datt[getNonEmptyDFrows(datt, ignore.studlab=FALSE),]
-#   }))
+  rcts_dat <- reactive({
+    datt <- values$rctsDAT
+    colnames(datt) <- c("Study", "e.e", "n.e", "e.c", "n.c", "group")
+    datt[getNonEmptyDFrows(datt, ignore.studlab=FALSE),]
+  })
+
   return(reactive({ rcts_dat() }))
 
 }

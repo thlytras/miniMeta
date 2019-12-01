@@ -1,4 +1,9 @@
 
+except <- function(x, y) {
+  x[!(x %in% y)]
+}
+
+
 checkRCTValidity <- function(rctDAT) {
   msg <- list()
   if (nrow(rctDAT)==0) {
@@ -35,14 +40,6 @@ gradeRR <- function(dat, m) {
 }
 
 
-getNonEmptyDFrows <- function(dat, ignore.studlab=FALSE) {
-  if (ignore.studlab) {
-    apply(dat[,2:5], 1, function(x) !sum(is.na(unlist(x)))==4)
-  } else {
-    apply(dat[,1:5], 1, function(x) (sum(is.na(unlist(x))) + sum(unlist(x)=="", na.rm=TRUE))<5)
-  }
-}
-
 
 readAdvParameters <- function(x) {
   getArgs <- function(...) return(list(...))
@@ -58,4 +55,5 @@ readAdvParameters <- function(x) {
   }
   return(pars)
 }
+
 
