@@ -47,7 +47,7 @@ obs_module <- function(input, output, session) {
         byVar <- NULL
       }
       te <- if (input$obsOpt_sm %in% c("RR","OR")) log(obs_dat()$TE) else obs_dat()$TE
-      return(metagen(te, seTE, data=obs_dat(), studlab=Study, 
+      return(metagen(te, abs(seTE), data=obs_dat(), studlab=Study, 
         method.tau=input$obsOpt_methodTau,
         comb.fixed=input$obsOpt_combFixed, comb.random=input$obsOpt_combRandom,
         byvar=byVar, sm=input$obsOpt_sm, hakn=input$obsOpt_hakn

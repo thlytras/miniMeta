@@ -15,9 +15,12 @@ obsLoadDataUI <- function(id) {
       downloadButton(ns("obsSaveExcel"), "Save as Excel"),
       cellArgs = list(style = "padding: 6px; text-align:center")
     ),
-#     conditionalPanel(sprintf("output['%s'] != ''", ns("msgpanel")),
     conditionalPanel(sprintf("document.getElementById('%s').innerHTML != ''", ns("msgpanel")),
               wellPanel(uiOutput(ns("msgpanel")))
+    ),
+    fluidRow(
+      column(6, checkboxInput(ns("autoUpdate"), "Auto-update table", value=TRUE)),
+      column(6, checkboxInput(ns("autoSE"), "Auto-calculate SE", value=TRUE))
     )
   )
 }
@@ -35,7 +38,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
   }
   
   # Helper function
-  formatObsDat <- function(tempDat, log=TRUE) {
+  formatObsDat <- function(tempDat, log=TRUE, autoSE=FALSE) {
     while(ncol(tempDat)<6) {
       tempDat <- cbind(tempDat, NA)
     }
@@ -44,10 +47,12 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
     suppressWarnings(for (i in 2:5) tempDat[,i] <- as.numeric(tempDat[,i]))
     tempDat[,6] <- as.character(tempDat[,6])
     names(tempDat) <- c("Study", "Eff.measure", "95CI.LL", "95CI.UL", "SE", "Group")
+    idx <- rep(TRUE, nrow(tempDat))
+    if (!autoSE) idx <- is.na(tempDat$SE)
     if (log) {
-      tempDat$SE <- ifelse(is.na(tempDat$SE), with(tempDat, (log(`95CI.UL`)-log(`95CI.LL`))/(2*qnorm(0.975))), tempDat$SE)
+      tempDat$SE <- ifelse(idx, with(tempDat, (log(`95CI.UL`)-log(`95CI.LL`))/(2*qnorm(0.975))), tempDat$SE)
     } else {
-      tempDat$SE <- ifelse(is.na(tempDat$SE), with(tempDat, (`95CI.UL`-`95CI.LL`)/(2*qnorm(0.975))), tempDat$SE)
+      tempDat$SE <- ifelse(idx, with(tempDat, (`95CI.UL`-`95CI.LL`)/(2*qnorm(0.975))), tempDat$SE)
     }
     if (!is.na(rev(tempDat[,2])[1])) {
       tempDat <- tempDat[1:(nrow(tempDat)+1),]
@@ -65,10 +70,14 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
   )
   
   observe({
-    if (!is.null(input$obsTabWidget) && !isolate(values$obsJustRendered)) {
-      values$obsDAT <- formatObsDat(hot_to_r(input$obsTabWidget), log=isolate(logMeasure()))
-    } else {
-      values$obsJustRendered <- FALSE
+    if (input$autoUpdate) {
+      logMeasure()
+      input$autoSE
+      if (!is.null(input$obsTabWidget) && !isolate(values$obsJustRendered)) {
+        values$obsDAT <- formatObsDat(hot_to_r(input$obsTabWidget), log=logMeasure(), autoSE=input$autoSE)
+      } else {
+        values$obsJustRendered <- FALSE
+      }
     }
   })
   
@@ -85,7 +94,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
         footer = modalButton("OK, got it"), size="s"))
       return()
     }
-    tempDat <- formatObsDat(tempDat, log=logMeasure())
+    tempDat <- formatObsDat(tempDat, log=logMeasure(), autoSE=input$autoSE)
     tempDat <- tempDat[getNonEmptyDFrows(tempDat),]
     tempDat <- tempDat[1:(nrow(tempDat)+1),]
     values$obsDAT <- tempDat

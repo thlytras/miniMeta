@@ -15,29 +15,19 @@ obs_moduleUI <- function(id) {
           column(6, selectInput(ns("obsOpt_sm"), "Effect measure",
             c("Relative Risk"="RR", "Odds Ratio"="OR", "Risk Difference"="RD", 
             "Arcsine Difference"="ASD"))),
-          column(6, checkboxInput(ns("obsShowOptions"), "Show analysis options"))
+          column(6, style = "margin-top: 15px;", checkboxInput(ns("obsShowOptions"), "Show analysis options"))
         ),
         conditionalPanel(sprintf("input['%s']", ns("obsShowOptions")),
           wellPanel(
             fluidRow(
-#               column(6,
-#               ),
               column(6, offset=6,
                 checkboxInput(ns("obsOpt_combFixed"), "Use fixed-effects model", value=FALSE),
-                checkboxInput(ns("obsOpt_combRandom"), "Use random-effects model", value=TRUE)
-              )
-            ),
-            fluidRow(
-#               column(6, 
-#                 ),
-              column(6, offset=6, selectInput(ns("obsOpt_methodTau"), "Heterogeneity estimator", 
-                c("DerSimonian-Laird"="DL", "Paule-Mandel"="PM", 
-                  "Restricted Maximum-Likelihood"="REML", 
-                  "Maximum Likelihood"="ML", "Hunter-Schmidt"="HS", "Sidik-Jonkman"="SJ", 
-                  "Hedges"="HE", "Empirical Bayes"="EB")))
-            ),
-            fluidRow(
-              column(6,
+                checkboxInput(ns("obsOpt_combRandom"), "Use random-effects model", value=TRUE),
+                selectInput(ns("obsOpt_methodTau"), "Heterogeneity estimator", 
+                  c("DerSimonian-Laird"="DL", "Paule-Mandel"="PM", 
+                    "Restricted Maximum-Likelihood"="REML", 
+                    "Maximum Likelihood"="ML", "Hunter-Schmidt"="HS", "Sidik-Jonkman"="SJ", 
+                    "Hedges"="HE", "Empirical Bayes"="EB")),
                 checkboxInput(ns("obsOpt_hakn"), "Hartung and Knapp correction", value=FALSE)
               )
             )
