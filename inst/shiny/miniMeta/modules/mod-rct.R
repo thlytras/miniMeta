@@ -239,7 +239,7 @@ rct_module <- function(input, output, session) {
   # REACTIVE: render the output panel
   output$uncpanel <- renderPrint({
     if (rcts_chk()) {
-      return(print(gradeRR(rcts_dat()[,-1], m())))
+      return(print(gradeRCT(rcts_dat()[,-1], m())))
     } else {
       return(cat(paste(attr(rcts_chk(), "msg"), sep="", collapse="\n")))
     }

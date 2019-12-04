@@ -77,7 +77,7 @@ rct_moduleUI <- function(id) {
               )
             ),
             checkboxInput(ns("rctPlOpt_showFormattingOptions"), "Formatting options", FALSE),
-            conditionalPanel(sprintf("input['%s']", ns("showFormattingOptions")),
+            conditionalPanel(sprintf("input['%s']", ns("rctPlOpt_showFormattingOptions")),
               wellPanel(
               )
             ),

@@ -64,7 +64,7 @@ obs_moduleUI <- function(id) {
               )
             ),
             checkboxInput(ns("obsPlOpt_showFormattingOptions"), "Formatting options", FALSE),
-            conditionalPanel(sprintf("input['%s']", ns("showFormattingOptions")),
+            conditionalPanel(sprintf("input['%s']", ns("obsPlOpt_showFormattingOptions")),
               wellPanel(
               )
             ),
@@ -79,7 +79,8 @@ obs_moduleUI <- function(id) {
             )
           ),
           tabPanel("GRADE output",
-            verbatimTextOutput(ns("uncpanel"))
+            verbatimTextOutput(ns("uncpanel")),
+            numericInput(ns("baseRisk"), "Basline risk (%)", value=5, min=0, max=100, step=1)
           ),
           tabPanel("Help", includeMarkdown("helptext.md"))
         ), width=6

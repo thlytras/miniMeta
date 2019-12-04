@@ -13,7 +13,7 @@ source("modules/mod-obs-ui.R")
 obs_module <- function(input, output, session) {
 
   # Helper functions for this module
-  source("modules/mod-rct-include.R", local=TRUE)
+  source("modules/mod-obs-include.R", local=TRUE)
 
 #   flagFirstRun <- FALSE # Ugly hack to avoid Cairo backend error
 
@@ -235,14 +235,17 @@ obs_module <- function(input, output, session) {
     }
   )
 
-#   # REACTIVE: render the output panel
-#   output$uncpanel <- renderPrint({
-#     if (obs_chk()) {
-#       return(print(gradeRR(obs_dat()[,-1], m())))
-#     } else {
-#       return(cat(paste(attr(obs_chk(), "msg"), sep="", collapse="\n")))
-#     }
-#   })
+  # REACTIVE: render the output panel
+  output$uncpanel <- renderPrint({
+    bR <- as.numeric(input$baseRisk)
+    if (!is.na(bR) && (bR<0 || bR>100)) bR <- NA
+    if (is.na(bR)) return(cat("Missing baseline risk"))
+    if (inherits(m(), "metagen")) {
+      return(print(gradeObs(m(), bR)))
+    } else {
+      return(cat("No meta-analysis input"))
+    }
+  })
 
 }
 
