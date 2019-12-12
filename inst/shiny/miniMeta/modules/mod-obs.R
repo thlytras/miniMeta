@@ -1,3 +1,4 @@
+library(miniMeta)
 library(meta)
 library(metafor)
 
@@ -87,7 +88,7 @@ obs_module <- function(input, output, session) {
   
   # REACTIVE: parse all advanced plot options
   obs_pltAdvOpt <- reactive({
-    res <- readAdvParameters(input$obsPlOpt_advParInput)
+    res <- parseArguments(input$obsPlOpt_advParInput)
     if (class(res)!="try-error" && length(res)>0) {
       res <- res[names(res) %in% forest_args]
     }
@@ -161,53 +162,53 @@ obs_module <- function(input, output, session) {
   
 
   
-#   # Code to import meta-analysis
-#   observeEvent(input$obsImport, {
-# #     values$obsImportReady <- FALSE
-#     if (is.null(input$obsImport)) return()
-#     inFile <- input$obsImport
-#     m <- try(readRDS(inFile$datapath), silent=TRUE)
-#       # Has the file been read successfully?
-#     if (length(m)==1 && class(m)=="try-error") {
-#       showModal(modalDialog(title = "Whoops...", 
-#         "Error while trying to read this file.", br(), "Is it an actual miniMeta file?", 
-#         footer = modalButton("OK, got it"), size="s"))
-#       return()
-#     }
-#       # Does it appear to be a correct miniMeta file
-#     if (!isMiniMetaRct(m)) {
-#       if (isMiniMetaObs(m)) {
-#         showModal(modalDialog(title = "Info", 
-#           "This is indeed a miniMeta file, but it contains a meta-analysis of observational studies.",
-#           br(), "Please move to the Observational studies module and import it there. Thank you.", 
-#           footer = modalButton("OK, got it"), size="s"))
-#         return()
-#       }
-#       showModal(modalDialog(title = "Whoops...", 
-#         "This is a serialized R object, but it does not appear to be a valid miniMeta file.",
-#         footer = modalButton("OK, got it"), size="s"))
-#       return()
-#     }
-#     values$dataset <- NULL
-#     values$dataset <- m$data
-#     for (n in c("sm", "method", "methodTau", "incr")) {
-#       updateSelectInput(session, paste0("obsOpt_", n), 
-#           selected = m$analysisOptions[[n]])
-#     }
-#     for (n in c("combFixed", "combRandom", "hakn")) {
-#       updateCheckboxInput(session, paste0("obsOpt_", n), 
-#           value = m$analysisOptions[[n]])
-#     }
-#     for (n in c("inclAbsNum", "printI2", "printQ", "printPval", "printTau2")) {
-#       updateCheckboxInput(session, paste0("obsPlOpt_", n), 
-#           value = m$plotOptions[[n]])
-#     }
-#     updateTextAreaInput(session, "obsPlOpt_advParInput", value = m$plotOptions$advParInput)
-#     for (n in except(names(obsPlOpt_downloadOpts), "trigger")) {
-#       obsPlOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
-#     }
-# #     values$obsImportReady <- TRUE
-#   }, ignoreInit=TRUE)
+  # Code to import meta-analysis
+  observeEvent(input$obsImport, {
+#     values$obsImportReady <- FALSE
+    if (is.null(input$obsImport)) return()
+    inFile <- input$obsImport
+    m <- try(readRDS(inFile$datapath), silent=TRUE)
+      # Has the file been read successfully?
+    if (length(m)==1 && class(m)=="try-error") {
+      showModal(modalDialog(title = "Whoops...", 
+        "Error while trying to read this file.", br(), "Is it an actual miniMeta file?", 
+        footer = modalButton("OK, got it"), size="s"))
+      return()
+    }
+      # Does it appear to be a correct miniMeta file
+    if (!is.miniMeta.obs(m)) {
+      if (is.miniMeta.rct(m)) {
+        showModal(modalDialog(title = "Notice:", 
+          "This is indeed a miniMeta file, but it contains a meta-analysis of Randomized Controlled Trials (RCTs).",
+          br(), "Please move to the RCT module and import it there. Thank you.", 
+          footer = modalButton("OK, got it"), size="s"))
+        return()
+      }
+      showModal(modalDialog(title = "Whoops...", 
+        "This is a serialized R object, but it does not appear to be a valid miniMeta file.",
+        footer = modalButton("OK, got it"), size="s"))
+      return()
+    }
+    values$dataset <- NULL
+    values$dataset <- m$data
+    for (n in c("sm", "method", "methodTau")) {
+      updateSelectInput(session, paste0("obsOpt_", n), 
+          selected = m$analysisOptions[[n]])
+    }
+    for (n in c("combFixed", "combRandom", "hakn")) {
+      updateCheckboxInput(session, paste0("obsOpt_", n), 
+          value = m$analysisOptions[[n]])
+    }
+    for (n in c("inclAbsNum", "printI2", "printQ", "printPval", "printTau2")) {
+      updateCheckboxInput(session, paste0("obsPlOpt_", n), 
+          value = m$plotOptions[[n]])
+    }
+    updateTextAreaInput(session, "obsPlOpt_advParInput", value = m$plotOptions$advParInput)
+    for (n in except(names(obsPlOpt_downloadOpts), "trigger")) {
+      obsPlOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
+    }
+#     values$obsImportReady <- TRUE
+  }, ignoreInit=TRUE)
 
   
   # Export meta-analysis
@@ -220,7 +221,7 @@ obs_module <- function(input, output, session) {
         data = obs_dat(),
         meta = m(),
         analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
-          "methodTau", "incr", "hakn"), function(x) 
+          "methodTau", "hakn"), function(x) 
           input[[paste0("obsOpt_", x)]], simplify=FALSE
         ),
         plotOptions = c(reactiveValuesToList(obsPlOpt_downloadOpts),

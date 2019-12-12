@@ -2,6 +2,7 @@ library(shiny)
 library(meta)
 library(metafor)
 library(WriteXLS)
+library(miniMeta)
 
 
 shinyServer(function(input, output, session) {

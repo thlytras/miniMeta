@@ -55,25 +55,3 @@ readAdvParameters <- function(x) {
   }
   return(pars)
 }
-
-
-isMiniMeta <- function(m) {
-  res <- c(
-    inherits(m, "list"),
-    c("data", "meta", "analysisOptions", "plotOptions") %in% names(m)
-  )
-  return(sum(!res)==0)
-}
-
-isMiniMetaRct <- function(m) {
-  if (!isMiniMeta(m)) return(FALSE)
-  res <- c(inherits(m$meta, "metabin"))
-  return(sum(!res)==0)
-}
-
-isMiniMetaObs <- function(m) {
-  if (!isMiniMeta(m)) return(FALSE)
-  res <- c(inherits(m$meta, "metagen"))
-  return(sum(!res)==0)
-}
-

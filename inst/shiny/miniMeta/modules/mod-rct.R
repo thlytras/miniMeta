@@ -1,3 +1,4 @@
+library(miniMeta)
 library(meta)
 library(metafor)
 
@@ -86,7 +87,7 @@ rct_module <- function(input, output, session) {
   
   # REACTIVE: parse all advanced plot options
   rcts_pltAdvOpt <- reactive({
-    res <- readAdvParameters(input$rctPlOpt_advParInput)
+    res <- parseArguments(input$rctPlOpt_advParInput)
     if (class(res)!="try-error" && length(res)>0) {
       res <- res[names(res) %in% forest_args]
     }
@@ -176,9 +177,9 @@ rct_module <- function(input, output, session) {
       return()
     }
       # Does it appear to be a correct miniMeta file
-    if (!isMiniMetaRct(m)) {
-      if (isMiniMetaObs(m)) {
-        showModal(modalDialog(title = "Info", 
+    if (!is.miniMeta.rct(m)) {
+      if (is.miniMeta.obs(m)) {
+        showModal(modalDialog(title = "Notice:", 
           "This is indeed a miniMeta file, but it contains a meta-analysis of observational studies.",
           br(), "Please move to the Observational studies module and import it there. Thank you.", 
           footer = modalButton("OK, got it"), size="s"))
