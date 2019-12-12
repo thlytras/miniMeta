@@ -5,15 +5,17 @@
 #'
 #' @param x An object of class \code{miniMeta}
 #' 
+#' @return A named list of arguments corresponding to the arguments of 
+#' \code{\link[meta]{forest.meta}}.
+#' 
+#' @importFrom methods formalArgs
+#' 
 #' @examples 
 #' \donttest{
 #' # m should be a miniMeta object
 #' fopts <- plotOptions(m)
 #' do.call(forest, c(x=m, fopts))
 #' }
-#'
-#' @return A named list of arguments corresponding to the arguments of 
-#' \code{\link[meta]{forest.meta}}.
 #'
 #' @export
 plotOptions <- function(x) {

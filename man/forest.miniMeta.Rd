@@ -4,10 +4,12 @@
 \alias{forest.miniMeta}
 \title{Forest plot for miniMeta objects}
 \usage{
-\method{forest}{miniMeta}(x)
+\method{forest}{miniMeta}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{miniMeta}}
+
+\item{...}{Further arguments passed to or from other methods}
 }
 \description{
 Draws a forest plot for a miniMeta object using the options 

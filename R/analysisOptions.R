@@ -24,15 +24,15 @@ analysisOptions <- function(x, data=FALSE) {
   if (("incr" %in% names(res)) && res$incr != "TACC") res$incr <- as.numeric(res$incr)
   if (data) {
     if (is.miniMeta.rct(x)) {
-      res$event.e <- m$meta$event.e
-      res$n.e <- m$meta$n.e
-      res$event.c <- m$meta$event.c
-      res$n.c <- m$meta$n.c
+      res$event.e <- x$meta$event.e
+      res$n.e <- x$meta$n.e
+      res$event.c <- x$meta$event.c
+      res$n.c <- x$meta$n.c
     } else {
-      res$TE <- m$meta$TE
-      res$seTE <- m$meta$seTE
+      res$TE <- x$meta$TE
+      res$seTE <- x$meta$seTE
     }
-    grp <- trimws(as.character(m$data$group)); grp[grp==""] <- NA
+    grp <- trimws(as.character(x$data$group)); grp[grp==""] <- NA
     if (sum(is.na(grp))==0 & length(unique(grp))>1) {
       res$byVar <- factor(grp)
     }
