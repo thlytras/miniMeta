@@ -1,0 +1,295 @@
+---
+title: "Running meta-analyses with miniMeta"
+author: "Theodore Lytras \\<thlytras@gmail.com\\>"
+date: "`r Sys.Date()`"
+version: 0.0.1
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{miniMeta_manual}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+[miniMeta](https://github.com/thlytras/miniMeta) 
+is a [shiny](https://shiny.rstudio.com/) web application that makes 
+it easy to run meta-analyses, without having any familiarity with R 
+and its console. 
+It is intended for use by non-statistical colleagues, or as educational tool.
+
+miniMeta can be run locally from an R installation, or fully online 
+from a shiny server. It provides a "live" web interface where the 
+meta-analysis is automatically updated as data are entered or options are adjusted. 
+It can save (export) the results into files (RDS files) which can be
+later loaded (imported) to miniMeta, or also further processed in R if more
+detailed analyses are required.
+
+Under the hood miniMeta relies on the 
+[meta](https://CRAN.R-project.org/package=meta) package for R, and can be
+thought of as a graphical front-end for it. 
+Analysis and plotting is done by functions from meta, in particular 
+[`metabin()`](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metabin), 
+[`metagen()`](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metagen) and 
+[`forest.meta()`](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/forest.meta); 
+see the associated function documentation for details.
+
+
+# How to install and run locally
+
+Open R, install package [devtools](https://github.com/thlytras/devtools) if 
+you don't already have it, and then use `install_github()` to install the 
+[miniMeta](https://github.com/thlytras/miniMeta) package from GitHub:
+
+```{r, eval=FALSE, echo=TRUE}
+install.packages("devtools")
+devtools::install_github("thlytras/miniMeta")
+```
+
+This will bring in from CRAN all required dependencies if not already 
+installed, such as packages 
+[shiny](https://CRAN.R-project.org/package=shiny), 
+[meta](https://CRAN.R-project.org/package=meta) and 
+[readxl](https://CRAN.R-project.org/package=readxl).
+
+In order to run miniMeta, load the package with `library()` and launch it
+with `miniMeta()`:
+
+```{r, eval=FALSE, echo=TRUE}
+library(miniMeta)
+miniMeta()
+```
+
+This will run miniMeta in a new browser window.
+
+
+# Using miniMeta
+
+At the top of the miniMeta window, there are three tabs named "RCT module",
+"Observational studies module" and "Tools" respectively. 
+Click one of the first two if you want to run a meta-analysis of 
+Randomized Controlled Trials (RCTs) or observational studies. 
+In the "Tools" tab there is a suite of small tools
+(currently just one, for making adjusted indirect comparisons) 
+with which to perform various associated calculations.
+
+
+## Randomized Controlled Trials (RCT) module
+
+At the top, there are buttons "Import meta-analysis" and "Export meta-analysis".
+Click "Export meta-analysis" to save the current meta-analysis (including 
+dataset, analysis options and plot options) as an RDS file. 
+This can be loaded later into miniMeta by clicking "Import meta-analysis". 
+
+The data are input on the left section of the page, and results are output on
+the right section. Options for the analysis are also set on the left section, 
+whereas options for the forest plot are set on the right section.
+
+### Input section (left side)
+
+Data can be input in two ways: by hand at the provided table widget, or loaded 
+from an Excel spreadsheet. The Excel file must have the exact same layout 
+as the table widget: each row represents one study, the first column holds 
+the study labels, followed by the number of events (number of participants 
+with the outcome) and total number of participants randomized in the 
+intervention arm, the number of events and participants randomized in the 
+control arm, and optionally a column defining subgroups for a subgroup analysis. 
+If data are entered manually, then the meta-analysis and the forest plot on
+the right are updated automatically with each complete row entered. If a row 
+is incomplete or the data make no sense (for example, more events than 
+participants randomized) no forest plot is drawn. Click "Add rows" to insert
+more rows in the table widget, or "Clear empty rows" to clear all rows that 
+are empty, except the last one (there is always a blank row at the bottom 
+in order to fill in more data). 
+
+Click the "Save to Excel" button to save the dataset as an Excel spreadsheet. 
+Only the dataset is saved; in contrast, the "Export meta-analysis" button 
+saves everything (dataset, analysis options, plot options, and the entire 
+meta-analysis object) in an RDS file that can be imported in miniMeta, or 
+further processed in R.
+
+By clicking the "Show analysis options" checkbox, a suite of options appear
+that determine how the meta-analysis is conducted (see the [documentation of 
+the metabin() function](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metabin) in package [meta](https://CRAN.R-project.org/package=meta) for full details).
+A fixed-effects or random-effects model can be specified, or both. 
+There is a choice of different effect measures (Relative Risk, Odds Ratio, 
+Risk Difference and Arcsine Difference), methods for pooling studies 
+(Mantel-Hanszel, Inverse Variance, Peto and GLMM) and heterogeneity estimators 
+for the random-effects model (the default being the standard 
+DerSimonian-Laird estimator). The Hartung and Knapp correction can be selected,
+as well as the type of continuity correction for study arms with zero events, 
+with a "treatment arm continuity correction" (TACC) being the default. 
+More options may be added in the future.
+With every change in these analysis options, the meta-analysis is 
+automatically updated and a new forest plot is redrawn.
+
+
+### Output section (right side)
+
+The right section of the miniMeta window is where all the output appears. 
+There are several tabs: "Forest plot", "Plot options", "GRADE output" 
+and "Help". 
+
+On the "Forest plot" tab, the forest plot appears automatically every time 
+the input data or the analysis options are modified. 
+Click the "Download plot" button to download the forest plot as an image file. 
+
+On the "Plot options" tab, every aspect of the forest plot can be customized 
+as desired. The options are conceptually organized in four sections: 
+"Download options", "Content options", "Formatting options" and "Advanced 
+options". Click on the corresponding checkbox for the options to appear.
+"Download options" determine what kind of image file is downloaded
+when clicking the "Download plot" button (pdf, ps, tiff or png), 
+its dimensions (in inches), its resolution in dots per inch (dpi - only for 
+bitmap-type images, i.e. tiff or png) and factors such as line width, spacing 
+(between study rows) and pointsize (affecting the size of text).
+"Content options" control what is shown in the forest plot and what is not, 
+e.g. absolute numbers per study arm, weights, heterogeneity statistics, etc.
+"Formatting options" affect various aesthetical characteristics of the 
+forest plot. 
+
+Finally, "Advanced options" provides a powerful interface (for advanced 
+users) to control any aspect of the forest plot, by specifying a 
+comma-separated list of arguments that are passed to the
+[`forest.meta()`](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/forest.meta) 
+method. Any argument listed in the 
+[function documentation](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/forest.meta) 
+can be specified in the input box, and these _override_ any other options 
+set in miniMeta. For example, if `col.diamond="red"` is entered in the input
+box, the diamond illustrating the pooled effect measure is painted red. 
+This interface allows customizing the forest plot in ways that go beyond 
+the options provided in miniMeta, but still without resorting to the R console.
+
+The "GRADE output" tab provides results for a "Grading of 
+Recommendations Assessment, Development and Evaluation" (GRADE) 
+Summary of Findings (SoF) table. When filling in such a table,
+each row corresponds to one meta-analysis of RCTs for a single outcome, 
+and in the five rightmost columns one puts the Event Rate for the control
+and intervention groups, the pooled relative effect (usually a Risk Ratio),
+the absolute risk in the control group (per 1000 patients) and the absolute
+Risk Difference in the intervention group. 
+miniMeta provides these information automatically in the "GRADE output" tab.
+
+The last tab, "Help", includes some brief usage help to get you started 
+with miniMeta.
+
+
+## Observational studies module
+
+The observational studies module roughly follows the interface of the 
+RCT module, and most of the descriptions there apply here as well, 
+but with some adaptations for the meta-analysis of observational studies.
+Again the input data and analysis options are entered on the left side, 
+with all output on the right side. "Import meta-analysis"/"Export 
+meta-analysis" buttons can be found at the top. 
+
+### Input section (left side)
+
+Input (study) data can again be entered via an Excel file or on the 
+table widget. However, the columns are different. The first column again 
+contains the study labels, but the next columns contain the study effect 
+point estimate, the lower/upper limits of the 95% Confidence Interval (95% CI), 
+and the standard error (SE) of the effect. A final grouping column is 
+available, if subgroup analyses are desired.
+
+The table widget also operates in a slightly more complex way than 
+in the RCT module. Studies normally report the point estimate of the 
+effect and the associated 95% CI; however, the calculations 
+in a meta-analysis of observational studies involve the point estimate and 
+its _standard error_, which can be _derived_ from the confidence interval. 
+As a result, while the effect measure and its 95% CI are entered in the 
+table widget, the SE is automatically calculated and filled in the respective
+table cell, and the meta-analysis is updated. 
+
+As this filling in of the table widget is relatively slow (especially over
+a web connection), it can be turned off by unchecking 
+the "Auto-update table and analysis" checkbox. When this is unchecked, the 
+table widget becomes static and the meta-analysis is NOT updated as the data 
+are adjusted. When it _is_ checked (the default), then with every table cell 
+altered the data are checked (and potential problems are indicated with a 
+message that appears below the table widget), the SE is recalculated based on
+the 95% CI, and the meta-analysis is updated. If the "Auto-calculate SE" is 
+unchecked, then the SE is NOT updated unless it is deleted explicitly.
+
+Below the table widget is a drop-down menu there the type of effect measure 
+is selected (Relative Risk, Odds Ratio, Risk Difference or Arcsine difference). 
+This determines what kind of measure the "effect" and the "SE" column represent.
+If the effect measure is the Relative Risk or Odds Ratio, then the SE column 
+represents the standard error of the *log* Relative Risk or *log* Odds Ratio.
+
+Click "Show analysis options" to adjust further options for the meta-analysis 
+(see the [documentation of 
+the metagen() function](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metagen) in package [meta](https://CRAN.R-project.org/package=meta) for full details).
+A fixed-effects or random-effects model can be specified, or both. 
+Different heterogeneity estimators can be chosen for the random-effects model 
+(the default being the standard DerSimonian-Laird estimator), and the 
+Hartung and Knapp correction can be selected as well.
+With every change in these analysis options, the meta-analysis is 
+automatically updated and a new forest plot is redrawn.
+
+### Output section (right side)
+
+The output section of the Observational studies module, on the right side of
+the miniMeta window, is very similar to that of the RCT module. 
+
+On the "Forest plot" tab, the forest plot appears automatically every time 
+the input data or the analysis options are modified. 
+Click the "Download plot" button to download the forest plot as an image file. 
+Note that the 95% CIs on the forest plot *may not exactly correspond* to those 
+on the input table widget. This is because what is analysed is the effect and 
+its standard error, and the 95% CIs are recalculated based on that. 
+
+On the "Plot options" tab, every aspect of the forest plot can be customized 
+as desired. The four sections ("Download options", "Content options", 
+"Formatting options" and "Advanced options") are the same as in the RCT module.
+Some items in the "Content options" section that may not apply to observational 
+studies have been omittted.
+
+The "GRADE" output tab is again the same as in the RCT module, with one 
+difference: an input field is provided to specify a baseline risk. 
+This is because, in contrast to a meta-analysis of RCTs, the baseline risk 
+cannot be estimated from the study data and must be plugged in separately. 
+
+
+## Tools 
+
+At the "Tools" tab, a suite of small additional tools can be found that are 
+useful when performing a meta-analysis. 
+Currently this contains just one tool that implements the Bucher method for 
+adjusted indirect comparisons.
+
+### Bucher method tool
+
+This tools implement the Bucher method for adjusted indirect comparisons. 
+It utilizes two _pooled_ effect measures, comparing two outcomes against a 
+common third outcome (outcome A vs outcome C, and outcome B vs outcome C).
+Then a comparison of A vs B can be performed by taking the _difference_ 
+of the two effect point estimates, and the _sum_ of their variances 
+(squared standard errors). Just fill in the point estimate and 95% CI 
+lower/upper limits for the two pooled effect estimates (A vs C, and B vs C), 
+and the results will appear on the right side of the miniMeta window.
+
+
+# Other miniMeta features
+
+## Import/export functionality
+
+In both the RCT module and Observational studies module, there are buttons 
+for importing from / exporting to an RDS file. An RDS file holds a single 
+serialized R object, and can be read into R using the console. The exported 
+objects are of class 'miniMeta', and are essentially a list with four elements:
+'data', 'meta', 'analysisOptions' and 'plotOptions'. Element 'data' contains 
+the study data, as an R data.frame. Element 'meta' contains the meta-analysis 
+(an object of class 'meta'). The other two elements are named lists containing 
+all analysis and plot options. 
+
+Objects of class 'miniMeta' can be further processed in R, or (when stored in an 
+RDS file) can be imported back into miniMeta. They can also be converted into 
+an R source code format using the `as.source()` function of the miniMeta 
+package, and can be saved as an R script with something like 
+`writeLines(as.source(m), "analysis.R")` (m is the 'miniMeta' class object).
+Such a script contains (a) the data, (b) the command to run the meta-analysis,
+and (c) the command to make the forest plot. It allows you to reproduce the 
+meta-analysis, or extend it further into more complex analyses.
+
+

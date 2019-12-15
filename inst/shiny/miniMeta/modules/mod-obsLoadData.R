@@ -19,7 +19,7 @@ obsLoadDataUI <- function(id) {
               wellPanel(uiOutput(ns("msgpanel")))
     ),
     fluidRow(
-      column(6, checkboxInput(ns("autoUpdate"), "Auto-update table", value=TRUE)),
+      column(6, checkboxInput(ns("autoUpdate"), "Auto-update table and analysis", value=TRUE)),
       column(6, checkboxInput(ns("autoSE"), "Auto-calculate SE", value=TRUE))
     )
   )
@@ -46,7 +46,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
     tempDat[,1] <- as.character(tempDat[,1])
     suppressWarnings(for (i in 2:5) tempDat[,i] <- as.numeric(tempDat[,i]))
     tempDat[,6] <- as.character(tempDat[,6])
-    names(tempDat) <- c("Study", "Eff.measure", "95CI.LL", "95CI.UL", "SE", "Group")
+    names(tempDat) <- c("Study", "Effect", "95CI.LL", "95CI.UL", "SE", "Group")
     idx <- rep(TRUE, nrow(tempDat))
     if (!autoSE) idx <- is.na(tempDat$SE)
     if (log) {
@@ -103,7 +103,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
   observe({
     if (!is.null(dataset())) {
       tempDat <- dataset()[,1:6]
-      names(tempDat) <- c("Study", "Eff.measure", "95CI.LL", "95CI.UL", "SE", "Group")
+      names(tempDat) <- c("Study", "Effect", "95CI.LL", "95CI.UL", "SE", "Group")
       values$obsDAT <- formatObsDat(tempDat, log=logMeasure())
     }
   })
@@ -112,7 +112,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
   output$obsTabWidget <- renderRHandsontable({
     values$obsJustRendered <- TRUE
     rhandsontable(values$obsDAT, stretchH="all", rowHeaders=NULL, overflow="hidden") %>% 
-      hot_col("Eff.measure", format="0,00") %>% hot_col("95CI.LL", format="0,00") %>% 
+      hot_col("Effect", format="0,00") %>% hot_col("95CI.LL", format="0,00") %>% 
       hot_col("95CI.UL", format="0,00") %>% hot_col("SE", format="0,00") %>% hot_col("Group")
   })
   
@@ -137,7 +137,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
     },
     content = function(file) {
       dummy <- obs_dat()
-      names(dummy) <- c("Study", "Eff.measure", "95CI.LL", "95CI.UL", "SE", "Group")
+      names(dummy) <- c("Study", "Effect", "95CI.LL", "95CI.UL", "SE", "Group")
       WriteXLS(dummy, file, "RCTs")
     }
   )

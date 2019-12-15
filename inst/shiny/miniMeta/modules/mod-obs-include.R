@@ -31,7 +31,7 @@ gradeObs <- function(m, bR) {
   a <- c(a, 
         sprintf("%.0f per 1000", uR),
         sprintf("%.0f per 1000", eR[1]),
-        sprintf("%.0f per 1000", eR[1]),
+        sprintf("%.0f per 1000", uR),
         sprintf("%s per 1000 (from %s to %s)", sg(rdI[1]), sg(rdI[2]), sg(rdI[3]))
     )[c(2,3,1,4,5)]
   a <- data.frame("Results"=a)

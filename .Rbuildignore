@@ -3,3 +3,5 @@
 ^.*stack$
 ^inst/shiny/miniMeta/deployMe\.R$
 ^inst/shiny/miniMeta/rsconnect$
+^doc$
+^Meta$
