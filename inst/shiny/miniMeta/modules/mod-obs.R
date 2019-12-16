@@ -6,6 +6,7 @@ library(metafor)
 source("modules/mod-obsLoadData.R")
 source("modules/mod-plDownloadOpts.R")
 source("modules/miniFileInput.R")
+source("modules/mod-funnel.R")
 
 # Load the UI of this module from separate file
 source("modules/mod-obs-ui.R")
@@ -247,6 +248,10 @@ obs_module <- function(input, output, session) {
       return(cat("No meta-analysis input"))
     }
   })
+
+  callModule(module = funnelTab, id="obsFunnel", meta = reactive(m()),
+    fileType = reactive(obsPlOpt_downloadOpts$fileType)
+  )
 
 }
 

@@ -82,6 +82,7 @@ obs_moduleUI <- function(id) {
             verbatimTextOutput(ns("uncpanel")),
             numericInput(ns("baseRisk"), "Basline risk (%)", value=5, min=0, max=100, step=1)
           ),
+          funnelTabUI(id = ns("obsFunnel")),
           tabPanel("Help", includeMarkdown("helptext.md"))
         ), width=6
       )

@@ -94,6 +94,7 @@ rct_moduleUI <- function(id) {
           tabPanel("GRADE output",
             verbatimTextOutput(ns("uncpanel"))
           ),
+          funnelTabUI(id = ns("rctFunnel")),
           tabPanel("Help", includeMarkdown("helptext.md"))
         ), width=6
       )

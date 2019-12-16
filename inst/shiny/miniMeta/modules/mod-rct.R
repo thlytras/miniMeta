@@ -6,6 +6,7 @@ library(metafor)
 source("modules/mod-rctLoadData.R")
 source("modules/mod-plDownloadOpts.R")
 source("modules/miniFileInput.R")
+source("modules/mod-funnel.R")
 
 # Load the UI of this module from separate file
 source("modules/mod-rct-ui.R")
@@ -245,6 +246,10 @@ rct_module <- function(input, output, session) {
       return(cat(paste(attr(rcts_chk(), "msg"), sep="", collapse="\n")))
     }
   })
+  
+  callModule(module = funnelTab, id="rctFunnel", meta = reactive(m()),
+    fileType = reactive(rctPlOpt_downloadOpts$fileType)
+  )
 
 }
 
