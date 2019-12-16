@@ -199,17 +199,12 @@ in a meta-analysis of observational studies involve the point estimate and
 its _standard error_, which can be _derived_ from the confidence interval. 
 As a result, while the effect measure and its 95% CI are entered in the 
 table widget, the SE is automatically calculated and filled in the respective
-table cell, and the meta-analysis is updated. 
-
-As this filling in of the table widget is relatively slow (especially over
-a web connection), it can be turned off by unchecking 
-the "Auto-update table and analysis" checkbox. When this is unchecked, the 
-table widget becomes static and the meta-analysis is NOT updated as the data 
-are adjusted. When it _is_ checked (the default), then with every table cell 
-altered the data are checked (and potential problems are indicated with a 
-message that appears below the table widget), the SE is recalculated based on
-the 95% CI, and the meta-analysis is updated. If the "Auto-calculate SE" is 
-unchecked, then the SE is NOT updated unless it is deleted explicitly.
+table cell. SE always remains in sync with the provided 95% CI, unless the 
+"Auto-calculate SE" checkbox is unchecked; then a SE can be entered manually 
+(but, if blank, will still be automatically calculated based on the 95% CI). 
+Potential problems with the data entered, such as SE that do not match the 
+95% CI or a CI that are not symmetrical, are indicated with a message that 
+appears just below the table widget.
 
 Below the table widget is a drop-down menu there the type of effect measure 
 is selected (Relative Risk, Odds Ratio, Risk Difference or Arcsine difference). 

@@ -19,8 +19,7 @@ obsLoadDataUI <- function(id) {
               wellPanel(uiOutput(ns("msgpanel")))
     ),
     fluidRow(
-      column(6, checkboxInput(ns("autoUpdate"), "Auto-update table and analysis", value=TRUE)),
-      column(6, checkboxInput(ns("autoSE"), "Auto-calculate SE", value=TRUE))
+      column(6, checkboxInput(ns("autoSE"), "Auto-calculate SE", value=TRUE), offset=6)
     )
   )
 }
@@ -38,7 +37,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
   }
   
   # Helper function
-  formatObsDat <- function(tempDat, log=TRUE, autoSE=FALSE) {
+  formatObsDat <- function(tempDat, log=TRUE, autoSE=FALSE, noSE=FALSE) {
     while(ncol(tempDat)<6) {
       tempDat <- cbind(tempDat, NA)
     }
@@ -47,12 +46,14 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
     suppressWarnings(for (i in 2:5) tempDat[,i] <- as.numeric(tempDat[,i]))
     tempDat[,6] <- as.character(tempDat[,6])
     names(tempDat) <- c("Study", "Effect", "95CI.LL", "95CI.UL", "SE", "Group")
-    idx <- rep(TRUE, nrow(tempDat))
-    if (!autoSE) idx <- is.na(tempDat$SE)
-    if (log) {
-      tempDat$SE <- ifelse(idx, with(tempDat, (log(`95CI.UL`)-log(`95CI.LL`))/(2*qnorm(0.975))), tempDat$SE)
-    } else {
-      tempDat$SE <- ifelse(idx, with(tempDat, (`95CI.UL`-`95CI.LL`)/(2*qnorm(0.975))), tempDat$SE)
+    if (!noSE) {
+      idx <- rep(TRUE, nrow(tempDat))
+      if (!autoSE) idx <- is.na(tempDat$SE)
+      if (log) {
+        tempDat$SE <- ifelse(idx, with(tempDat, (log(`95CI.UL`)-log(`95CI.LL`))/(2*qnorm(0.975))), tempDat$SE)
+      } else {
+        tempDat$SE <- ifelse(idx, with(tempDat, (`95CI.UL`-`95CI.LL`)/(2*qnorm(0.975))), tempDat$SE)
+      }
     }
     if (!is.na(rev(tempDat[,2])[1])) {
       tempDat <- tempDat[1:(nrow(tempDat)+1),]
@@ -60,23 +61,36 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
     }
     tempDat
   }
+  
+  # Helper function
+  compSE <- function(a,b) {
+    # Returns TRUE if a and b are different
+    a[is.na(a)] <- -Inf; b[is.na(b)] <- -Inf
+    return(sum(round(a,4) != round(b,4))>0)
+  }
 
   # Load some data in advance!
   obsDAT <- formatObsDat(as.data.frame(read_excel("examples/obs-template.xls"), stringsAsFactors=FALSE), log=TRUE)
 
   values <- reactiveValues(
     obsDAT = obsDAT,
-    obsJustRendered = FALSE
+    obsDATfeed = obsDAT
   )
   
   observe({
-    if (input$autoUpdate) {
-      logMeasure()
-      input$autoSE
-      if (!is.null(input$obsTabWidget) && !isolate(values$obsJustRendered)) {
-        values$obsDAT <- formatObsDat(hot_to_r(input$obsTabWidget), log=logMeasure(), autoSE=input$autoSE)
-      } else {
-        values$obsJustRendered <- FALSE
+    logMeasure()
+    input$autoSE
+    if (!is.null(input$obsTabWidget)) {
+      rawTable <- formatObsDat(hot_to_r(input$obsTabWidget), log=logMeasure(), noSE=TRUE)
+      autoTable <- formatObsDat(hot_to_r(input$obsTabWidget), log=logMeasure(), autoSE=input$autoSE)
+      if (compSE(rawTable$SE, autoTable$SE)) {
+        values$obsDATfeed <- NULL # Ensure feed back even if same as previous auto-calculated value
+        values$obsDATfeed <- autoTable
+      }
+      if (!is.logical(all.equal(autoTable[getNonEmptyDFrows(autoTable),], 
+        isolate(values$obsDAT[getNonEmptyDFrows(values$obsDAT),]), check.attributes=FALSE))) {
+        # Replacing obsDAT
+        values$obsDAT <- autoTable
       }
     }
   })
@@ -97,28 +111,27 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
     tempDat <- formatObsDat(tempDat, log=logMeasure(), autoSE=input$autoSE)
     tempDat <- tempDat[getNonEmptyDFrows(tempDat),]
     tempDat <- tempDat[1:(nrow(tempDat)+1),]
-    values$obsDAT <- tempDat
+    values$obsDATfeed <- tempDat
   }, ignoreInit=TRUE)
   
   observe({
     if (!is.null(dataset())) {
       tempDat <- dataset()[,1:6]
       names(tempDat) <- c("Study", "Effect", "95CI.LL", "95CI.UL", "SE", "Group")
-      values$obsDAT <- formatObsDat(tempDat, log=logMeasure())
+      values$obsDATfeed <- formatObsDat(tempDat, log=logMeasure())
     }
   })
   
   # Code to render the table in the widget, if values have changed
   output$obsTabWidget <- renderRHandsontable({
-    values$obsJustRendered <- TRUE
-    rhandsontable(values$obsDAT, stretchH="all", rowHeaders=NULL, overflow="hidden") %>% 
+    rhandsontable(values$obsDATfeed, stretchH="all", rowHeaders=NULL, overflow="hidden") %>% 
       hot_col("Effect", format="0,00") %>% hot_col("95CI.LL", format="0,00") %>% 
       hot_col("95CI.UL", format="0,00") %>% hot_col("SE", format="0,00") %>% hot_col("Group")
   })
   
   # Code to add rows to the widget
   observeEvent(input$addRowToRctsTabWidget, {
-    values$obsDAT <- values$obsDAT[1:(nrow(values$obsDAT)+1),]
+    values$obsDATfeed <- values$obsDAT[1:(nrow(values$obsDATfeed)+1),]
   }, ignoreInit=TRUE)
 
   # Clear empty rows from TabWidget
@@ -127,7 +140,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
     dummy <- dummy[getNonEmptyDFrows(dummy),]
     dummy <- dummy[1:(nrow(dummy)+1),]
     rownames(dummy) <- NULL
-    values$obsDAT <- dummy
+    values$obsDATfeed <- dummy
   }, ignoreInit=TRUE)  
   
   # Download data as Excel
