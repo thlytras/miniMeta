@@ -79,6 +79,7 @@ rct_moduleUI <- function(id) {
             checkboxInput(ns("rctPlOpt_showFormattingOptions"), "Formatting options", FALSE),
             conditionalPanel(sprintf("input['%s']", ns("rctPlOpt_showFormattingOptions")),
               wellPanel(
+                funnelOptsUi(ns)
               )
             ),
             checkboxInput(ns("rctPlOpt_showAdvancedOptions"), "Advanced options", FALSE),
@@ -94,7 +95,10 @@ rct_moduleUI <- function(id) {
           tabPanel("GRADE output",
             verbatimTextOutput(ns("uncpanel"))
           ),
-          funnelTabUI(id = ns("rctFunnel")),
+          tabPanel("Funnel plot",
+            funnelTabUI(id = ns("rctFunnel")),
+            funnelTabUI(id = ns("rctLabbe"))
+          ),
           tabPanel("Help", includeMarkdown("helptext.md"))
         ), width=6
       )

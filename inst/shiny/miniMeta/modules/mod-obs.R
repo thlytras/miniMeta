@@ -1,6 +1,7 @@
 library(miniMeta)
 library(meta)
 library(metafor)
+library(colourpicker)
 
 # Load required modules
 source("modules/mod-obsLoadData.R")
@@ -249,8 +250,19 @@ obs_module <- function(input, output, session) {
     }
   })
 
-  callModule(module = funnelTab, id="obsFunnel", meta = reactive(m()),
-    fileType = reactive(obsPlOpt_downloadOpts$fileType)
+  funnelOptions <- reactiveValues(
+    showStudlab = NULL, fileType = NULL, ptCol = NULL
+  )
+  
+  observe({
+    funnelOptions$showStudlab <- input$funOpt_showStudlab
+    funnelOptions$fileType <- obsPlOpt_downloadOpts$fileType
+    funnelOptions$ptCol <- input$funOpt_ptCol
+  })
+  
+  callModule(module = funnelTab, id="obsFunnel", 
+    meta = reactive(m()),
+    options = funnelOptions
   )
 
 }

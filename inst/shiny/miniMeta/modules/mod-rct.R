@@ -1,6 +1,7 @@
 library(miniMeta)
 library(meta)
 library(metafor)
+library(colourpicker)
 
 # Load required modules
 source("modules/mod-rctLoadData.R")
@@ -247,8 +248,24 @@ rct_module <- function(input, output, session) {
     }
   })
   
-  callModule(module = funnelTab, id="rctFunnel", meta = reactive(m()),
-    fileType = reactive(rctPlOpt_downloadOpts$fileType)
+  funnelOptions <- reactiveValues(
+    showStudlab = NULL, fileType = NULL, ptCol = NULL
+  )
+  
+  observe({
+    funnelOptions$showStudlab <- input$funOpt_showStudlab
+    funnelOptions$fileType <- rctPlOpt_downloadOpts$fileType
+    funnelOptions$ptCol <- input$funOpt_ptCol
+  })
+  
+  callModule(module = funnelTab, id="rctFunnel", 
+    meta = reactive(m()),
+    options = funnelOptions
+  )
+
+  callModule(module = funnelTab, id="rctLabbe", labbe=TRUE,
+    meta = reactive(m()),
+    options = funnelOptions
   )
 
 }

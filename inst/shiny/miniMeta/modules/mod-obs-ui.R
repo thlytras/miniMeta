@@ -66,6 +66,7 @@ obs_moduleUI <- function(id) {
             checkboxInput(ns("obsPlOpt_showFormattingOptions"), "Formatting options", FALSE),
             conditionalPanel(sprintf("input['%s']", ns("obsPlOpt_showFormattingOptions")),
               wellPanel(
+                funnelOptsUi(ns)
               )
             ),
             checkboxInput(ns("obsPlOpt_showAdvancedOptions"), "Advanced options", FALSE),
@@ -82,7 +83,9 @@ obs_moduleUI <- function(id) {
             verbatimTextOutput(ns("uncpanel")),
             numericInput(ns("baseRisk"), "Basline risk (%)", value=5, min=0, max=100, step=1)
           ),
-          funnelTabUI(id = ns("obsFunnel")),
+          tabPanel("Funnel plot", 
+            funnelTabUI(id = ns("obsFunnel"))
+          ),
           tabPanel("Help", includeMarkdown("helptext.md"))
         ), width=6
       )
