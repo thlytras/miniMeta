@@ -26,81 +26,80 @@ obs_module <- function(input, output, session) {
     c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
 
   values <- reactiveValues(
-    obsImportReady = FALSE,
+    importReady = FALSE,
     dataset = NULL
   )
   
-  obs_dat <- callModule(module = obsLoadData, id="obsLoadData", 
+  dat <- callModule(module = obsLoadData, id="loadData", 
         dataset = reactive(values$dataset), 
-        logMeasure = reactive(input$obsOpt_sm %in% c("RR","OR")))
+        logMeasure = reactive(input$opt_sm %in% c("RR","OR")))
   
   # REACTIVE: check validity of the data
-  obs_chk <- reactive({
-#     checkRCTValidity(obs_dat())
+  chk <- reactive({
     return(TRUE)
   })
   
   # REACTIVE: run the meta-analysis
   m <- reactive({
-    if (obs_chk()) {
-      grp <- trimws(as.character(obs_dat()$group)); grp[grp==""] <- NA
+    if (chk()) {
+      grp <- trimws(as.character(dat()$group)); grp[grp==""] <- NA
       if (sum(is.na(grp))==0 & length(unique(grp))>1) {
         byVar <- factor(grp)
       } else {
         byVar <- NULL
       }
-      te <- if (input$obsOpt_sm %in% c("RR","OR")) log(obs_dat()$TE) else obs_dat()$TE
-      return(metagen(te, abs(seTE), data=obs_dat(), studlab=Study, 
-        method.tau=input$obsOpt_methodTau,
-        comb.fixed=input$obsOpt_combFixed, comb.random=input$obsOpt_combRandom,
-        byvar=byVar, sm=input$obsOpt_sm, hakn=input$obsOpt_hakn
+      te <- if (input$opt_sm %in% c("RR","OR")) log(dat()$TE) else dat()$TE
+      return(metagen(te, abs(seTE), data=dat(), studlab=Study, 
+        method.tau=input$opt_methodTau,
+        comb.fixed=input$opt_combFixed, comb.random=input$opt_combRandom,
+        byvar=byVar, sm=input$opt_sm, hakn=input$opt_hakn
       ))
     }
   })
   
   # REACTIVE: get all plot options in a list
-  obs_pltOpt <- reactive({
+  pltOpt <- reactive({
     lcols <- c("studlab")
     rcols <- c("effect","ci")
-    if (input$obsPlOpt_showWeights) {
-      if (input$obsOpt_combFixed) rcols <- c(rcols, "w.fixed")
-      if (input$obsOpt_combRandom) rcols <- c(rcols, "w.random")
+    if (input$plOpt_showWeights) {
+      if (input$opt_combFixed) rcols <- c(rcols, "w.fixed")
+      if (input$opt_combRandom) rcols <- c(rcols, "w.random")
     }
     plOpts <- list(
       leftcols=lcols,
       rightcols=rcols,
-      print.I2 = input$obsPlOpt_printI2, 
-      print.Q = input$obsPlOpt_printQ,
-      print.pval.Q = input$obsPlOpt_printPval,
-      print.tau2 = input$obsPlOpt_printTau2,
-      col.diamond = input$obsPlOpt_diamCol,
-      col.diamond.lines = input$obsPlOpt_diamCol,
-      col.study = input$obsPlOpt_barCol,
-      col.square = input$obsPlOpt_sqCol
+      print.I2 = input$plOpt_printI2, 
+      print.Q = input$plOpt_printQ,
+      print.pval.Q = input$plOpt_printPval,
+      print.tau2 = input$plOpt_printTau2,
+      col.diamond = input$plOpt_diamCol,
+      col.diamond.lines = input$plOpt_diamCol,
+      col.study = input$plOpt_barCol,
+      col.square = input$plOpt_sqCol
     )
-    if (class(obs_pltAdvOpt())!="try-error" && length(obs_pltAdvOpt())>0) {
-      plOpts <- rev(c(plOpts, obs_pltAdvOpt()))
+    if (class(pltAdvOpt())!="try-error" && length(pltAdvOpt())>0) {
+      plOpts <- rev(c(plOpts, pltAdvOpt()))
       plOpts <- rev(plOpts[!duplicated(names(plOpts))])
     }
     return(plOpts)
   })
   
   
-  obsPlOpt_downloadOpts <- reactiveValues(
+  plOpt_downloadOpts <- reactiveValues(
         fileType=NULL, width=NULL, height=NULL, pointsize=NULL,
         res=NULL, lwd=NULL, spacing=NULL)
-  obsPlOpt_mod_downloadOpts <- callModule(module = plDownloadOpts, id="obsDownloadOpts", 
-        setOpts = obsPlOpt_downloadOpts)
+  plOpt_mod_downloadOpts <- callModule(module = plDownloadOpts, id="downloadOpts", 
+        setOpts = plOpt_downloadOpts)
   
-  observeEvent(obsPlOpt_mod_downloadOpts$trigger, {
-    for (n in except(names(obsPlOpt_mod_downloadOpts), "trigger")) {
-      obsPlOpt_downloadOpts[[n]] <- obsPlOpt_mod_downloadOpts[[n]]
+  observeEvent(plOpt_mod_downloadOpts$trigger, {
+    for (n in except(names(plOpt_mod_downloadOpts), "trigger")) {
+      plOpt_downloadOpts[[n]] <- plOpt_mod_downloadOpts[[n]]
     }
   })
   
   # REACTIVE: parse all advanced plot options
-  obs_pltAdvOpt <- reactive({
-    res <- parseArguments(input$obsPlOpt_advParInput)
+  pltAdvOpt <- reactive({
+    res <- parseArguments(input$plOpt_advParInput)
     if (class(res)!="try-error" && length(res)>0) {
       res <- res[names(res) %in% forest_args]
     }
@@ -109,7 +108,7 @@ obs_module <- function(input, output, session) {
   
   forest_obs <- function(new=TRUE, pointsize=12, lwd=1, spacing=1) {
     cilayout("(", " - ")
-    pars <- c(list(x=m(), new=new), obs_pltOpt(),
+    pars <- c(list(x=m(), new=new), pltOpt(),
       list(
         text.fixed = "Fixed-effects model",
         text.random = "Random-effects model",
@@ -124,48 +123,48 @@ obs_module <- function(input, output, session) {
     do.call(forest, pars)
   }
     
-  output$obsPlOpt_advParOutput <- renderText({
-    if (class(obs_pltAdvOpt())=="try-error") return(as.character(attr(obs_pltAdvOpt(), "condition")))
-    if (length(obs_pltAdvOpt())==0) return("No extra parameters provided (or parameters unknown to forest.meta())")
-    return(gsub("^list\\(|\\)$", "", deparse(obs_pltAdvOpt())))
+  output$plOpt_advParOutput <- renderText({
+    if (class(pltAdvOpt())=="try-error") return(as.character(attr(pltAdvOpt(), "condition")))
+    if (length(pltAdvOpt())==0) return("No extra parameters provided (or parameters unknown to forest.meta())")
+    return(gsub("^list\\(|\\)$", "", deparse(pltAdvOpt())))
   })
   
-  output$obsForestPlotUI <- renderUI({
-    nr <- nrow(obs_dat())
+  output$forestPlotUI <- renderUI({
+    nr <- nrow(dat())
     if (!is.numeric(nr)) nr <- 5
 #     if (!flagFirstRun) {
 #       flagFirstRun <<- TRUE
 #       return()
 #     }
-    plotOutput(session$ns("obsForestPlot"), height=paste0(12 + 1.1*nr, "em"), width="100%")
+    plotOutput(session$ns("forestPlot"), height=paste0(12 + 1.1*nr, "em"), width="100%")
   })
   
   # REACTIVE: render the forest plot
-  output$obsForestPlot <- renderPlot({
-    if (obs_chk()) {
+  output$forestPlot <- renderPlot({
+    if (chk()) {
       forest_obs(new=TRUE)
     }
   })
   
   
   # Download the forest plot
-  output$obsForestDownload <- downloadHandler(
+  output$forestDownload <- downloadHandler(
     filename = function() {
-      sprintf("forest.%s", gsub("cairo_", "", obsPlOpt_downloadOpts$fileType, fixed=TRUE))
+      sprintf("forest.%s", gsub("cairo_", "", plOpt_downloadOpts$fileType, fixed=TRUE))
     },
     content = function(file) {
       fileOptions <- list(filename=file, 
-        width=obsPlOpt_downloadOpts$width, height=obsPlOpt_downloadOpts$height, 
-        pointsize=obsPlOpt_downloadOpts$pointsize)
-      if (obsPlOpt_downloadOpts$fileType %in% c("png", "tiff")) {
-        fileOptions$res <- obsPlOpt_downloadOpts$res
+        width=plOpt_downloadOpts$width, height=plOpt_downloadOpts$height, 
+        pointsize=plOpt_downloadOpts$pointsize)
+      if (plOpt_downloadOpts$fileType %in% c("png", "tiff")) {
+        fileOptions$res <- plOpt_downloadOpts$res
         fileOptions$width <- fileOptions$width * fileOptions$res
         fileOptions$height <- fileOptions$height * fileOptions$res
-        if (obsPlOpt_downloadOpts$fileType=="tiff") fileOptions$compression <- "lzw"
+        if (plOpt_downloadOpts$fileType=="tiff") fileOptions$compression <- "lzw"
       }
-      do.call(obsPlOpt_downloadOpts$fileType, fileOptions)
-      forest_obs(pointsize=obsPlOpt_downloadOpts$pointsize, 
-        spacing=obsPlOpt_downloadOpts$spacing, lwd=obsPlOpt_downloadOpts$lwd)
+      do.call(plOpt_downloadOpts$fileType, fileOptions)
+      forest_obs(pointsize=plOpt_downloadOpts$pointsize, 
+        spacing=plOpt_downloadOpts$spacing, lwd=plOpt_downloadOpts$lwd)
       dev.off()
     }
   )
@@ -175,10 +174,10 @@ obs_module <- function(input, output, session) {
 
   
   # Code to import meta-analysis
-  observeEvent(input$obsImport, {
-#     values$obsImportReady <- FALSE
-    if (is.null(input$obsImport)) return()
-    inFile <- input$obsImport
+  observeEvent(input$import, {
+#     values$importReady <- FALSE
+    if (is.null(input$import)) return()
+    inFile <- input$import
     m <- try(readRDS(inFile$datapath), silent=TRUE)
       # Has the file been read successfully?
     if (length(m)==1 && class(m)=="try-error") {
@@ -204,39 +203,39 @@ obs_module <- function(input, output, session) {
     values$dataset <- NULL
     values$dataset <- m$data
     for (n in c("sm", "method", "methodTau")) {
-      updateSelectInput(session, paste0("obsOpt_", n), 
+      updateSelectInput(session, paste0("opt_", n), 
           selected = m$analysisOptions[[n]])
     }
     for (n in c("combFixed", "combRandom", "hakn")) {
-      updateCheckboxInput(session, paste0("obsOpt_", n), 
+      updateCheckboxInput(session, paste0("opt_", n), 
           value = m$analysisOptions[[n]])
     }
     for (n in c("inclAbsNum", "printI2", "printQ", "printPval", "printTau2")) {
-      updateCheckboxInput(session, paste0("obsPlOpt_", n), 
+      updateCheckboxInput(session, paste0("plOpt_", n), 
           value = m$plotOptions[[n]])
     }
-    updateTextAreaInput(session, "obsPlOpt_advParInput", value = m$plotOptions$advParInput)
-    for (n in except(names(obsPlOpt_downloadOpts), "trigger")) {
-      obsPlOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
+    updateTextAreaInput(session, "plOpt_advParInput", value = m$plotOptions$advParInput)
+    for (n in except(names(plOpt_downloadOpts), "trigger")) {
+      plOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
     }
-#     values$obsImportReady <- TRUE
+#     values$importReady <- TRUE
   }, ignoreInit=TRUE)
 
   
   makeMiniMetaObject <- function() {
     m <- list(
-      data = obs_dat(),
+      data = dat(),
       meta = m(),
       analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
         "methodTau", "hakn"), function(x) 
-        input[[paste0("obsOpt_", x)]], simplify=FALSE
+        input[[paste0("opt_", x)]], simplify=FALSE
       ),
-      plotOptions = c(reactiveValuesToList(obsPlOpt_downloadOpts),
+      plotOptions = c(reactiveValuesToList(plOpt_downloadOpts),
         sapply(c("printI2", "printQ", "printPval", "printTau2", 
           "showWeights",
           "diamCol", "barCol", "sqCol",
           "advParInput"), function(x)
-          input[[paste0("obsPlOpt_", x)]], simplify=FALSE
+          input[[paste0("plOpt_", x)]], simplify=FALSE
         ),
         reactiveValuesToList(funnelOptions)
       )
@@ -246,7 +245,7 @@ obs_module <- function(input, output, session) {
   }
   
   # Export meta-analysis
-  output$obsExport <- downloadHandler(
+  output$export <- downloadHandler(
     filename = function() {
       "miniMeta_obs.rds"
     },
@@ -256,7 +255,7 @@ obs_module <- function(input, output, session) {
     }
   )
 
-  output$obsExportSource <- downloadHandler(
+  output$exportSource <- downloadHandler(
     filename = function() {
       "miniMeta_analysis.R"
     },
@@ -285,12 +284,12 @@ obs_module <- function(input, output, session) {
   
   observe({
     funnelOptions$showStudlab <- input$funOpt_showStudlab
-    funnelOptions$fileType <- obsPlOpt_downloadOpts$fileType
+    funnelOptions$fileType <- plOpt_downloadOpts$fileType
     funnelOptions$ptCol <- input$funOpt_ptCol
     funnelOptions$posStudlab <- input$funOpt_posStudlab
   })
   
-  callModule(module = funnelTab, id="obsFunnel", 
+  callModule(module = funnelTab, id="funnel", 
     meta = reactive(m()),
     options = funnelOptions
   )

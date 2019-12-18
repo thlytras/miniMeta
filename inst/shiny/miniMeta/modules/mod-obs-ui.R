@@ -5,31 +5,31 @@ obs_moduleUI <- function(id) {
   ns <- NS(id)
   tabPanel("Observational studies module",
     fluidPage(br(),fluidRow(
-      miniFileInput(ns("obsImport"), "Import meta-analysis", accept = c('application/octet-stream')),
-      downloadButton(ns("obsExport"), "Export meta-analysis"),
-      downloadButton(ns("obsExportSource"), "Export as source code", style="margin-left: 2em")
+      miniFileInput(ns("import"), "Import meta-analysis", accept = c('application/octet-stream')),
+      downloadButton(ns("export"), "Export meta-analysis"),
+      downloadButton(ns("exportSource"), "Export as source code", style="margin-left: 2em")
     ), br()),
     sidebarLayout(
       sidebarPanel(
-        obsLoadDataUI(id = ns("obsLoadData")),
+        obsLoadDataUI(id = ns("loadData")),
         fluidRow(
-          column(6, selectInput(ns("obsOpt_sm"), "Effect measure",
+          column(6, selectInput(ns("opt_sm"), "Effect measure",
             c("Relative Risk"="RR", "Odds Ratio"="OR", "Risk Difference"="RD", 
             "Arcsine Difference"="ASD"))),
-          column(6, style = "margin-top: 15px;", checkboxInput(ns("obsShowOptions"), "Show analysis options"))
+          column(6, style = "margin-top: 15px;", checkboxInput(ns("showOptions"), "Show analysis options"))
         ),
-        conditionalPanel(sprintf("input['%s']", ns("obsShowOptions")),
+        conditionalPanel(sprintf("input['%s']", ns("showOptions")),
           wellPanel(
             fluidRow(
               column(6, offset=6,
-                checkboxInput(ns("obsOpt_combFixed"), "Use fixed-effects model", value=FALSE),
-                checkboxInput(ns("obsOpt_combRandom"), "Use random-effects model", value=TRUE),
-                selectInput(ns("obsOpt_methodTau"), "Heterogeneity estimator", 
+                checkboxInput(ns("opt_combFixed"), "Use fixed-effects model", value=FALSE),
+                checkboxInput(ns("opt_combRandom"), "Use random-effects model", value=TRUE),
+                selectInput(ns("opt_methodTau"), "Heterogeneity estimator", 
                   c("DerSimonian-Laird"="DL", "Paule-Mandel"="PM", 
                     "Restricted Maximum-Likelihood"="REML", 
                     "Maximum Likelihood"="ML", "Hunter-Schmidt"="HS", "Sidik-Jonkman"="SJ", 
                     "Hedges"="HE", "Empirical Bayes"="EB")),
-                checkboxInput(ns("obsOpt_hakn"), "Hartung and Knapp correction", value=FALSE)
+                checkboxInput(ns("opt_hakn"), "Hartung and Knapp correction", value=FALSE)
               )
             )
           )
@@ -40,49 +40,49 @@ obs_moduleUI <- function(id) {
         tabsetPanel(
           tabPanel("Forest plot", 
             splitLayout(
-              downloadButton(ns("obsForestDownload"), "Download plot"),
+              downloadButton(ns("forestDownload"), "Download plot"),
               cellArgs = list(style = "padding: 6px; text-align:center")
             ),
             wellPanel(
-              uiOutput(ns("obsForestPlotUI")),
+              uiOutput(ns("forestPlotUI")),
               style="background:white"
             )
           ),
           tabPanel("Plot options",
-            checkboxInput(ns("obsPlOpt_showDownloadOptions"), "Download options", FALSE),
-            conditionalPanel(sprintf("input['%s']", ns("obsPlOpt_showDownloadOptions")),
-              plDownloadOptsUI(id = ns("obsDownloadOpts"))
+            checkboxInput(ns("plOpt_showDownloadOptions"), "Download options", FALSE),
+            conditionalPanel(sprintf("input['%s']", ns("plOpt_showDownloadOptions")),
+              plDownloadOptsUI(id = ns("dowloadOpts"))
             ),
-            checkboxInput(ns("obsPlOpt_showContentOptions"), "Content options", FALSE),
-            conditionalPanel(sprintf("input['%s']", ns("obsPlOpt_showContentOptions")),
+            checkboxInput(ns("plOpt_showContentOptions"), "Content options", FALSE),
+            conditionalPanel(sprintf("input['%s']", ns("plOpt_showContentOptions")),
               wellPanel(
                 fluidRow(
-                  column(3, checkboxInput(ns("obsPlOpt_printI2"), HTML("I<sup>2</sup>"), TRUE)),
-                  column(3, checkboxInput(ns("obsPlOpt_printQ"), "Q", FALSE)),
-                  column(3, checkboxInput(ns("obsPlOpt_printPval"), "p-value", TRUE)),
-                  column(3, checkboxInput(ns("obsPlOpt_printTau2"), "τ^2", FALSE))
+                  column(3, checkboxInput(ns("plOpt_printI2"), HTML("I<sup>2</sup>"), TRUE)),
+                  column(3, checkboxInput(ns("plOpt_printQ"), "Q", FALSE)),
+                  column(3, checkboxInput(ns("plOpt_printPval"), "p-value", TRUE)),
+                  column(3, checkboxInput(ns("plOpt_printTau2"), "τ^2", FALSE))
                 ),
-                checkboxInput(ns("obsPlOpt_showWeights"), "Show weights", TRUE)
+                checkboxInput(ns("plOpt_showWeights"), "Show weights", TRUE)
               )
             ),
-            checkboxInput(ns("obsPlOpt_showFormattingOptions"), "Formatting options", FALSE),
-            conditionalPanel(sprintf("input['%s']", ns("obsPlOpt_showFormattingOptions")),
+            checkboxInput(ns("plOpt_showFormattingOptions"), "Formatting options", FALSE),
+            conditionalPanel(sprintf("input['%s']", ns("plOpt_showFormattingOptions")),
               wellPanel(
                 fluidRow(
-                  column(4, colourInput(ns("obsPlOpt_barCol"), "Study bar colour", "#000000")),
-                  column(4, colourInput(ns("obsPlOpt_sqCol"), "Weight square colour", "#BEBEBE")),
-                  column(4, colourInput(ns("obsPlOpt_diamCol"), "Diamond colour", "#000000"))
+                  column(4, colourInput(ns("plOpt_barCol"), "Study bar colour", "#000000")),
+                  column(4, colourInput(ns("plOpt_sqCol"), "Weight square colour", "#BEBEBE")),
+                  column(4, colourInput(ns("plOpt_diamCol"), "Diamond colour", "#000000"))
                 ),
                 funnelOptsUi(ns)
               )
             ),
-            checkboxInput(ns("obsPlOpt_showAdvancedOptions"), "Advanced options", FALSE),
-            conditionalPanel(sprintf("input['%s']", ns("obsPlOpt_showAdvancedOptions")),
+            checkboxInput(ns("plOpt_showAdvancedOptions"), "Advanced options", FALSE),
+            conditionalPanel(sprintf("input['%s']", ns("plOpt_showAdvancedOptions")),
               wellPanel(
-                textAreaInput(ns("obsPlOpt_advParInput"), 
+                textAreaInput(ns("plOpt_advParInput"), 
                   "Additional parameters for forest.meta()",
                   placeholder="Enter a comma-separated list of parameters..."),
-                verbatimTextOutput(ns("obsPlOpt_advParOutput"))
+                verbatimTextOutput(ns("plOpt_advParOutput"))
               )
             )
           ),
@@ -91,7 +91,7 @@ obs_moduleUI <- function(id) {
             numericInput(ns("baseRisk"), "Basline risk (%)", value=5, min=0, max=100, step=1)
           ),
           tabPanel("Funnel plot", 
-            funnelTabUI(id = ns("obsFunnel"))
+            funnelTabUI(id = ns("funnel"))
           ),
           tabPanel("Help", includeMarkdown("helptext.md"))
         ), width=6

@@ -26,80 +26,80 @@ rct_module <- function(input, output, session) {
     c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
 
   values <- reactiveValues(
-    rctsImportReady = FALSE,
+    importReady = FALSE,
     dataset = NULL
   )
   
-  rcts_dat <- callModule(module = rctLoadData, id="rctLoadData", 
+  dat <- callModule(module = rctLoadData, id="loadData", 
         dataset = reactive(values$dataset))
   
   # REACTIVE: check validity of the data
-  rcts_chk <- reactive({
-    checkRCTValidity(rcts_dat())
+  chk <- reactive({
+    checkRCTValidity(dat())
   })
   
   # REACTIVE: run the meta-analysis
   m <- reactive({
-    if (rcts_chk()) {
-      optIncr <- input$rctOpt_incr; if (optIncr!="TACC") optIncr <- as.numeric(optIncr)
-      grp <- trimws(as.character(rcts_dat()$group)); grp[grp==""] <- NA
+    if (chk()) {
+      optIncr <- input$opt_incr; if (optIncr!="TACC") optIncr <- as.numeric(optIncr)
+      grp <- trimws(as.character(dat()$group)); grp[grp==""] <- NA
       if (sum(is.na(grp))==0 & length(unique(grp))>1) {
         byVar <- factor(grp)
       } else {
         byVar <- NULL
       }
-      return(metabin(e.e, n.e, e.c, n.c, data=rcts_dat(), studlab=Study, 
-        method=input$rctOpt_method, method.tau=input$rctOpt_methodTau,
-        comb.fixed=input$rctOpt_combFixed, comb.random=input$rctOpt_combRandom,
-        byvar=byVar, incr=optIncr, sm=input$rctOpt_sm, hakn=input$rctOpt_hakn
+      return(metabin(e.e, n.e, e.c, n.c, data=dat(), studlab=Study, 
+        method=input$opt_method, method.tau=input$opt_methodTau,
+        comb.fixed=input$opt_combFixed, comb.random=input$opt_combRandom,
+        byvar=byVar, incr=optIncr, sm=input$opt_sm, hakn=input$opt_hakn
       ))
     }
   })
   
   # REACTIVE: get all plot options in a list
-  rcts_pltOpt <- reactive({
+  pltOpt <- reactive({
     lcols <- c("studlab")
-    if (input$rctPlOpt_inclAbsNum) lcols <- c(lcols, "event.e", "n.e", "event.c", "n.c")
+    if (input$plOpt_inclAbsNum) lcols <- c(lcols, "event.e", "n.e", "event.c", "n.c")
     rcols <- c("effect","ci")
-    if (input$rctPlOpt_showWeights) {
-      if (input$rctOpt_combFixed) rcols <- c(rcols, "w.fixed")
-      if (input$rctOpt_combRandom) rcols <- c(rcols, "w.random")
+    if (input$plOpt_showWeights) {
+      if (input$opt_combFixed) rcols <- c(rcols, "w.fixed")
+      if (input$opt_combRandom) rcols <- c(rcols, "w.random")
     }
     plOpts <- list(
       leftcols=lcols,
       rightcols=rcols,
-      print.I2 = input$rctPlOpt_printI2, 
-      print.Q = input$rctPlOpt_printQ,
-      print.pval.Q = input$rctPlOpt_printPval,
-      print.tau2 = input$rctPlOpt_printTau2,
-      col.diamond = input$rctPlOpt_diamCol,
-      col.diamond.lines = input$rctPlOpt_diamCol,
-      col.study = input$rctPlOpt_barCol,
-      col.square = input$rctPlOpt_sqCol
+      print.I2 = input$plOpt_printI2, 
+      print.Q = input$plOpt_printQ,
+      print.pval.Q = input$plOpt_printPval,
+      print.tau2 = input$plOpt_printTau2,
+      col.diamond = input$plOpt_diamCol,
+      col.diamond.lines = input$plOpt_diamCol,
+      col.study = input$plOpt_barCol,
+      col.square = input$plOpt_sqCol
     )
-    if (class(rcts_pltAdvOpt())!="try-error" && length(rcts_pltAdvOpt())>0) {
-      plOpts <- rev(c(plOpts, rcts_pltAdvOpt()))
+    if (class(pltAdvOpt())!="try-error" && length(pltAdvOpt())>0) {
+      plOpts <- rev(c(plOpts, pltAdvOpt()))
       plOpts <- rev(plOpts[!duplicated(names(plOpts))])
     }
     return(plOpts)
   })
   
   
-  rctPlOpt_downloadOpts <- reactiveValues(
+  plOpt_downloadOpts <- reactiveValues(
         fileType=NULL, width=NULL, height=NULL, pointsize=NULL,
         res=NULL, lwd=NULL, spacing=NULL)
-  rctPlOpt_mod_downloadOpts <- callModule(module = plDownloadOpts, id="rctDownloadOpts", 
-        setOpts = rctPlOpt_downloadOpts)
+  plOpt_mod_downloadOpts <- callModule(module = plDownloadOpts, id="rctDownloadOpts", 
+        setOpts = plOpt_downloadOpts)
   
-  observeEvent(rctPlOpt_mod_downloadOpts$trigger, {
-    for (n in except(names(rctPlOpt_mod_downloadOpts), "trigger")) {
-      rctPlOpt_downloadOpts[[n]] <- rctPlOpt_mod_downloadOpts[[n]]
+  observeEvent(plOpt_mod_downloadOpts$trigger, {
+    for (n in except(names(plOpt_mod_downloadOpts), "trigger")) {
+      plOpt_downloadOpts[[n]] <- plOpt_mod_downloadOpts[[n]]
     }
   })
   
   # REACTIVE: parse all advanced plot options
-  rcts_pltAdvOpt <- reactive({
-    res <- parseArguments(input$rctPlOpt_advParInput)
+  pltAdvOpt <- reactive({
+    res <- parseArguments(input$plOpt_advParInput)
     if (class(res)!="try-error" && length(res)>0) {
       res <- res[names(res) %in% forest_args]
     }
@@ -108,7 +108,7 @@ rct_module <- function(input, output, session) {
   
   forest_rct <- function(new=TRUE, pointsize=12, lwd=1, spacing=1) {
     cilayout("(", " - ")
-    pars <- c(list(x=m(), new=new), rcts_pltOpt(),
+    pars <- c(list(x=m(), new=new), pltOpt(),
       list(
         text.fixed = "Fixed-effects model",
         text.random = "Random-effects model",
@@ -122,49 +122,49 @@ rct_module <- function(input, output, session) {
     do.call(forest, pars)
   }
     
-  output$rctPlOpt_advParOutput <- renderText({
-    if (class(rcts_pltAdvOpt())=="try-error") return(as.character(attr(rcts_pltAdvOpt(), "condition")))
-    if (length(rcts_pltAdvOpt())==0) return("No extra parameters provided (or parameters unknown to forest.meta())")
-    return(gsub("^list\\(|\\)$", "", deparse(rcts_pltAdvOpt())))
+  output$plOpt_advParOutput <- renderText({
+    if (class(pltAdvOpt())=="try-error") return(as.character(attr(pltAdvOpt(), "condition")))
+    if (length(pltAdvOpt())==0) return("No extra parameters provided (or parameters unknown to forest.meta())")
+    return(gsub("^list\\(|\\)$", "", deparse(pltAdvOpt())))
   })
   
-  output$rctsForestPlotUI <- renderUI({
-    nr <- nrow(rcts_dat())
+  output$forestPlotUI <- renderUI({
+    nr <- nrow(dat())
     if (!is.numeric(nr)) nr <- 5
     if (!flagFirstRun) {
       flagFirstRun <<- TRUE
       return()
     }
-    plotOutput(session$ns("rctsForestPlot"), height=paste0(12 + 1.1*nr, "em"), width="100%")
+    plotOutput(session$ns("forestPlot"), height=paste0(12 + 1.1*nr, "em"), width="100%")
   })
   
   # REACTIVE: render the forest plot
-  output$rctsForestPlot <- renderPlot({
-    if (rcts_chk()) {
+  output$forestPlot <- renderPlot({
+    if (chk()) {
       forest_rct(new=TRUE)
     }
   })
   
     
   # Download the forest plot
-  output$rctsForestDownload <- downloadHandler(
+  output$forestDownload <- downloadHandler(
     filename = function() {
-      sprintf("forest.%s", gsub("cairo_", "", rctPlOpt_downloadOpts$fileType, fixed=TRUE))
+      sprintf("forest.%s", gsub("cairo_", "", plOpt_downloadOpts$fileType, fixed=TRUE))
     },
     content = function(file) {
       fileOptions <- list(filename=file, 
-        width=rctPlOpt_downloadOpts$width, height=rctPlOpt_downloadOpts$height, 
-        pointsize=rctPlOpt_downloadOpts$pointsize)
-      if (rctPlOpt_downloadOpts$fileType %in% c("png", "tiff")) {
-        fileOptions$res <- rctPlOpt_downloadOpts$res
+        width=plOpt_downloadOpts$width, height=plOpt_downloadOpts$height, 
+        pointsize=plOpt_downloadOpts$pointsize)
+      if (plOpt_downloadOpts$fileType %in% c("png", "tiff")) {
+        fileOptions$res <- plOpt_downloadOpts$res
         fileOptions$width <- fileOptions$width * fileOptions$res
         fileOptions$height <- fileOptions$height * fileOptions$res
-        if (rctPlOpt_downloadOpts$fileType=="tiff") fileOptions$compression <- "lzw"
+        if (plOpt_downloadOpts$fileType=="tiff") fileOptions$compression <- "lzw"
       }
-      do.call(rctPlOpt_downloadOpts$fileType, fileOptions)
-      if (rcts_chk()) {
-        forest_rct(pointsize=rctPlOpt_downloadOpts$pointsize, 
-          spacing=rctPlOpt_downloadOpts$spacing, lwd=rctPlOpt_downloadOpts$lwd)
+      do.call(plOpt_downloadOpts$fileType, fileOptions)
+      if (chk()) {
+        forest_rct(pointsize=plOpt_downloadOpts$pointsize, 
+          spacing=plOpt_downloadOpts$spacing, lwd=plOpt_downloadOpts$lwd)
       }
       dev.off()
     }
@@ -175,10 +175,10 @@ rct_module <- function(input, output, session) {
 
   
   # Code to import meta-analysis
-  observeEvent(input$rctsImport, {
-#     values$rctsImportReady <- FALSE
-    if (is.null(input$rctsImport)) return()
-    inFile <- input$rctsImport
+  observeEvent(input$import, {
+#     values$importReady <- FALSE
+    if (is.null(input$import)) return()
+    inFile <- input$import
     m <- try(readRDS(inFile$datapath), silent=TRUE)
       # Has the file been read successfully?
     if (length(m)==1 && class(m)=="try-error") {
@@ -204,40 +204,40 @@ rct_module <- function(input, output, session) {
     values$dataset <- NULL
     values$dataset <- m$data
     for (n in c("sm", "method", "methodTau", "incr")) {
-      updateSelectInput(session, paste0("rctOpt_", n), 
+      updateSelectInput(session, paste0("opt_", n), 
           selected = m$analysisOptions[[n]])
     }
     for (n in c("combFixed", "combRandom", "hakn")) {
-      updateCheckboxInput(session, paste0("rctOpt_", n), 
+      updateCheckboxInput(session, paste0("opt_", n), 
           value = m$analysisOptions[[n]])
     }
     for (n in c("inclAbsNum", "printI2", "printQ", "printPval", "printTau2")) {
-      updateCheckboxInput(session, paste0("rctPlOpt_", n), 
+      updateCheckboxInput(session, paste0("plOpt_", n), 
           value = m$plotOptions[[n]])
     }
-    updateTextAreaInput(session, "rctPlOpt_advParInput", value = m$plotOptions$advParInput)
-    for (n in except(names(rctPlOpt_downloadOpts), "trigger")) {
-      rctPlOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
+    updateTextAreaInput(session, "plOpt_advParInput", value = m$plotOptions$advParInput)
+    for (n in except(names(plOpt_downloadOpts), "trigger")) {
+      plOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
     }
-#     values$rctsImportReady <- TRUE
+#     values$importReady <- TRUE
   }, ignoreInit=TRUE)
 
   
   makeMiniMetaObject <- function() {
     m <- list(
-      data = rcts_dat(),
+      data = dat(),
       meta = m(),
       analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
         "method", "methodTau", "incr", "hakn"), function(x) 
-        input[[paste0("rctOpt_", x)]], simplify=FALSE
+        input[[paste0("opt_", x)]], simplify=FALSE
       ),
-      plotOptions = c(reactiveValuesToList(rctPlOpt_downloadOpts),
+      plotOptions = c(reactiveValuesToList(plOpt_downloadOpts),
         sapply(c("inclAbsNum",
           "printI2", "printQ", "printPval", "printTau2",
           "showWeights",
           "diamCol", "barCol", "sqCol",
           "advParInput"), function(x)
-          input[[paste0("rctPlOpt_", x)]], simplify=FALSE
+          input[[paste0("plOpt_", x)]], simplify=FALSE
         ),
         reactiveValuesToList(funnelOptions)
       )
@@ -247,7 +247,7 @@ rct_module <- function(input, output, session) {
   }
   
   # Export meta-analysis
-  output$rctsExport <- downloadHandler(
+  output$export <- downloadHandler(
     filename = function() {
       "miniMeta_RCTs.rds"
     },
@@ -257,7 +257,7 @@ rct_module <- function(input, output, session) {
     }
   )
 
-  output$rctsExportSource <- downloadHandler(
+  output$exportSource <- downloadHandler(
     filename = function() {
       "miniMeta_analysis.R"
     },
@@ -270,10 +270,10 @@ rct_module <- function(input, output, session) {
 
   # REACTIVE: render the output panel
   output$uncpanel <- renderPrint({
-    if (rcts_chk()) {
-      return(print(gradeRCT(rcts_dat()[,-1], m())))
+    if (chk()) {
+      return(print(gradeRCT(dat()[,-1], m())))
     } else {
-      return(cat(paste(attr(rcts_chk(), "msg"), sep="", collapse="\n")))
+      return(cat(paste(attr(chk(), "msg"), sep="", collapse="\n")))
     }
   })
   
@@ -283,17 +283,17 @@ rct_module <- function(input, output, session) {
   
   observe({
     funnelOptions$showStudlab <- input$funOpt_showStudlab
-    funnelOptions$fileType <- rctPlOpt_downloadOpts$fileType
+    funnelOptions$fileType <- plOpt_downloadOpts$fileType
     funnelOptions$ptCol <- input$funOpt_ptCol
     funnelOptions$posStudlab <- input$funOpt_posStudlab
   })
   
-  callModule(module = funnelTab, id="rctFunnel", 
+  callModule(module = funnelTab, id="funnel", 
     meta = reactive(m()),
     options = funnelOptions
   )
 
-  callModule(module = funnelTab, id="rctLabbe", labbe=TRUE,
+  callModule(module = funnelTab, id="labbe", labbe=TRUE,
     meta = reactive(m()),
     options = funnelOptions
   )

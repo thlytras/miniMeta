@@ -39,19 +39,3 @@ gradeObs <- function(m, bR) {
   a
 }
 
-
-
-readAdvParameters <- function(x) {
-  getArgs <- function(...) return(list(...))
-  x <- gsub(";|\n", "", x)
-  pars <- try(eval(parse(text=sprintf("getArgs(%s)", x))), silent=TRUE)
-  if (class(pars)=="try-error") {
-    return(pars)
-  }
-  if (length(pars)>0 && (is.null(names(pars)) || (sum(names(pars)=="")>0))) {
-    pars <- try(stop("All provided arguments should be named"), silent=TRUE)
-    attr(pars, "condition")$call <- call('getArgs')
-    return(pars)
-  }
-  return(pars)
-}
