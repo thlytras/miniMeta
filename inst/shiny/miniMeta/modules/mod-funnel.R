@@ -1,12 +1,15 @@
 funnelOptsUi <- function(ns) {
   tagList(
     fluidRow(
-      column(6, checkboxInput(ns("funOpt_showStudlab"), "Funnel plot: show study labels", FALSE)),
-      column(6, selectInput(ns("funOpt_posStudlab"), 
-        "Funnel plot: study label position",
-        c("Top"=3, "Bottom"=1, "Left"=2, "Right"="4")))
-    ),
-    colourInput(ns("funOpt_ptCol"), "Funnel plot: color for points", "#A9A9A9")
+      column(6, 
+        checkboxInput(ns("funOpt_showStudlab"), "Funnel plot: show study labels", FALSE),
+        selectInput(ns("funOpt_posStudlab"), "Funnel plot: study label position",
+          c("Top"=3, "Bottom"=1, "Left"=2, "Right"="4"))
+      ),
+      column(6, 
+        colourInput(ns("funOpt_ptCol"), "Funnel plot: color for points", "#A9A9A9")
+      )
+    )
   )
 }
 

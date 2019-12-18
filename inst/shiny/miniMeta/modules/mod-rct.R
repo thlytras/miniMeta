@@ -65,7 +65,11 @@ rct_module <- function(input, output, session) {
       print.I2 = input$rctPlOpt_printI2, 
       print.Q = input$rctPlOpt_printQ,
       print.pval.Q = input$rctPlOpt_printPval,
-      print.tau2 = input$rctPlOpt_printTau2
+      print.tau2 = input$rctPlOpt_printTau2,
+      col.diamond = input$rctPlOpt_diamCol,
+      col.diamond.lines = input$rctPlOpt_diamCol,
+      col.study = input$rctPlOpt_barCol,
+      col.square = input$rctPlOpt_sqCol
     )
     if (class(rcts_pltAdvOpt())!="try-error" && length(rcts_pltAdvOpt())>0) {
       plOpts <- rev(c(plOpts, rcts_pltAdvOpt()))
@@ -102,7 +106,6 @@ rct_module <- function(input, output, session) {
       list(
         text.fixed = "Fixed-effects model",
         text.random = "Random-effects model",
-        col.diamond = "black",
         fontsize = pointsize,
         plotwidth = sprintf("%.2fcm", 8*pointsize/12),
         colgap = sprintf("%.2fmm", 2*pointsize/12),
@@ -228,8 +231,9 @@ rct_module <- function(input, output, session) {
           input[[paste0("rctOpt_", x)]], simplify=FALSE
         ),
         plotOptions = c(reactiveValuesToList(rctPlOpt_downloadOpts),
-          sapply(c("inclAbsNum", "printI2", 
-            "printQ", "printPval", "printTau2", "advParInput"), function(x)
+          sapply(c("printI2", "printQ", "printPval", "printTau2", 
+            "diamCol", "barCol", "sqCol",
+            "advParInput"), function(x)
             input[[paste0("rctPlOpt_", x)]], simplify=FALSE
           ),
           reactiveValuesToList(funnelOptions)

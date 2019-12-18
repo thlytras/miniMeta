@@ -66,6 +66,11 @@ obs_moduleUI <- function(id) {
             checkboxInput(ns("obsPlOpt_showFormattingOptions"), "Formatting options", FALSE),
             conditionalPanel(sprintf("input['%s']", ns("obsPlOpt_showFormattingOptions")),
               wellPanel(
+                fluidRow(
+                  column(4, colourInput(ns("obsPlOpt_barCol"), "Study bar colour", "#000000")),
+                  column(4, colourInput(ns("obsPlOpt_sqCol"), "Weight square colour", "#BEBEBE")),
+                  column(4, colourInput(ns("obsPlOpt_diamCol"), "Diamond colour", "#000000"))
+                ),
                 funnelOptsUi(ns)
               )
             ),

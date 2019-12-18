@@ -22,7 +22,9 @@ plotOptions <- function(x) {
   if (!is.miniMeta(x)) stop("`x` should be a miniMeta object")
   res <- x$plotOptions
   oMat <- c("printI2" = "print.I2", "printQ" = "print.Q", 
-    "printPval" = "print.pval.Q", "printTau2" = "print.tau2")
+    "printPval" = "print.pval.Q", "printTau2" = "print.tau2",
+    "diamCol" = "col.diamond", "barCol" = "col.study", "sqCol" = "col.square"
+    )
   names(res)[names(res) %in% names(oMat)] <- unname(oMat[names(res)[names(res) %in% names(oMat)]])
     res$leftcols <- "studlab"
   if (is.miniMeta.rct(x)) {
@@ -32,7 +34,7 @@ plotOptions <- function(x) {
   }
   res$text.fixed <- "Fixed-effects model"
   res$text.random <- "Random-effects model"
-  res$col.diamond <- "black"
+  res$col.diamond.lines <- res$col.diamond
   res$fontsize <- res$pointsize
   res$plotwidth <- sprintf("%.2fcm", 8*res$pointsize/12)
   res$colgap <- sprintf("%.2fmm", 2*res$pointsize/12)

@@ -66,7 +66,11 @@ obs_module <- function(input, output, session) {
       print.I2 = input$obsPlOpt_printI2, 
       print.Q = input$obsPlOpt_printQ,
       print.pval.Q = input$obsPlOpt_printPval,
-      print.tau2 = input$obsPlOpt_printTau2
+      print.tau2 = input$obsPlOpt_printTau2,
+      col.diamond = input$obsPlOpt_diamCol,
+      col.diamond.lines = input$obsPlOpt_diamCol,
+      col.study = input$obsPlOpt_barCol,
+      col.square = input$obsPlOpt_sqCol
     )
     if (class(obs_pltAdvOpt())!="try-error" && length(obs_pltAdvOpt())>0) {
       plOpts <- rev(c(plOpts, obs_pltAdvOpt()))
@@ -227,8 +231,9 @@ obs_module <- function(input, output, session) {
           input[[paste0("obsOpt_", x)]], simplify=FALSE
         ),
         plotOptions = c(reactiveValuesToList(obsPlOpt_downloadOpts),
-          sapply(c("printI2", 
-            "printQ", "printPval", "printTau2", "advParInput"), function(x)
+          sapply(c("printI2", "printQ", "printPval", "printTau2", 
+            "diamCol", "barCol", "sqCol",
+            "advParInput"), function(x)
             input[[paste0("obsPlOpt_", x)]], simplify=FALSE
           ),
           reactiveValuesToList(funnelOptions)

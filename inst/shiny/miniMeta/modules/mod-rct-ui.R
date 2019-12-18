@@ -79,6 +79,11 @@ rct_moduleUI <- function(id) {
             checkboxInput(ns("rctPlOpt_showFormattingOptions"), "Formatting options", FALSE),
             conditionalPanel(sprintf("input['%s']", ns("rctPlOpt_showFormattingOptions")),
               wellPanel(
+                fluidRow(
+                  column(4, colourInput(ns("rctPlOpt_barCol"), "Study bar colour", "#000000")),
+                  column(4, colourInput(ns("rctPlOpt_sqCol"), "Weight square colour", "#BEBEBE")),
+                  column(4, colourInput(ns("rctPlOpt_diamCol"), "Diamond colour", "#000000"))
+                ),
                 funnelOptsUi(ns)
               )
             ),
