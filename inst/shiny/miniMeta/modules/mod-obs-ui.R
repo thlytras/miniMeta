@@ -6,7 +6,8 @@ obs_moduleUI <- function(id) {
   tabPanel("Observational studies module",
     fluidPage(br(),fluidRow(
       miniFileInput(ns("obsImport"), "Import meta-analysis", accept = c('application/octet-stream')),
-      downloadButton(ns("obsExport"), "Export meta-analysis")
+      downloadButton(ns("obsExport"), "Export meta-analysis"),
+      downloadButton(ns("obsExportSource"), "Export as source code", style="margin-left: 2em")
     ), br()),
     sidebarLayout(
       sidebarPanel(

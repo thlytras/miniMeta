@@ -223,34 +223,50 @@ obs_module <- function(input, output, session) {
   }, ignoreInit=TRUE)
 
   
+  makeMiniMetaObject <- function() {
+    m <- list(
+      data = obs_dat(),
+      meta = m(),
+      analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
+        "methodTau", "hakn"), function(x) 
+        input[[paste0("obsOpt_", x)]], simplify=FALSE
+      ),
+      plotOptions = c(reactiveValuesToList(obsPlOpt_downloadOpts),
+        sapply(c("printI2", "printQ", "printPval", "printTau2", 
+          "showWeights",
+          "diamCol", "barCol", "sqCol",
+          "advParInput"), function(x)
+          input[[paste0("obsPlOpt_", x)]], simplify=FALSE
+        ),
+        reactiveValuesToList(funnelOptions)
+      )
+    )
+    class(m) <- c("miniMeta", "list")
+    return(m)
+  }
+  
   # Export meta-analysis
   output$obsExport <- downloadHandler(
     filename = function() {
       "miniMeta_obs.rds"
     },
     content = function(file) {
-      m <- list(
-        data = obs_dat(),
-        meta = m(),
-        analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
-          "methodTau", "hakn"), function(x) 
-          input[[paste0("obsOpt_", x)]], simplify=FALSE
-        ),
-        plotOptions = c(reactiveValuesToList(obsPlOpt_downloadOpts),
-          sapply(c("printI2", "printQ", "printPval", "printTau2", 
-            "showWeights",
-            "diamCol", "barCol", "sqCol",
-            "advParInput"), function(x)
-            input[[paste0("obsPlOpt_", x)]], simplify=FALSE
-          ),
-          reactiveValuesToList(funnelOptions)
-        )
-      )
-      class(m) <- c("miniMeta", "list")
+      m <- makeMiniMetaObject()
       saveRDS(m, file=file)
     }
   )
 
+  output$obsExportSource <- downloadHandler(
+    filename = function() {
+      "miniMeta_analysis.R"
+    },
+    content = function(file) {
+      m <- makeMiniMetaObject()
+      writeLines(as.source(m), file)
+    }
+  )
+
+  
   # REACTIVE: render the output panel
   output$uncpanel <- renderPrint({
     bR <- as.numeric(input$baseRisk)

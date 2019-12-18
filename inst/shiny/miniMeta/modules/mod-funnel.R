@@ -49,12 +49,12 @@ funnelTab <- function(input, output, session, meta, options, labbe=FALSE) {
 
 
   drawPlot <- function() {
-    if (labbe)
-        labbe(meta(),
-        studlab=options$showStudlab, 
-        col=options$ptCol, bg=options$ptCol)
+    if (labbe) # suppressWarnings, in case meta version does not support pos.studlab
+      suppressWarnings(labbe(meta(),
+        studlab=options$showStudlab, pos.studlab=options$posStudlab, 
+        col=options$ptCol, bg=options$ptCol)) 
     else 
-        funnel(meta(), 
+      funnel(meta(), 
         studlab=options$showStudlab, pos.studlab=options$posStudlab, 
         col=options$ptCol, bg=options$ptCol)
   }

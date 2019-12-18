@@ -34,8 +34,8 @@ plotOptions <- function(x) {
   }
   res$rightcols <- c("effect", "ci")
   if (res$showWeights) {
-    if (x$comb.fixed) res$rightcols <- c(res$rightcols, "w.fixed")
-    if (x$comb.random) res$rightcols <- c(res$rightcols, "w.random")
+    if (x$meta$comb.fixed) res$rightcols <- c(res$rightcols, "w.fixed")
+    if (x$meta$comb.random) res$rightcols <- c(res$rightcols, "w.random")
   }
   res$text.fixed <- "Fixed-effects model"
   res$text.random <- "Random-effects model"

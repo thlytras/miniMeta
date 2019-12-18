@@ -6,7 +6,8 @@ rct_moduleUI <- function(id) {
   tabPanel("RCT module",
     fluidPage(br(),fluidRow(
       miniFileInput(ns("rctsImport"), "Import meta-analysis", accept = c('application/octet-stream')),
-      downloadButton(ns("rctsExport"), "Export meta-analysis")
+      downloadButton(ns("rctsExport"), "Export meta-analysis"),
+      downloadButton(ns("rctsExportSource"), "Export as source code", style="margin-left: 2em")
     ), br()),
     sidebarLayout(
       sidebarPanel(

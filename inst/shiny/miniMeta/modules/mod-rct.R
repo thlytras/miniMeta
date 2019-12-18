@@ -223,33 +223,50 @@ rct_module <- function(input, output, session) {
   }, ignoreInit=TRUE)
 
   
+  makeMiniMetaObject <- function() {
+    m <- list(
+      data = rcts_dat(),
+      meta = m(),
+      analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
+        "method", "methodTau", "incr", "hakn"), function(x) 
+        input[[paste0("rctOpt_", x)]], simplify=FALSE
+      ),
+      plotOptions = c(reactiveValuesToList(rctPlOpt_downloadOpts),
+        sapply(c("inclAbsNum",
+          "printI2", "printQ", "printPval", "printTau2",
+          "showWeights",
+          "diamCol", "barCol", "sqCol",
+          "advParInput"), function(x)
+          input[[paste0("rctPlOpt_", x)]], simplify=FALSE
+        ),
+        reactiveValuesToList(funnelOptions)
+      )
+    )
+    class(m) <- c("miniMeta", "list")
+    return(m)
+  }
+  
   # Export meta-analysis
   output$rctsExport <- downloadHandler(
     filename = function() {
       "miniMeta_RCTs.rds"
     },
     content = function(file) {
-      m <- list(
-        data = rcts_dat(),
-        meta = m(),
-        analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
-          "method", "methodTau", "incr", "hakn"), function(x) 
-          input[[paste0("rctOpt_", x)]], simplify=FALSE
-        ),
-        plotOptions = c(reactiveValuesToList(rctPlOpt_downloadOpts),
-          sapply(c("printI2", "printQ", "printPval", "printTau2",
-            "showWeights",
-            "diamCol", "barCol", "sqCol",
-            "advParInput"), function(x)
-            input[[paste0("rctPlOpt_", x)]], simplify=FALSE
-          ),
-          reactiveValuesToList(funnelOptions)
-        )
-      )
-      class(m) <- c("miniMeta", "list")
+      m <- makeMiniMetaObject()
       saveRDS(m, file=file)
     }
   )
+
+  output$rctsExportSource <- downloadHandler(
+    filename = function() {
+      "miniMeta_analysis.R"
+    },
+    content = function(file) {
+      m <- makeMiniMetaObject()
+      writeLines(as.source(m), file)
+    }
+  )
+
 
   # REACTIVE: render the output panel
   output$uncpanel <- renderPrint({
