@@ -230,7 +230,8 @@ obs_module <- function(input, output, session) {
           sapply(c("printI2", 
             "printQ", "printPval", "printTau2", "advParInput"), function(x)
             input[[paste0("obsPlOpt_", x)]], simplify=FALSE
-          )
+          ),
+          reactiveValuesToList(funnelOptions)
         )
       )
       class(m) <- c("miniMeta", "list")
@@ -258,6 +259,7 @@ obs_module <- function(input, output, session) {
     funnelOptions$showStudlab <- input$funOpt_showStudlab
     funnelOptions$fileType <- obsPlOpt_downloadOpts$fileType
     funnelOptions$ptCol <- input$funOpt_ptCol
+    funnelOptions$posStudlab <- input$funOpt_posStudlab
   })
   
   callModule(module = funnelTab, id="obsFunnel", 

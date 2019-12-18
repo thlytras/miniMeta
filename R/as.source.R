@@ -33,6 +33,14 @@ as.source <- function(x) {
   fOpts <- deparse(fOpts)
   fOpts[1] <- gsub("^list\\(", "    ", fOpts[1])
   res <- c(res, fOpts, "\n")
+  res <- c(res, with(x$plotOptions, 
+    sprintf("funnel(m, studlab=%s, pos.studlab=%s, col=\"%s\", bg=\"%s\")\n",
+      showStudlab, posStudlab, ptCol, ptCol)))
+  if (is.miniMeta.rct(x)) {
+    res <- c(res, with(x$plotOptions, 
+      sprintf("labbe(m, studlab=%s, col=\"%s\", bg=\"%s\")\n",
+        showStudlab, ptCol, ptCol)))
+  }
   res <- paste(res, collapse="\n")
   return(res)
 }

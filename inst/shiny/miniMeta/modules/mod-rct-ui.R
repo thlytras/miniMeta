@@ -28,7 +28,7 @@ rct_moduleUI <- function(id) {
             fluidRow(
               column(6, selectInput(ns("rctOpt_method"), "Method for pooling",
                 c("Mantel-Hanszel"="MH", "Inverse variance"="Inverse", 
-                "Peto method"="Peto", "GLMM"="GLMM"))),
+                "Peto method"="Peto"))),
               column(6, selectInput(ns("rctOpt_methodTau"), "Heterogeneity estimator", 
                 c("DerSimonian-Laird"="DL", "Paule-Mandel"="PM", 
                   "Restricted Maximum-Likelihood"="REML", 

@@ -231,7 +231,8 @@ rct_module <- function(input, output, session) {
           sapply(c("inclAbsNum", "printI2", 
             "printQ", "printPval", "printTau2", "advParInput"), function(x)
             input[[paste0("rctPlOpt_", x)]], simplify=FALSE
-          )
+          ),
+          reactiveValuesToList(funnelOptions)
         )
       )
       class(m) <- c("miniMeta", "list")
@@ -256,6 +257,7 @@ rct_module <- function(input, output, session) {
     funnelOptions$showStudlab <- input$funOpt_showStudlab
     funnelOptions$fileType <- rctPlOpt_downloadOpts$fileType
     funnelOptions$ptCol <- input$funOpt_ptCol
+    funnelOptions$posStudlab <- input$funOpt_posStudlab
   })
   
   callModule(module = funnelTab, id="rctFunnel", 

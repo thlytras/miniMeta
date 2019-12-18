@@ -114,7 +114,7 @@ the metabin() function](https://www.rdocumentation.org/packages/meta/versions/4.
 A fixed-effects or random-effects model can be specified, or both. 
 There is a choice of different effect measures (Relative Risk, Odds Ratio, 
 Risk Difference and Arcsine Difference), methods for pooling studies 
-(Mantel-Hanszel, Inverse Variance, Peto and GLMM) and heterogeneity estimators 
+(Mantel-Hanszel, Inverse Variance and Peto) and heterogeneity estimators 
 for the random-effects model (the default being the standard 
 DerSimonian-Laird estimator). The Hartung and Knapp correction can be selected,
 as well as the type of continuity correction for study arms with zero events, 
@@ -146,7 +146,7 @@ bitmap-type images, i.e. tiff or png) and factors such as line width, spacing
 "Content options" control what is shown in the forest plot and what is not, 
 e.g. absolute numbers per study arm, weights, heterogeneity statistics, etc.
 "Formatting options" affect various aesthetical characteristics of the 
-forest plot. 
+forest plot or the funnel plot (see below). 
 
 Finally, "Advanced options" provides a powerful interface (for advanced 
 users) to control any aspect of the forest plot, by specifying a 
@@ -169,6 +169,10 @@ and intervention groups, the pooled relative effect (usually a Risk Ratio),
 the absolute risk in the control group (per 1000 patients) and the absolute
 Risk Difference in the intervention group. 
 miniMeta provides these information automatically in the "GRADE output" tab.
+
+The "Funnel plot" tab provides a funnel plot to assess publication bias or 
+small study effects. The results for the Begg & Mamzudar and Egger tests 
+are provided below the funnel plot, as well as a L'Abbe plot.
 
 The last tab, "Help", includes some brief usage help to get you started 
 with miniMeta.
@@ -244,6 +248,8 @@ The "GRADE" output tab is again the same as in the RCT module, with one
 difference: an input field is provided to specify a baseline risk. 
 This is because, in contrast to a meta-analysis of RCTs, the baseline risk 
 cannot be estimated from the study data and must be plugged in separately. 
+The "Funnel plot" section does not include a L'Abbe plot, as these are not 
+applicable to observational studies.
 
 
 ## Tools 
