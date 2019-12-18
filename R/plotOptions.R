@@ -26,11 +26,16 @@ plotOptions <- function(x) {
     "diamCol" = "col.diamond", "barCol" = "col.study", "sqCol" = "col.square"
     )
   names(res)[names(res) %in% names(oMat)] <- unname(oMat[names(res)[names(res) %in% names(oMat)]])
-    res$leftcols <- "studlab"
+  res$leftcols <- "studlab"
   if (is.miniMeta.rct(x)) {
     if (res$inclAbsNum) res$leftcols <- c(res$leftcols, 
         "event.e", "n.e", "event.c", "n.c")
     res$inclAbsNum <- NULL
+  }
+  res$rightcols <- c("effect", "ci")
+  if (res$showWeights) {
+    if (x$comb.fixed) res$rightcols <- c(res$rightcols, "w.fixed")
+    if (x$comb.random) res$rightcols <- c(res$rightcols, "w.random")
   }
   res$text.fixed <- "Fixed-effects model"
   res$text.random <- "Random-effects model"

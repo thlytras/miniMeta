@@ -60,8 +60,14 @@ rct_module <- function(input, output, session) {
   rcts_pltOpt <- reactive({
     lcols <- c("studlab")
     if (input$rctPlOpt_inclAbsNum) lcols <- c(lcols, "event.e", "n.e", "event.c", "n.c")
+    rcols <- c("effect","ci")
+    if (input$rctPlOpt_showWeights) {
+      if (input$rctOpt_combFixed) rcols <- c(rcols, "w.fixed")
+      if (input$rctOpt_combRandom) rcols <- c(rcols, "w.random")
+    }
     plOpts <- list(
       leftcols=lcols,
+      rightcols=rcols,
       print.I2 = input$rctPlOpt_printI2, 
       print.Q = input$rctPlOpt_printQ,
       print.pval.Q = input$rctPlOpt_printPval,
@@ -231,7 +237,8 @@ rct_module <- function(input, output, session) {
           input[[paste0("rctOpt_", x)]], simplify=FALSE
         ),
         plotOptions = c(reactiveValuesToList(rctPlOpt_downloadOpts),
-          sapply(c("printI2", "printQ", "printPval", "printTau2", 
+          sapply(c("printI2", "printQ", "printPval", "printTau2",
+            "showWeights",
             "diamCol", "barCol", "sqCol",
             "advParInput"), function(x)
             input[[paste0("rctPlOpt_", x)]], simplify=FALSE

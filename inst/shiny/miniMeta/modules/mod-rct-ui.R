@@ -73,7 +73,8 @@ rct_moduleUI <- function(id) {
                   column(3, checkboxInput(ns("rctPlOpt_printQ"), "Q", FALSE)),
                   column(3, checkboxInput(ns("rctPlOpt_printPval"), "p-value", TRUE)),
                   column(3, checkboxInput(ns("rctPlOpt_printTau2"), "τ^2", FALSE))
-                )
+                ),
+                checkboxInput(ns("rctPlOpt_showWeights"), "Show weights", TRUE)
               )
             ),
             checkboxInput(ns("rctPlOpt_showFormattingOptions"), "Formatting options", FALSE),

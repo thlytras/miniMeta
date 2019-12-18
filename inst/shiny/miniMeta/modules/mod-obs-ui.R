@@ -60,7 +60,8 @@ obs_moduleUI <- function(id) {
                   column(3, checkboxInput(ns("obsPlOpt_printQ"), "Q", FALSE)),
                   column(3, checkboxInput(ns("obsPlOpt_printPval"), "p-value", TRUE)),
                   column(3, checkboxInput(ns("obsPlOpt_printTau2"), "τ^2", FALSE))
-                )
+                ),
+                checkboxInput(ns("obsPlOpt_showWeights"), "Show weights", TRUE)
               )
             ),
             checkboxInput(ns("obsPlOpt_showFormattingOptions"), "Formatting options", FALSE),

@@ -61,8 +61,14 @@ obs_module <- function(input, output, session) {
   # REACTIVE: get all plot options in a list
   obs_pltOpt <- reactive({
     lcols <- c("studlab")
+    rcols <- c("effect","ci")
+    if (input$obsPlOpt_showWeights) {
+      if (input$obsOpt_combFixed) rcols <- c(rcols, "w.fixed")
+      if (input$obsOpt_combRandom) rcols <- c(rcols, "w.random")
+    }
     plOpts <- list(
       leftcols=lcols,
+      rightcols=rcols,
       print.I2 = input$obsPlOpt_printI2, 
       print.Q = input$obsPlOpt_printQ,
       print.pval.Q = input$obsPlOpt_printPval,
@@ -232,6 +238,7 @@ obs_module <- function(input, output, session) {
         ),
         plotOptions = c(reactiveValuesToList(obsPlOpt_downloadOpts),
           sapply(c("printI2", "printQ", "printPval", "printTau2", 
+            "showWeights",
             "diamCol", "barCol", "sqCol",
             "advParInput"), function(x)
             input[[paste0("obsPlOpt_", x)]], simplify=FALSE
