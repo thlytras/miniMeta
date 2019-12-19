@@ -63,7 +63,7 @@ rct_moduleUI <- function(id) {
           tabPanel("Plot options",
             checkboxInput(ns("plOpt_showDownloadOptions"), "Download options", FALSE),
             conditionalPanel(sprintf("input['%s']", ns("plOpt_showDownloadOptions")),
-              plDownloadOptsUI(id = ns("rctDownloadOpts"))
+              plDownloadOptsUI(id = ns("downloadOpts"))
             ),
             checkboxInput(ns("plOpt_showContentOptions"), "Content options", FALSE),
             conditionalPanel(sprintf("input['%s']", ns("plOpt_showContentOptions")),

@@ -15,20 +15,10 @@ source("modules/mod-rct-ui.R")
 # Server logic of the module follows
 rct_module <- function(input, output, session) {
 
-  # Helper functions for this module
-  source("modules/mod-rct-include.R", local=TRUE)
+  mtype <- 1   # This is an RCT module
 
-  flagFirstRun <- FALSE # Ugly hack to avoid Cairo backend error
-
-  # List of forest.meta() arguments, excluding some that we don't want the user to touch
-  forest_args <- formalArgs("forest.meta")
-  forest_args <- forest_args[!(forest_args %in% 
-    c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
-
-  values <- reactiveValues(
-    importReady = FALSE,
-    dataset = NULL
-  )
+  # Import the "guts" of the module
+  source("modules/include-mod-univ.R", local=TRUE)
   
   dat <- callModule(module = rctLoadData, id="loadData", 
         dataset = reactive(values$dataset))
@@ -37,7 +27,28 @@ rct_module <- function(input, output, session) {
   chk <- reactive({
     checkRCTValidity(dat())
   })
-  
+
+  checkRCTValidity <- function(rctDAT) {
+    msg <- list()
+    if (nrow(rctDAT)==0) {
+        msg <- c(msg, "Empty data -- cannot perform meta-analysis")
+    } else {
+        if (sum(is.na(rctDAT[,2:5]))>0) msg <- c(msg, "Blank cells not allowed.")
+        a <- with(rctDAT, which(e.e>n.e | e.c>n.c))
+        if (length(a)>0) msg <- c(msg, paste("Number of events cannot be higher than the number randomized.\n   Check studies: '", paste(rctDAT[a,1], collapse="', '"), "'.", sep=""))
+        a <- with(rctDAT, which(n.e==0 | n.c==0))
+        if (length(a)>0) msg <- c(msg, paste("Number randomized cannot be zero.\n   Check studies: '", paste(rctDAT[a,1], collapse="', '"), "'.", sep=""))  
+    }
+    res <- TRUE
+    if (length(msg)>0) {
+        res <- FALSE
+        attr(res, "msg") <- msg
+    }
+    return(res)
+  }
+
+
+
   # REACTIVE: run the meta-analysis
   m <- reactive({
     if (chk()) {
@@ -55,217 +66,8 @@ rct_module <- function(input, output, session) {
       ))
     }
   })
-  
-  # REACTIVE: get all plot options in a list
-  pltOpt <- reactive({
-    lcols <- c("studlab")
-    if (input$plOpt_inclAbsNum) lcols <- c(lcols, "event.e", "n.e", "event.c", "n.c")
-    rcols <- c("effect","ci")
-    if (input$plOpt_showWeights) {
-      if (input$opt_combFixed) rcols <- c(rcols, "w.fixed")
-      if (input$opt_combRandom) rcols <- c(rcols, "w.random")
-    }
-    plOpts <- list(
-      leftcols=lcols,
-      rightcols=rcols,
-      print.I2 = input$plOpt_printI2, 
-      print.Q = input$plOpt_printQ,
-      print.pval.Q = input$plOpt_printPval,
-      print.tau2 = input$plOpt_printTau2,
-      col.diamond = input$plOpt_diamCol,
-      col.diamond.lines = input$plOpt_diamCol,
-      col.study = input$plOpt_barCol,
-      col.square = input$plOpt_sqCol
-    )
-    if (class(pltAdvOpt())!="try-error" && length(pltAdvOpt())>0) {
-      plOpts <- rev(c(plOpts, pltAdvOpt()))
-      plOpts <- rev(plOpts[!duplicated(names(plOpts))])
-    }
-    return(plOpts)
-  })
-  
-  
-  plOpt_downloadOpts <- reactiveValues(
-        fileType=NULL, width=NULL, height=NULL, pointsize=NULL,
-        res=NULL, lwd=NULL, spacing=NULL)
-  plOpt_mod_downloadOpts <- callModule(module = plDownloadOpts, id="rctDownloadOpts", 
-        setOpts = plOpt_downloadOpts)
-  
-  observeEvent(plOpt_mod_downloadOpts$trigger, {
-    for (n in except(names(plOpt_mod_downloadOpts), "trigger")) {
-      plOpt_downloadOpts[[n]] <- plOpt_mod_downloadOpts[[n]]
-    }
-  })
-  
-  # REACTIVE: parse all advanced plot options
-  pltAdvOpt <- reactive({
-    res <- parseArguments(input$plOpt_advParInput)
-    if (class(res)!="try-error" && length(res)>0) {
-      res <- res[names(res) %in% forest_args]
-    }
-    res
-  })
-  
-  forest_rct <- function(new=TRUE, pointsize=12, lwd=1, spacing=1) {
-    cilayout("(", " - ")
-    pars <- c(list(x=m(), new=new), pltOpt(),
-      list(
-        text.fixed = "Fixed-effects model",
-        text.random = "Random-effects model",
-        fontsize = pointsize,
-        plotwidth = sprintf("%.2fcm", 8*pointsize/12),
-        colgap = sprintf("%.2fmm", 2*pointsize/12),
-        lwd = lwd,
-        spacing = spacing
-      ))
-    pars <- pars[!duplicated(names(pars))]
-    do.call(forest, pars)
-  }
-    
-  output$plOpt_advParOutput <- renderText({
-    if (class(pltAdvOpt())=="try-error") return(as.character(attr(pltAdvOpt(), "condition")))
-    if (length(pltAdvOpt())==0) return("No extra parameters provided (or parameters unknown to forest.meta())")
-    return(gsub("^list\\(|\\)$", "", deparse(pltAdvOpt())))
-  })
-  
-  output$forestPlotUI <- renderUI({
-    nr <- nrow(dat())
-    if (!is.numeric(nr)) nr <- 5
-    if (!flagFirstRun) {
-      flagFirstRun <<- TRUE
-      return()
-    }
-    plotOutput(session$ns("forestPlot"), height=paste0(12 + 1.1*nr, "em"), width="100%")
-  })
-  
-  # REACTIVE: render the forest plot
-  output$forestPlot <- renderPlot({
-    if (chk()) {
-      forest_rct(new=TRUE)
-    }
-  })
-  
-    
-  # Download the forest plot
-  output$forestDownload <- downloadHandler(
-    filename = function() {
-      sprintf("forest.%s", gsub("cairo_", "", plOpt_downloadOpts$fileType, fixed=TRUE))
-    },
-    content = function(file) {
-      fileOptions <- list(filename=file, 
-        width=plOpt_downloadOpts$width, height=plOpt_downloadOpts$height, 
-        pointsize=plOpt_downloadOpts$pointsize)
-      if (plOpt_downloadOpts$fileType %in% c("png", "tiff")) {
-        fileOptions$res <- plOpt_downloadOpts$res
-        fileOptions$width <- fileOptions$width * fileOptions$res
-        fileOptions$height <- fileOptions$height * fileOptions$res
-        if (plOpt_downloadOpts$fileType=="tiff") fileOptions$compression <- "lzw"
-      }
-      do.call(plOpt_downloadOpts$fileType, fileOptions)
-      if (chk()) {
-        forest_rct(pointsize=plOpt_downloadOpts$pointsize, 
-          spacing=plOpt_downloadOpts$spacing, lwd=plOpt_downloadOpts$lwd)
-      }
-      dev.off()
-    }
-  )
-  
 
-  
 
-  
-  # Code to import meta-analysis
-  observeEvent(input$import, {
-#     values$importReady <- FALSE
-    if (is.null(input$import)) return()
-    inFile <- input$import
-    m <- try(readRDS(inFile$datapath), silent=TRUE)
-      # Has the file been read successfully?
-    if (length(m)==1 && class(m)=="try-error") {
-      showModal(modalDialog(title = "Whoops...", 
-        "Error while trying to read this file.", br(), "Is it an actual miniMeta file?", 
-        footer = modalButton("OK, got it"), size="s"))
-      return()
-    }
-      # Does it appear to be a correct miniMeta file
-    if (!is.miniMeta.rct(m)) {
-      if (is.miniMeta.obs(m)) {
-        showModal(modalDialog(title = "Notice:", 
-          "This is indeed a miniMeta file, but it contains a meta-analysis of observational studies.",
-          br(), "Please move to the Observational studies module and import it there. Thank you.", 
-          footer = modalButton("OK, got it"), size="s"))
-        return()
-      }
-      showModal(modalDialog(title = "Whoops...", 
-        "This is a serialized R object, but it does not appear to be a valid miniMeta file.",
-        footer = modalButton("OK, got it"), size="s"))
-      return()
-    }
-    values$dataset <- NULL
-    values$dataset <- m$data
-    for (n in c("sm", "method", "methodTau", "incr")) {
-      updateSelectInput(session, paste0("opt_", n), 
-          selected = m$analysisOptions[[n]])
-    }
-    for (n in c("combFixed", "combRandom", "hakn")) {
-      updateCheckboxInput(session, paste0("opt_", n), 
-          value = m$analysisOptions[[n]])
-    }
-    for (n in c("inclAbsNum", "printI2", "printQ", "printPval", "printTau2")) {
-      updateCheckboxInput(session, paste0("plOpt_", n), 
-          value = m$plotOptions[[n]])
-    }
-    updateTextAreaInput(session, "plOpt_advParInput", value = m$plotOptions$advParInput)
-    for (n in except(names(plOpt_downloadOpts), "trigger")) {
-      plOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
-    }
-#     values$importReady <- TRUE
-  }, ignoreInit=TRUE)
-
-  
-  makeMiniMetaObject <- function() {
-    m <- list(
-      data = dat(),
-      meta = m(),
-      analysisOptions = sapply(c("sm", "combFixed", "combRandom", 
-        "method", "methodTau", "incr", "hakn"), function(x) 
-        input[[paste0("opt_", x)]], simplify=FALSE
-      ),
-      plotOptions = c(reactiveValuesToList(plOpt_downloadOpts),
-        sapply(c("inclAbsNum",
-          "printI2", "printQ", "printPval", "printTau2",
-          "showWeights",
-          "diamCol", "barCol", "sqCol",
-          "advParInput"), function(x)
-          input[[paste0("plOpt_", x)]], simplify=FALSE
-        ),
-        reactiveValuesToList(funnelOptions)
-      )
-    )
-    class(m) <- c("miniMeta", "list")
-    return(m)
-  }
-  
-  # Export meta-analysis
-  output$export <- downloadHandler(
-    filename = function() {
-      "miniMeta_RCTs.rds"
-    },
-    content = function(file) {
-      m <- makeMiniMetaObject()
-      saveRDS(m, file=file)
-    }
-  )
-
-  output$exportSource <- downloadHandler(
-    filename = function() {
-      "miniMeta_analysis.R"
-    },
-    content = function(file) {
-      m <- makeMiniMetaObject()
-      writeLines(as.source(m), file)
-    }
-  )
 
 
   # REACTIVE: render the output panel
@@ -277,26 +79,46 @@ rct_module <- function(input, output, session) {
     }
   })
   
-  funnelOptions <- reactiveValues(
-    showStudlab = NULL, fileType = NULL, ptCol = NULL
-  )
-  
-  observe({
-    funnelOptions$showStudlab <- input$funOpt_showStudlab
-    funnelOptions$fileType <- plOpt_downloadOpts$fileType
-    funnelOptions$ptCol <- input$funOpt_ptCol
-    funnelOptions$posStudlab <- input$funOpt_posStudlab
-  })
-  
-  callModule(module = funnelTab, id="funnel", 
-    meta = reactive(m()),
-    options = funnelOptions
-  )
 
   callModule(module = funnelTab, id="labbe", labbe=TRUE,
     meta = reactive(m()),
     options = funnelOptions
   )
+
+
+  gradeRCT <- function(dat, m) {
+    lim <- function(x) {
+        x[x<0] <- 0
+        x[x>1000] <- 1000
+        x
+    }
+    ef <- with(m, c(TE.random, lower.random, upper.random))
+    uR <- sum(dat[,3])*1000/sum(dat[,4])
+    if (m$sm=="RR") {
+        eR <- lim(uR * exp(ef))
+        effM <- sprintf("RR, %.2f (%.2f – %.2f)", exp(ef[1]), exp(ef[2]), exp(ef[3]))
+    } else if (m$sm=="OR") {
+        ORtoP <- function(o) o / (o+1)
+        eR <- lim(ORtoP(uR/(1000-uR) * exp(ef))*1000)
+        effM <- sprintf("OR, %.2f (%.2f – %.2f)", exp(ef[1]), exp(ef[2]), exp(ef[3]))
+    } else if (m$sm=="RD") {
+        eR <- lim(uR + ef*1000)
+        effM <- sprintf("RD, %.2f (%.2f – %.2f)", ef[1], ef[2], ef[3])
+    } else { # Arcsine risk difference
+        eR <- (sin(asin(sqrt(uR/1000)) + ef)^2)*1000
+        effM <- sprintf("ASD, %.2f (%.2f – %.2f)", ef[1], ef[2], ef[3])
+    }
+    rdI <- eR-uR; rdI[2:3] <- rdI[2:3][order(abs(rdI[2:3]))]  
+    sg <- function(x) sprintf("%.0f %s", abs(x), c("fewer", "more")[as.integer(x>=0)+1])
+    a <- c(sprintf("%s/%s (%.1f%%)", sum(dat[,3]), sum(dat[,4]), uR/10),
+        sprintf("%s/%s (%.1f%%)", sum(dat[,1]), sum(dat[,2]), sum(dat[,1])*100/sum(dat[,2])),
+        effM,
+        sprintf("%s per 1000", round(uR)),
+        sprintf("%s per 1000 (from %s to %s)", sg(rdI[1]), sg(rdI[2]), sg(rdI[3])))
+    a <- data.frame("Results"=a)
+    rownames(a) <- c("Event rate (control)", "Event rate (intervention)", "Relative effect", "Risk with control", "RD with intervention")
+    a
+  }
 
 }
 
