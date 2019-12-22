@@ -1,8 +1,17 @@
+source("modules/dropdownMenu.R")
+
 ui_importer <- function(ns) {
+  prefMenu <- list(
+    list(label="Save preferences to browser", icon=icon("cloud-upload")),
+    list(label="Load preferences from browser", icon=icon("cloud-download")), 
+    list(label="Clear preferences from browser", icon=icon("eraser")))
+  names(prefMenu) <- c(ns("saveState"), ns("loadState"), ns("rmState"))
   fluidPage(br(),fluidRow(
     miniFileInput(ns("import"), "Import meta-analysis", accept = c('application/octet-stream')),
     downloadButton(ns("export"), "Export meta-analysis"),
-    downloadButton(ns("exportSource"), "Export as source code", style="margin-left: 2em")
+    downloadButton(ns("exportSource"), "Export as source code", style="margin-left: 2em; margin-right: 2em"),
+    dropdownMenu(label = "Preferences", menu = prefMenu, 
+        icon = icon("bars"), style = "display:inline-block; float:right")
   ), br())
 }
 

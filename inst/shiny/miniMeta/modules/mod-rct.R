@@ -13,7 +13,7 @@ source("modules/mod-funnel.R")
 source("modules/mod-rct-ui.R")
 
 # Server logic of the module follows
-rct_module <- function(input, output, session) {
+rct_module <- function(input, output, session, stateEvent) {
 
   mtype <- 1   # This is an RCT module
 
@@ -119,6 +119,8 @@ rct_module <- function(input, output, session) {
     rownames(a) <- c("Event rate (control)", "Event rate (intervention)", "Relative effect", "Risk with control", "RD with intervention")
     a
   }
+
+  return(stateEvent)
 
 }
 

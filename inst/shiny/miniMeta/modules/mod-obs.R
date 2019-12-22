@@ -13,7 +13,7 @@ source("modules/mod-funnel.R")
 source("modules/mod-obs-ui.R")
 
 # Server logic of the module follows
-obs_module <- function(input, output, session) {
+obs_module <- function(input, output, session, stateEvent) {
 
   mtype <- 2   # This is an observational module
 
@@ -96,6 +96,8 @@ obs_module <- function(input, output, session) {
     a
   }
 
+  
+  return(stateEvent)
 
 }
 

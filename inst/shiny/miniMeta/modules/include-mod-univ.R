@@ -251,3 +251,15 @@
     meta = reactive(m()),
     options = funnelOptions
   )
+  
+  
+  observeEvent(input$loadState, {
+    stateEvent("load")
+  })
+  observeEvent(input$saveState, {
+    stateEvent("save")
+  })
+  observeEvent(input$rmState, {
+    stateEvent("clear")
+  })
+
