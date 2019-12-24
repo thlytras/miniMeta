@@ -1,17 +1,21 @@
+source("modules/miniFileInput.R")
 source("modules/dropdownMenu.R")
 
 ui_importer <- function(ns) {
   prefMenu <- list(
-    list(label="Save preferences to browser", icon=icon("cloud-upload")),
-    list(label="Load preferences from browser", icon=icon("cloud-download")), 
-    list(label="Clear preferences from browser", icon=icon("eraser")))
-  names(prefMenu) <- c(ns("saveState"), ns("loadState"), ns("rmState"))
+    list(label="Save settings to browser", icon=icon("cloud-upload")),
+    list(label="Load settings from browser", icon=icon("cloud-download")), 
+    list(label="Clear settings from browser", icon=icon("eraser")),
+    list(label="Save settings to file", icon=icon("file-download")),
+    list(span=HTML("<label for=\"loadStateFromFile\"><i class=\"fa fa-file-upload\" style=\"margin-right:0.3em\"></i>Load settings from file</label>"))
+  )
+  names(prefMenu) <- c(ns("saveState"), ns("loadState"), ns("rmState"), ns("saveStateFile"), ns("loadStateFile"))
   fluidPage(br(),fluidRow(
     miniFileInput(ns("import"), "Import meta-analysis", accept = c('application/octet-stream')),
     downloadButton(ns("export"), "Export meta-analysis"),
-    downloadButton(ns("exportSource"), "Export as source code", style="margin-left: 2em; margin-right: 2em"),
-    dropdownMenu(label = "Preferences", menu = prefMenu, 
-        icon = icon("bars"), style = "display:inline-block; float:right")
+    downloadButton(ns("exportSource"), "Export as source code", style="margin-left:1em; margin-right:1em"),
+    dropdownMenu(label = "Settings", menu = prefMenu, 
+          icon = icon("bars"), style = "display:inline-block; float:right")
   ), br())
 }
 

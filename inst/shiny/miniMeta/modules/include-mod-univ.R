@@ -262,4 +262,7 @@
   observeEvent(input$rmState, {
     stateEvent("clear")
   })
+  observeEvent(input$saveStateFile, {
+    stateEvent("saveFile")
+  })
 

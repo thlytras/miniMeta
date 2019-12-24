@@ -1,3 +1,5 @@
+source("modules/miniFileInput.R")
+
 addResourcePath("js", "www")
 
 saveState_header <- function() {
@@ -18,10 +20,15 @@ saveState_header <- function() {
   tagList(
     tags$head(
       tags$script(src = "js/js.cookie.js"),
-      tags$style(HTML("#shiny-notification-panel { top: 10px; }"))
+      tags$link(rel = "stylesheet", type = "text/css", href = "mine.css")
     ),
     useShinyjs(),
-    extendShinyjs(text = jsCode, functions=c("getcookie","setcookie","rmcookie"))
+    extendShinyjs(text = jsCode, functions=c("getcookie","setcookie","rmcookie")),
+    div(
+      miniFileInput("loadStateFromFile", "Load state from file", accept = c('application/octet-stream')),
+      downloadButton("saveStateToFile", "Save state to file"), 
+      style="visibility:hidden; height: 0px"
+    )
   )
 }
 

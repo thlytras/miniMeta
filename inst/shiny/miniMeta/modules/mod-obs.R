@@ -6,7 +6,6 @@ library(colourpicker)
 # Load required modules
 source("modules/mod-obsLoadData.R")
 source("modules/mod-plDownloadOpts.R")
-source("modules/miniFileInput.R")
 source("modules/mod-funnel.R")
 
 # Load the UI of this module from separate file

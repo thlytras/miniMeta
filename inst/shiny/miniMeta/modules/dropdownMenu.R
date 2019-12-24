@@ -5,7 +5,11 @@ dropdownMenu <- function(label=NULL, icon=NULL, menu=NULL, style=NULL) {
     } else {
       args <- menu[[id]]
       args$inputId <- id
-      tags$li(do.call(actionLink, args), style="padding: 0.5em 0 0.5em 0")
+      if ("span" %in% names(args)) {
+        tags$li(span(args$span, class="action-button"), style="padding: 0.5em 0 0.5em 0")
+      } else {
+        tags$li(do.call(actionLink, args), style="padding: 0.5em 0 0.5em 0")
+      }
     }
   })
   ul$class <- "dropdown-menu dropdown-menu-right"

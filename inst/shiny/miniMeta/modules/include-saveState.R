@@ -33,6 +33,8 @@
   setState <- function(state) {
     if (is.character(state) && length(state)==1) {
       state <- unserialize(memDecompress(jsonlite::base64_dec(URLdecode(state)), "gzip"))
+    }
+    if (is.list(state)) {
       for (n in names(state$sliders)) {
         updateSliderInput(session, n, value=state$sliders[[n]])
       }
@@ -58,9 +60,9 @@
     if (!is.null(values$cookie)) {
       success <- try(setState(values$cookie))
       if (inherits(success, "try-error")) {
-        showNotification("Error in restoring preferences!", type="error", duration=3)
+        showNotification("Error in restoring miniMeta settings!", type="error", duration=3)
       } else {
-        showNotification("Restored miniMeta preferences from browser.", type="message", duration=3)
+        showNotification("Restored miniMeta settings from browser.", type="message", duration=3)
       }
     }
   }
@@ -114,7 +116,7 @@
       if (stateEvent()=="save") {
         cookie <- getState()
         js$setcookie(cookie)
-        showNotification("Stored miniMeta preferences in browser.", type="message", duration=3)
+        showNotification("Stored miniMeta settings in browser.", type="message", duration=3)
         stateEvent(NULL)
         
       } else if (stateEvent()=="load") {
@@ -124,15 +126,50 @@
           cookie <- gsub("%(25)+", "%", cookie)
           values$cookie <- cookie; setTheState()
         } else {
-          showNotification("No miniMeta preferences found in browser.", type="warning", duration=3)
+          showNotification("No miniMeta settings found in browser.", type="warning", duration=3)
         }      
         stateEvent(NULL)
         
       } else if (stateEvent()=="clear") {
         js$rmcookie()
-        showNotification("Cleaned miniMeta preferences from browser.", type="message", duration=3)
+        showNotification("Cleaned miniMeta settings from browser.", type="message", duration=3)
+        stateEvent(NULL)
+        
+      } else if (stateEvent()=="saveFile") {
+        shinyjs::runjs("$('#saveStateToFile')[0].click();")
         stateEvent(NULL)
         
       }
     }
   })
+  
+  
+  
+  output$saveStateToFile <- downloadHandler(
+    filename = function() {
+      "miniMeta_settings.rds"
+    },
+    content = function(file) {
+      state <- getState(encode=FALSE)
+      saveRDS(state, file=file)
+    }
+  )
+
+  observeEvent(input$loadStateFromFile, {
+    if (is.null(input$loadStateFromFile)) return()
+    inFile <- input$loadStateFromFile
+    state <- try(readRDS(inFile$datapath), silent=TRUE)
+      # Has the file been read successfully?
+    if (length(state)==1 && class(state)=="try-error") {
+      showModal(modalDialog(title = "Whoops...", 
+        "Error while trying to read this file.", br(), "Is it an actual miniMeta file?", 
+        footer = modalButton("OK, got it"), size="s"))
+      return()
+    }
+    success <- try(setState(state))
+    if (inherits(success, "try-error")) {
+      showNotification("Error in restoring miniMeta settings!", type="error", duration=3)
+    } else {
+      showNotification("Restored miniMeta settings from file.", type="message", duration=3)
+    }
+  }, ignoreInit=TRUE)
