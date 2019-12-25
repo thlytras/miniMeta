@@ -7,7 +7,8 @@ Authors@R:
              email="thlytras@gmail.com", role=c("aut","cre"), 
              comment=c(ORCID="0000-0002-4146-4122")))
 Maintainer: Theodore Lytras <thlytras@gmail.com>
-Imports: shiny, metafor, readxl, rhandsontable, methods, colourpicker
+Imports: shiny, metafor, readxl, rhandsontable, methods, colourpicker,
+    markdown, WriteXLS
 Depends: meta
 Description: Shiny web application to run meta-analyses. 
     Essentially a graphical front-end to package 'meta' for R. 
