@@ -99,6 +99,7 @@
       list(
         text.fixed = "Fixed-effects model",
         text.random = "Random-effects model",
+        print.byvar = FALSE,
         fontsize = pointsize,
         plotwidth = sprintf("%.2fcm", 8*pointsize/12),
         colgap = sprintf("%.2fmm", 2*pointsize/12),
