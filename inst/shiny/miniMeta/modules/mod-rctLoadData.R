@@ -40,7 +40,7 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
     suppressWarnings(for (i in 2:5) tempDat[,i] <- as.numeric(tempDat[,i]))
     tempDat[,6] <- as.character(tempDat[,6])
     tempDat <- tempDat[getNonEmptyDFrows(tempDat),]
-    names(tempDat) <- c("Study", "Eff.measure", "95CI.LL", "95CI.UL", "SE", "Group")
+    names(tempDat) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
     tempDat
   }
 

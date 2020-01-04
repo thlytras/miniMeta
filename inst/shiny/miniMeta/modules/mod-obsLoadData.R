@@ -125,8 +125,8 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
   # Code to render the table in the widget, if values have changed
   output$obsTabWidget <- renderRHandsontable({
     rhandsontable(values$obsDATfeed, stretchH="all", rowHeaders=NULL, overflow="hidden") %>% 
-      hot_col("Effect", format="0,00") %>% hot_col("95CI.LL", format="0,00") %>% 
-      hot_col("95CI.UL", format="0,00") %>% hot_col("SE", format="0,00") %>% hot_col("Group")
+      hot_col("Effect", format="0.00") %>% hot_col("95CI.LL", format="0.00") %>% 
+      hot_col("95CI.UL", format="0.00") %>% hot_col("SE", format="0.0000") %>% hot_col("Group")
   })
   
   # Code to add rows to the widget
