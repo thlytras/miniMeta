@@ -2,7 +2,7 @@ funnelOptsUi <- function(ns) {
   tagList(
     fluidRow(
       column(6, 
-        checkboxInput(ns("funOpt_showStudlab"), "Funnel plot: show study labels", FALSE),
+        awesomeCheckbox(ns("funOpt_showStudlab"), "Funnel plot: show study labels", FALSE),
         selectInput(ns("funOpt_posStudlab"), "Funnel plot: study label position",
           c("Top"=3, "Bottom"=1, "Left"=2, "Right"="4"))
       ),

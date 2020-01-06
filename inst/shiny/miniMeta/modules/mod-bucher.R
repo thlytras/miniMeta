@@ -69,7 +69,7 @@ bucher_module <- function(input, output, session) {
         "WARNING: The 95% CI for B vs C does not look symmetric.",
         "         Are the values you entered correct?")
       return(cat(paste(output, collapse="\n")))
-    } else return(cat(" "))
+    } else return(cat("No (appropriate) input data provided."))
   })
 
 }

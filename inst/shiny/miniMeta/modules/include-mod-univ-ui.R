@@ -50,24 +50,25 @@ ui_mainPanel <- function(ns, mtype) {
         )
       ),
       tabPanel("Plot options",
-        checkboxInput(ns("plOpt_showDownloadOptions"), "Download options", FALSE),
+        div(style="padding-top:0.5em"),
+        prettySwitch(ns("plOpt_showDownloadOptions"), "Download options", FALSE, status="primary"),
         conditionalPanel(sprintf("input['%s']", ns("plOpt_showDownloadOptions")),
           plDownloadOptsUI(id = ns("downloadOpts"))
         ),
-        checkboxInput(ns("plOpt_showContentOptions"), "Content options", FALSE),
+        prettySwitch(ns("plOpt_showContentOptions"), "Content options", FALSE, status="primary"),
         conditionalPanel(sprintf("input['%s']", ns("plOpt_showContentOptions")),
           wellPanel(
-            if (mtype==1) checkboxInput(ns("plOpt_inclAbsNum"), "Show absolute numbers by arm", TRUE),
+            if (mtype==1) awesomeCheckbox(ns("plOpt_inclAbsNum"), "Show absolute numbers by arm", TRUE),
             fluidRow(
-              column(3, checkboxInput(ns("plOpt_printI2"), HTML("I<sup>2</sup>"), TRUE)),
-              column(3, checkboxInput(ns("plOpt_printQ"), "Q", FALSE)),
-              column(3, checkboxInput(ns("plOpt_printPval"), "p-value", TRUE)),
-              column(3, checkboxInput(ns("plOpt_printTau2"), "τ^2", FALSE))
+              column(3, awesomeCheckbox(ns("plOpt_printI2"), HTML("I<sup>2</sup>"), TRUE)),
+              column(3, awesomeCheckbox(ns("plOpt_printQ"), "Q", FALSE)),
+              column(3, awesomeCheckbox(ns("plOpt_printPval"), "p-value", TRUE)),
+              column(3, awesomeCheckbox(ns("plOpt_printTau2"), HTML("τ<sup>2</sup>"), FALSE))
             ),
-            checkboxInput(ns("plOpt_showWeights"), "Show weights", TRUE)
+            awesomeCheckbox(ns("plOpt_showWeights"), "Show weights", TRUE)
           )
         ),
-        checkboxInput(ns("plOpt_showFormattingOptions"), "Formatting options", FALSE),
+        prettySwitch(ns("plOpt_showFormattingOptions"), "Formatting options", FALSE, status="primary"),
         conditionalPanel(sprintf("input['%s']", ns("plOpt_showFormattingOptions")),
           wellPanel(
             fluidRow(
@@ -78,7 +79,7 @@ ui_mainPanel <- function(ns, mtype) {
             funnelOptsUi(ns)
           )
         ),
-        checkboxInput(ns("plOpt_showAdvancedOptions"), "Advanced options", FALSE),
+        prettySwitch(ns("plOpt_showAdvancedOptions"), "Advanced options", FALSE, status="primary"),
         conditionalPanel(sprintf("input['%s']", ns("plOpt_showAdvancedOptions")),
           wellPanel(
             textAreaInput(ns("plOpt_advParInput"), 

@@ -19,7 +19,7 @@ obsLoadDataUI <- function(id) {
               wellPanel(uiOutput(ns("msgpanel")))
     ),
     fluidRow(
-      column(6, checkboxInput(ns("autoSE"), "Auto-calculate SE", value=TRUE), offset=6)
+      column(6, awesomeCheckbox(ns("autoSE"), "Auto-calculate SE", value=TRUE), offset=6)
     )
   )
 }

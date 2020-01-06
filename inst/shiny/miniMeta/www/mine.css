@@ -40,3 +40,7 @@
 .dropdown-menu>li>span>label {
  font-weight:normal
 }
+
+.p-switch {
+ margin-top: 1em;
+}

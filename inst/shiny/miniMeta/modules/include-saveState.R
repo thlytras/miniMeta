@@ -51,7 +51,7 @@
         updateColourInput(session, n, value=state$color[[n]])
       }
       for (n in names(state$checkboxes)) {
-        updateCheckboxInput(session, n, value=state$checkboxes[[n]])
+        updateAwesomeCheckbox(session, n, value=state$checkboxes[[n]])
       }
     }
   }

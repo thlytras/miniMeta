@@ -9,14 +9,14 @@ rct_moduleUI <- function(id) {
     sidebarLayout(
       sidebarPanel(
         rctLoadDataUI(id = ns("loadData")),
-        checkboxInput(ns("showOptions"), "Show analysis options"),
+        prettySwitch(ns("showOptions"), "Show analysis options", status="primary"),
         conditionalPanel(sprintf("input['%s']", ns("showOptions")),
           wellPanel(
             fluidRow(
               column(6, ui_effectMeasure_select(ns)),
               column(6,
-                checkboxInput(ns("opt_combFixed"), "Use fixed-effects model", value=FALSE),
-                checkboxInput(ns("opt_combRandom"), "Use random-effects model", value=TRUE)
+                awesomeCheckbox(ns("opt_combFixed"), "Use fixed-effects model", value=FALSE),
+                awesomeCheckbox(ns("opt_combRandom"), "Use random-effects model", value=TRUE)
               )
             ),
             fluidRow(
@@ -30,7 +30,7 @@ rct_moduleUI <- function(id) {
                 selectInput(ns("opt_incr"), "Continuity correction for blank cells", c("TACC", "0.5"))
               ),
               column(6,
-                checkboxInput(ns("opt_hakn"), "Hartung and Knapp correction", value=FALSE)
+                awesomeCheckbox(ns("opt_hakn"), "Hartung and Knapp correction", value=FALSE)
               )
             )
           )

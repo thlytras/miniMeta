@@ -4,6 +4,7 @@ library(metafor)
 library(WriteXLS)
 library(miniMeta)
 library(colourpicker)
+library(shinyWidgets)
 
 
 shinyServer(function(input, output, session) {

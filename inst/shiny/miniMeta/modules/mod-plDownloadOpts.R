@@ -25,7 +25,7 @@ plDownloadOptsUI <- function(id) {
     ),
     fluidRow(
       column(6, actionButton(ns("setDefaultForestSize"), "Set default size")),
-      column(6, checkboxInput(ns("showDownloadOptionsMore"), "More options", FALSE))
+      column(6, prettySwitch(ns("showDownloadOptionsMore"), "More options", FALSE))
     )
   )
 }

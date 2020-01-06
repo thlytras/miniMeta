@@ -2,6 +2,7 @@ library(shiny)
 library(shinyjs)
 library(markdown)
 library(colourpicker)
+library(shinyWidgets)
 
 source("modules/mod-bucher.R")
 source("modules/mod-samplesize.R")

@@ -177,11 +177,11 @@
           selected = m$analysisOptions[[n]])
     }
     for (n in c("combFixed", "combRandom", "hakn")) {
-      updateCheckboxInput(session, paste0("opt_", n), 
+      updateAwesomeCheckbox(session, paste0("opt_", n), 
           value = m$analysisOptions[[n]])
     }
     for (n in c("inclAbsNum", "printI2", "printQ", "printPval", "printTau2")) {
-      updateCheckboxInput(session, paste0("plOpt_", n), 
+      updateAwesomeCheckbox(session, paste0("plOpt_", n), 
           value = m$plotOptions[[n]])
     }
     updateTextAreaInput(session, "plOpt_advParInput", value = m$plotOptions$advParInput)

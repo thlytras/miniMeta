@@ -1,4 +1,3 @@
-library(shinyWidgets)
 
 samplesize_moduleUI <- function(id) {
   ns <- NS(id)
@@ -34,9 +33,9 @@ samplesize_moduleUI <- function(id) {
         ))
       ),
       fluidRow(
-        column(8, helpText("If this is checked, \"Control group Event Rate\" represents a fixed population event rate and \"Intervention group\" represents that of the single-group study. The group size ratio setting is ignored."), br()),
-        column(1, icon("hand-point-right", "fa-2x"), style="padding-top: 0.6em"),
-        column(3, checkboxInput(ns("ois_kinf"), "Single-group study"))
+        column(7, helpText("If this is checked, \"Control group Event Rate\" represents a fixed population event rate and \"Intervention group\" represents that of the single-group study. The group size ratio setting is ignored."), br()),
+        column(1, icon("hand-point-right", "fa-2x"), style="padding-top: 10px"),
+        column(4, awesomeCheckbox(ns("ois_kinf"), "Single-group study"))
       )
     ),
     column(6, verbatimTextOutput(ns("ois_output")))
