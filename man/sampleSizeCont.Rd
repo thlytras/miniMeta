@@ -23,7 +23,7 @@ Set to infinity (\code{Inf}) in order to calculate sample size for a
 \emph{single-group study}, see details below.}
 }
 \value{
-Αn integer vector of length 2, with the sample sizes for the 
+An integer vector of length 2, with the sample sizes for the 
     control and intervention groups. 
 
     If \code{K=Inf}, then the sample size calculation is not for a study

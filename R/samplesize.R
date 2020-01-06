@@ -17,7 +17,7 @@
 #'     Set to infinity (\code{Inf}) in order to calculate sample size for a 
 #'     \emph{single-group study}, see details below.
 #'
-#' @return Αn integer vector of length 2, with the sample sizes for the 
+#' @return An integer vector of length 2, with the sample sizes for the 
 #'     control and intervention groups. 
 #'
 #'     If \code{K=Inf}, then the sample size calculation is not for a study
@@ -79,7 +79,7 @@ sampleSizeBin <- function(cer, RRR = 25, ier=NULL, a = 0.05, b = 0.2, K=1) {
 #'     Set to infinity (\code{Inf}) in order to calculate sample size for a 
 #'     \emph{single-group study}, see details below.
 #'
-#' @return Αn integer vector of length 2, with the sample sizes for the 
+#' @return An integer vector of length 2, with the sample sizes for the 
 #'     control and intervention groups. 
 #'
 #'     If \code{K=Inf}, then the sample size calculation is not for a study
