@@ -14,5 +14,6 @@ shinyServer(function(input, output, session) {
   stateEvent <- callModule(module = rct_module, id = "rctModule", stateEvent)  
   stateEvent <- callModule(module = obs_module, id = "obsModule", stateEvent)  
   callModule(module = bucher_module, id = "bucher")
+  callModule(module = samplesize_module, id = "samplesize")
   
 })

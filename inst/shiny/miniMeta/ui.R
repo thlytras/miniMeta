@@ -4,6 +4,7 @@ library(markdown)
 library(colourpicker)
 
 source("modules/mod-bucher.R")
+source("modules/mod-samplesize.R")
 source("modules/mod-rct.R")
 source("modules/mod-obs.R")
 
@@ -19,7 +20,8 @@ shinyUI(fluidPage(
     obs_moduleUI(id = "obsModule"),
     tabPanel("Tools", br(),
       tabsetPanel(
-        bucher_moduleUI(id = "bucher")
+        bucher_moduleUI(id = "bucher"),
+        samplesize_moduleUI(id = "samplesize")
       )
     )
   )
