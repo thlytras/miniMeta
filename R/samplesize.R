@@ -27,6 +27,8 @@
 #'     rate that it we anticipate. And the return value is a single value,
 #'     i.e. the sample size of the study.
 #'
+#' @importFrom stats qnorm
+#' 
 #' @examples
 #' # Sample size for a trial with 40\% control event rate and 1:1 randomization,
 #' # aiming to show a Relative Risk Reduction of 30\% with 80\% power.
