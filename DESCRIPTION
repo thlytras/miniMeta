@@ -1,7 +1,7 @@
 Package: miniMeta
 Type: Package
 Title: Web Application to Run Meta-Analyses
-Version: 0.0.1
+Version: 0.1
 Authors@R: 
     c(person(given="Theodore", family="Lytras", 
              email="thlytras@gmail.com", role=c("aut","cre"), 

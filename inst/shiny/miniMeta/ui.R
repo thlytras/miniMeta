@@ -14,8 +14,10 @@ source("modules/include-saveState-ui.R")
 
 shinyUI(fluidPage(
   saveState_header(),
-  titlePanel("miniMeta"),
-  span("A simple tool to run meta-analyses, with a focus on GRADE SoF tables"),
+  titlePanel(span(
+    img(src="logo-large.svg", style="height:3em; margin-right:1em;"),
+    div(span("A simple tool to run meta-analyses,"), br(), span("with a focus on GRADE SoF tables"), style="display:inline-block; font-size:50%;")
+  ), "miniMeta"),
   tabsetPanel(
     rct_moduleUI(id = "rctModule"),
     obs_moduleUI(id = "obsModule"),

@@ -2,7 +2,7 @@
 title: "Running meta-analyses with miniMeta"
 author: "Theodore Lytras \\<thlytras@gmail.com\\>"
 date: "`r Sys.Date()`"
-version: 0.0.1
+version: 0.1
 output: pdf_document
 vignette: >
   %\VignetteIndexEntry{miniMeta_manual}

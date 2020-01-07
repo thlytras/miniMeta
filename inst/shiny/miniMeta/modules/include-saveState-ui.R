@@ -20,7 +20,8 @@ saveState_header <- function() {
   tagList(
     tags$head(
       tags$script(src = "js/js.cookie.js"),
-      tags$link(rel = "stylesheet", type = "text/css", href = "mine.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "mine.css"),
+      tags$link(rel="shortcut icon", href="logo-small.png")
     ),
     useShinyjs(),
     extendShinyjs(text = jsCode, functions=c("getcookie","setcookie","rmcookie")),
