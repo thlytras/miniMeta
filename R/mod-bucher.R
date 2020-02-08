@@ -1,3 +1,11 @@
+#' UI function for the Bucher module
+#'
+#' @param id Module id
+#' 
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 bucher_moduleUI <- function(id) {
   ns <- NS(id)
   tabPanel("Bucher method",
@@ -26,6 +34,17 @@ bucher_moduleUI <- function(id) {
 }
 
 
+#' Server function for the Bucher module
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#' 
+#' @import shiny
+#' @importFrom stats qnorm
+#' 
+#' @keywords internal
+#' @noRd
 bucher_module <- function(input, output, session) {
 
     # REACTIVE: Output for Bucher method
@@ -54,12 +73,12 @@ bucher_module <- function(input, output, session) {
           abs(diff(eff["BC", c("lo","hi")]))/(2*qnorm(0.975))),
         sprintf("\nPoint estimate, A vs B: %.3f", pool.eff),
         sprintf("Standard error, A vs B: %.3f", pool.sd),
-        sprintf("95%% Confidence Interval, A vs B: %.3f — %.3f", 
+        sprintf("95%% Confidence Interval, A vs B: %.3f \u2014 %.3f", 
           pool.eff-qnorm(0.975)*pool.sd, pool.eff+qnorm(0.975)*pool.sd),
         (if (input$buch_type=="exp") paste(
             "\nExponentiating:",
             sprintf("Point estimate, A vs B: %.2f", exp(pool.eff)),
-            sprintf("95%% Confidence Interval, A vs B: %.2f — %.2f",
+            sprintf("95%% Confidence Interval, A vs B: %.2f \u2014 %.2f",
               exp(pool.eff-qnorm(0.975)*pool.sd), exp(pool.eff+qnorm(0.975)*pool.sd)
             ), sep="\n") else ""), "")
       if (!symm.ac) output <- c(output, 

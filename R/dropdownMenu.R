@@ -1,3 +1,30 @@
+#' Dropdown menu Shiny UI control
+#'
+#' Creates a dropdown menu. The items correspond to \code{input} elements
+#' and can be used in \code{\link[shiny]{observeEvent}} blocks to trigger
+#' various actions
+#' 
+#' @param label Optional label for the dropdown menu
+#' @param icon Optional icon for the dropdown menu
+#' @param menu A named list of items. Each element can be either a simple
+#'     character vector, or a list with elements \code{label} and \code{icon}.
+#'     See example.
+#' @param style CSS passed to the enclosing \code{div}
+#' 
+#' @import shiny
+#'
+#' @examples
+#' \donttest{
+#' dropdownMenu(label = "Preferences", icon = icon("bars"), 
+#'   menu = list(
+#'     edit = "edit item", 
+#'     rename = list(label = "address", icon = icon("id-card"))
+#'   )
+#' )
+#' }
+#'
+#' @keywords internal
+#' @noRd
 dropdownMenu <- function(label=NULL, icon=NULL, menu=NULL, style=NULL) {
   ul <- lapply(names(menu), function(id) {
     if (is.character(menu[[id]])) {
@@ -27,7 +54,3 @@ dropdownMenu <- function(label=NULL, icon=NULL, menu=NULL, style=NULL) {
   )
 }
 
-# Here's an example:
-#dropdownMenu(label = "Preferences", icon = icon("bars"),
-#  menu = list(edit = "edit item", 
-#    rename = list(label = "address", icon = icon("id-card"))))

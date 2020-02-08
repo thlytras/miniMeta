@@ -1,8 +1,17 @@
-# UI for Observational studies module, split into separate file to limit size.
-# Called from mod-obs.R. All dependencies (other modules) are there.
-
+#' UI function for the Observational studies module 
+#'
+#' Note that the UI parts common with the RCT module
+#' have been split off into helper functions (with "ui_" prefix)
+#' found in the \code{components-modUniv-ui.R} script.
+#'
+#' @param id Module id
+#' 
+#' @import shiny
+#' @import shinyWidgets
+#' 
+#' @keywords internal
+#' @noRd
 obs_moduleUI <- function(id) {
-  source("modules/include-mod-univ-ui.R", local=TRUE)
   ns <- NS(id)
   tabPanel("Observational studies module",
     ui_importer(ns),

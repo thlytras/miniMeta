@@ -7,9 +7,10 @@
 #'
 #' @export
 miniMeta <- function() {
-  appDir <- system.file("shiny", "miniMeta", package = "miniMeta")
+  appDir <- system.file("shiny", "www", package = "miniMeta")
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `miniMeta`.", call. = FALSE)
   }
-  shiny::runApp(appDir, display.mode = "normal")
+  addResourcePath("www", appDir)
+  shinyApp(ui = miniMetaUI(), server = miniMetaServer)#, display.mode = "normal")
 }

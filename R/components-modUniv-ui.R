@@ -1,6 +1,24 @@
-source("modules/miniFileInput.R")
-source("modules/dropdownMenu.R")
+#' Common UI component functions for RCT and observational modules
+#'
+#' These helper functions are directly called from the UI functions 
+#' of the RCT and observational modules, and encode their common 
+#' functionality, in order to avoid all code duplication.
+#' 
+#' @param ns Namespace id of the calling module
+#' @param mtype Type of the module; 1 for RCT, 2 for observational
+#' 
+#' @importFrom colourpicker colourInput
+#' @import shinyWidgets
+#'
+#' @name components-modUniv-ui
+#'
+#' @keywords internal
+#' @noRd
+NULL
 
+
+#' @rdname components-modUniv-ui
+#' @noRd
 ui_importer <- function(ns) {
   prefMenu <- list(
     list(label="Save settings to browser", icon=icon("cloud-upload")),
@@ -20,6 +38,8 @@ ui_importer <- function(ns) {
 }
 
 
+#' @rdname components-modUniv-ui
+#' @noRd
 ui_heterogeneity_select <- function(ns) {
   selectInput(ns("opt_methodTau"), "Heterogeneity estimator", 
     c("DerSimonian-Laird"="DL", "Paule-Mandel"="PM", 
@@ -29,6 +49,8 @@ ui_heterogeneity_select <- function(ns) {
 }
 
 
+#' @rdname components-modUniv-ui
+#' @noRd
 ui_effectMeasure_select <- function(ns) {
   selectInput(ns("opt_sm"), "Effect measure",
             c("Relative Risk"="RR", "Odds Ratio"="OR", "Risk Difference"="RD", 
@@ -36,6 +58,8 @@ ui_effectMeasure_select <- function(ns) {
 }
 
 
+#' @rdname components-modUniv-ui
+#' @noRd
 ui_mainPanel <- function(ns, mtype) {
   mainPanel(
     tabsetPanel(
@@ -63,7 +87,7 @@ ui_mainPanel <- function(ns, mtype) {
               column(3, awesomeCheckbox(ns("plOpt_printI2"), HTML("I<sup>2</sup>"), TRUE)),
               column(3, awesomeCheckbox(ns("plOpt_printQ"), "Q", FALSE)),
               column(3, awesomeCheckbox(ns("plOpt_printPval"), "p-value", TRUE)),
-              column(3, awesomeCheckbox(ns("plOpt_printTau2"), HTML("τ<sup>2</sup>"), FALSE))
+              column(3, awesomeCheckbox(ns("plOpt_printTau2"), HTML("\u03c4<sup>2</sup>"), FALSE))
             ),
             awesomeCheckbox(ns("plOpt_showWeights"), "Show weights", TRUE)
           )
@@ -72,9 +96,9 @@ ui_mainPanel <- function(ns, mtype) {
         conditionalPanel(sprintf("input['%s']", ns("plOpt_showFormattingOptions")),
           wellPanel(
             fluidRow(
-              column(4, colourInput(ns("plOpt_barCol"), "Study bar colour", "#000000")),
-              column(4, colourInput(ns("plOpt_sqCol"), "Weight square colour", "#BEBEBE")),
-              column(4, colourInput(ns("plOpt_diamCol"), "Diamond colour", "#000000"))
+              column(4, colourpicker::colourInput(ns("plOpt_barCol"), "Study bar colour", "#000000")),
+              column(4, colourpicker::colourInput(ns("plOpt_sqCol"), "Weight square colour", "#BEBEBE")),
+              column(4, colourpicker::colourInput(ns("plOpt_diamCol"), "Diamond colour", "#000000"))
             ),
             funnelOptsUi(ns)
           )
@@ -97,7 +121,7 @@ ui_mainPanel <- function(ns, mtype) {
         funnelTabUI(id = ns("funnel")),
         if (mtype==1) funnelTabUI(id = ns("labbe"))
       ),
-      tabPanel("Help", includeMarkdown("helptext.md"))
+      tabPanel("Help", includeMarkdown(system.file("shiny", "helptext.md", package = "miniMeta")))
     ), width=6
   )
 }

@@ -1,3 +1,28 @@
+#' miniMeta server code to handle state
+#' 
+#' This function is NOT called internally; its body (the code) is 
+#' \code{\link[base]{eval}}uated inside the main miniMeta server 
+#' function \code{\link{miniMetaServer}}. 
+#' 
+#' The code contains server functions to implement the saving and
+#' loading of state, on browser cookies or on files. The UI counterpart
+#' of this is in function \code{\link{saveState_header}} 
+#' in script \code{miniMetaUI.R}
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#' @param stateEvent A reactiveVal that signals events to save/load state 
+#'     from the modules
+#'
+#' @importFrom shinyjs runjs delay js
+#' @importFrom colourpicker updateColourInput
+#' @importFrom utils URLdecode URLencode
+#' @importFrom jsonlite base64_enc base64_dec
+#'
+#' @keywords internal
+#' @noRd
+include_saveState_serverCode <- function(input, output, session, stateEvent) {
 
   getState <- function(encode=TRUE) {
     combine <- function(...) {
@@ -48,7 +73,7 @@
         updateSelectInput(session, n, selected=state$select[[n]])
       }
       for (n in names(state$color)) {
-        updateColourInput(session, n, value=state$color[[n]])
+        colourpicker::updateColourInput(session, n, value=state$color[[n]])
       }
       for (n in names(state$checkboxes)) {
         updateAwesomeCheckbox(session, n, value=state$checkboxes[[n]])
@@ -69,7 +94,7 @@
 
   values <- reactiveValues(cookie = NULL)
 
-  delay(10, {
+  shinyjs::delay(10, {
     js$getcookie()
     cookie <- input$jscookie
     if (is.null(cookie) || cookie!="") {
@@ -88,7 +113,7 @@
     }
   })
   
-  delay(100, {
+  shinyjs::delay(100, {
     if (is.null(values$cookie)) {
       js$getcookie()
       cookie <- input$jscookie
@@ -99,7 +124,7 @@
     }
   })
 
-  delay(1000, {
+  shinyjs::delay(1000, {
     if (is.null(values$cookie)) {
       js$getcookie()
       cookie <- input$jscookie
@@ -173,3 +198,7 @@
       showNotification("Restored miniMeta settings from file.", type="message", duration=3)
     }
   }, ignoreInit=TRUE)
+
+  
+}
+

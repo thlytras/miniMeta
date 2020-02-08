@@ -1,7 +1,16 @@
-library(rhandsontable)
-library(readxl)
-
-
+#' UI function for the "RCTs load data" module
+#'
+#' This module is called from the RCT module, 
+#' and handles saving/loading of data used for the meta-analysis
+#' either from a rhandsontable table, or from/to an Excel file
+#'
+#' @param id Module id
+#' 
+#' @import rhandsontable
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 rctLoadDataUI <- function(id) {
   ns <- NS(id)
   tagList(
@@ -19,6 +28,23 @@ rctLoadDataUI <- function(id) {
 }
 
 
+#' Server function for the "RCTs load data" module
+#'
+#' This module is called from the RCT module, 
+#' and handles saving/loading of data used for the meta-analysis
+#' either from a rhandsontable table, or from/to an Excel file
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#' 
+#' @import rhandsontable
+#' @import readxl
+#' @import WriteXLS
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 rctLoadData <- function(input, output, session, dataset = NULL) {
 
   # Helper function
@@ -45,7 +71,7 @@ rctLoadData <- function(input, output, session, dataset = NULL) {
   }
 
   # Load some data in advance!
-  rctsDAT <- as.data.frame(read_excel("examples/RCTs-template.xls"), stringsAsFactors=FALSE)
+  rctsDAT <- as.data.frame(read_excel(system.file("shiny", "examples", "RCTs-template.xls", package = "miniMeta")), stringsAsFactors=FALSE)
   rctsDAT$group <- ""
   names(rctsDAT) <- c("Study", "events.Intervention", "N.Intervention", "events.Control", "N.Control", "Group")
 

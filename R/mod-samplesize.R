@@ -1,4 +1,11 @@
-
+#' UI function for the sample size calculation module
+#'
+#' @param id Module id
+#' 
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 samplesize_moduleUI <- function(id) {
   ns <- NS(id)
   tabPanel("Optimal sample size",
@@ -44,6 +51,16 @@ samplesize_moduleUI <- function(id) {
 }
 
 
+#' Server function for the sample size calculation module
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#' 
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 samplesize_module <- function(input, output, session) {
 
   Kmatrix <- c(1/5, 1/4, 1/3, 1/2, 1:5)

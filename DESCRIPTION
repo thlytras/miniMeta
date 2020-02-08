@@ -1,14 +1,15 @@
 Package: miniMeta
 Type: Package
 Title: Web Application to Run Meta-Analyses
-Version: 0.1
+Version: 0.2
 Authors@R: 
     c(person(given="Theodore", family="Lytras", 
              email="thlytras@gmail.com", role=c("aut","cre"), 
              comment=c(ORCID="0000-0002-4146-4122")))
 Maintainer: Theodore Lytras <thlytras@gmail.com>
-Imports: shiny, metafor, readxl, rhandsontable, methods, stats, 
-    colourpicker, markdown, WriteXLS, shinyWidgets
+Imports: shiny, shinyjs, shinyWidgets, colourpicker, 
+    rhandsontable, metafor, markdown, WriteXLS, readxl, 
+    jsonlite, grDevices, methods, stats
 Depends: meta
 Description: Shiny web application to run meta-analyses. 
     Essentially a graphical front-end to package 'meta' for R. 

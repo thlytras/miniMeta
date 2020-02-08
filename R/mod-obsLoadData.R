@@ -1,7 +1,16 @@
-library(rhandsontable)
-library(readxl)
-
-
+#' UI function for the "observational studies load data" module
+#'
+#' This module is called from the observational studies module, 
+#' and handles saving/loading of data used for the meta-analysis
+#' either from a rhandsontable table, or from/to an Excel file
+#'
+#' @param id Module id
+#' 
+#' @import rhandsontable
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 obsLoadDataUI <- function(id) {
   ns <- NS(id)
   tagList(
@@ -25,6 +34,24 @@ obsLoadDataUI <- function(id) {
 }
 
 
+#' Server function for the "observational studies load data" module
+#'
+#' This module is called from the observational studies module, 
+#' and handles saving/loading of data used for the meta-analysis
+#' either from a rhandsontable table, or from/to an Excel file
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#' 
+#' @import rhandsontable
+#' @import readxl
+#' @import WriteXLS
+#' @importFrom stats qnorm
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRUE) {
 
   # Helper function
@@ -70,7 +97,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
   }
 
   # Load some data in advance!
-  obsDAT <- formatObsDat(as.data.frame(read_excel("examples/obs-template.xls"), stringsAsFactors=FALSE), log=TRUE)
+  obsDAT <- formatObsDat(as.data.frame(read_excel(system.file("shiny", "examples", "obs-template.xls", package = "miniMeta")), stringsAsFactors=FALSE), log=TRUE)
 
   values <- reactiveValues(
     obsDAT = obsDAT,

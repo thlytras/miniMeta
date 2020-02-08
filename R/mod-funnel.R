@@ -1,19 +1,11 @@
-funnelOptsUi <- function(ns) {
-  tagList(
-    fluidRow(
-      column(6, 
-        awesomeCheckbox(ns("funOpt_showStudlab"), "Funnel plot: show study labels", FALSE),
-        selectInput(ns("funOpt_posStudlab"), "Funnel plot: study label position",
-          c("Top"=3, "Bottom"=1, "Left"=2, "Right"="4"))
-      ),
-      column(6, 
-        colourInput(ns("funOpt_ptCol"), "Funnel plot: color for points", "#A9A9A9")
-      )
-    )
-  )
-}
-
-
+#' UI function for the funnel tab module
+#'
+#' @param id Module id
+#' 
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 funnelTabUI <- function(id) {
   ns <- NS(id)
   tagList(
@@ -30,6 +22,18 @@ funnelTabUI <- function(id) {
 }
 
 
+#' Server function for the funnel tab module
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#' 
+#' @import shiny
+#' @import meta
+#' @importFrom grDevices dev.off
+#' 
+#' @keywords internal
+#' @noRd
 funnelTab <- function(input, output, session, meta, options, labbe=FALSE) {
 
   piformat <- function (x, html = FALSE) {
@@ -96,4 +100,33 @@ funnelTab <- function(input, output, session, meta, options, labbe=FALSE) {
     }
   })
   
+}
+
+
+#' Helper UI function to draw options controlling the funnel plot
+#'
+#' This is called from the RCT and observational studies modules, 
+#' separately from the funnel tab module, to draw UI controls for 
+#' various funnel plot options. These are then passed towards the 
+#' funnel tab module.
+#'
+#' @param id Namespace id of the module that calls this function
+#' 
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
+funnelOptsUi <- function(ns) {
+  tagList(
+    fluidRow(
+      column(6, 
+        awesomeCheckbox(ns("funOpt_showStudlab"), "Funnel plot: show study labels", FALSE),
+        selectInput(ns("funOpt_posStudlab"), "Funnel plot: study label position",
+          c("Top"=3, "Bottom"=1, "Left"=2, "Right"="4"))
+      ),
+      column(6, 
+        colourpicker::colourInput(ns("funOpt_ptCol"), "Funnel plot: color for points", "#A9A9A9")
+      )
+    )
+  )
 }

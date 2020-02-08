@@ -1,13 +1,30 @@
-# Server functionality that is common between the 
-# RCT module and observational studies module.
-#
-# This file is sourced with local=TRUE inside both modules' server function.
-# It also uses a local variable named mtype, indicating the 
-# module type: mtype==1 for RCT, and mtype==2 for observational, 
-# to implement some module-specific differences.
-#
-# It can be thought of as the "guts" of the two modules...
-
+#' Common code between the RCT and observational modules
+#' 
+#' This function is NOT called internally; its body (the code) is 
+#' \code{\link[base]{eval}}uated inside the server functions of the 
+#' RCT and observational modules. It contains the code that is common
+#' between the two modules.
+#'
+#' The code uses a local variable \code{mtype} to adjust its behaviour, 
+#' which takes a value of 1 for the RCT module and 2 for the observational
+#' module. It also uses two reactive expressions \code{dat} and \code{chk},
+#' defined differently in each module, as well as a \code{stateEvent} 
+#' \code{\link[shiny]{reactiveVal}} used to signal saving/loading of state.
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#' @param mtype 
+#' @param dat 
+#' @param chk 
+#' @param stateEvent 
+#'
+#' @importFrom methods formalArgs
+#' @import shiny
+#'
+#' @keywords internal
+#' @noRd
+include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, stateEvent) {
 
   # List of forest.meta() arguments, excluding some that we don't want the user to touch
   forest_args <- formalArgs("forest.meta")
@@ -267,3 +284,5 @@
     stateEvent("saveFile")
   })
 
+
+}

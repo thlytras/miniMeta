@@ -1,8 +1,17 @@
-# UI for RCT module, split into separate file to limit size.
-# Called from mod-rct.R. All dependencies (other modules) are there.
-
+#' UI function for the RCT module 
+#'
+#' Note that the UI parts common with the observational studies module
+#' have been split off into helper functions (with "ui_" prefix)
+#' found in the \code{components-modUniv-ui.R} script.
+#'
+#' @param id Module id
+#' 
+#' @import shiny
+#' @import shinyWidgets
+#' 
+#' @keywords internal
+#' @noRd
 rct_moduleUI <- function(id) {
-  source("modules/include-mod-univ-ui.R", local=TRUE)
   ns <- NS(id)
   tabPanel("RCT module",
     ui_importer(ns),

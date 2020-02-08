@@ -1,3 +1,15 @@
+#' UI function for the "plot download options" module
+#'
+#' The plot download options module is used in the RCT and observational
+#' studies modules, to adjust the device options used when downloading
+#' forest plots and other plots (funnel, labbe)
+#'
+#' @param id Module id
+#' 
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 plDownloadOptsUI <- function(id) {
   ns <- NS(id)
   wellPanel(
@@ -31,6 +43,22 @@ plDownloadOptsUI <- function(id) {
 }
 
 
+#' Server function for the "plot download options" module
+#'
+#' The plot download options module is used in the RCT and observational
+#' studies modules, to adjust the device options used when downloading
+#' forest plots and other plots (funnel, labbe)
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#' @param setOpts A reactiveValues object used for "messaging" the module
+#'     and sending it options to use.
+#' 
+#' @import shiny
+#' 
+#' @keywords internal
+#' @noRd
 plDownloadOpts <- function(input, output, session, setOpts) {
 
   res <- reactiveValues(fileType=NULL, width=NULL, height=NULL, pointsize=NULL,

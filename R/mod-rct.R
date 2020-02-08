@@ -1,23 +1,28 @@
-library(miniMeta)
-library(meta)
-library(metafor)
-library(colourpicker)
-
-# Load required modules
-source("modules/mod-rctLoadData.R")
-source("modules/mod-plDownloadOpts.R")
-source("modules/mod-funnel.R")
-
-# Load the UI of this module from separate file
-source("modules/mod-rct-ui.R")
-
-# Server logic of the module follows
+#' Server function for the observational studies module
+#'
+#' Note that the part of the code that is common with the RCT module
+#' has been split off into the \code{\link{include_modUniv_serverCode}}
+#' function, whose body is \code{\link[base]{eval}}uated into the 
+#' module's server function.
+#'
+#' @param input Shiny input parameter
+#' @param output Shiny output parameter
+#' @param session Shiny session object
+#'
+#' @seealso \code{\link{include_modUniv_serverCode}}
+#'
+#' @import shiny
+#' @import meta
+#' 
+#' @keywords internal
+#' @noRd
 rct_module <- function(input, output, session, stateEvent) {
 
   mtype <- 1   # This is an RCT module
 
-  # Import the "guts" of the module
-  source("modules/include-mod-univ.R", local=TRUE)
+  # Import the "guts" of the module; but first, declare objects defined there
+  values <- funnelOptions <- NULL
+  eval(body(include_modUniv_serverCode))
   
   dat <- callModule(module = rctLoadData, id="loadData", 
         dataset = reactive(values$dataset))
@@ -58,10 +63,12 @@ rct_module <- function(input, output, session, stateEvent) {
       } else {
         byVar <- NULL
       }
-      return(metabin(e.e, n.e, e.c, n.c, data=dat(), studlab=Study, 
-        method=input$opt_method, method.tau=input$opt_methodTau,
-        comb.fixed=input$opt_combFixed, comb.random=input$opt_combRandom,
-        byvar=byVar, incr=optIncr, sm=input$opt_sm, hakn=input$opt_hakn
+      return(with(dat(), 
+        metabin(e.e, n.e, e.c, n.c, data=dat(), studlab=Study, 
+          method=input$opt_method, method.tau=input$opt_methodTau,
+          comb.fixed=input$opt_combFixed, comb.random=input$opt_combRandom,
+          byvar=byVar, incr=optIncr, sm=input$opt_sm, hakn=input$opt_hakn
+        )
       ))
     }
   })
@@ -95,17 +102,17 @@ rct_module <- function(input, output, session, stateEvent) {
     uR <- sum(dat[,3])*1000/sum(dat[,4])
     if (m$sm=="RR") {
         eR <- lim(uR * exp(ef))
-        effM <- sprintf("RR, %.2f (%.2f – %.2f)", exp(ef[1]), exp(ef[2]), exp(ef[3]))
+        effM <- sprintf("RR, %.2f (%.2f \u2014 %.2f)", exp(ef[1]), exp(ef[2]), exp(ef[3]))
     } else if (m$sm=="OR") {
         ORtoP <- function(o) o / (o+1)
         eR <- lim(ORtoP(uR/(1000-uR) * exp(ef))*1000)
-        effM <- sprintf("OR, %.2f (%.2f – %.2f)", exp(ef[1]), exp(ef[2]), exp(ef[3]))
+        effM <- sprintf("OR, %.2f (%.2f \u2014 %.2f)", exp(ef[1]), exp(ef[2]), exp(ef[3]))
     } else if (m$sm=="RD") {
         eR <- lim(uR + ef*1000)
-        effM <- sprintf("RD, %.2f (%.2f – %.2f)", ef[1], ef[2], ef[3])
+        effM <- sprintf("RD, %.2f (%.2f \u2014 %.2f)", ef[1], ef[2], ef[3])
     } else { # Arcsine risk difference
         eR <- (sin(asin(sqrt(uR/1000)) + ef)^2)*1000
-        effM <- sprintf("ASD, %.2f (%.2f – %.2f)", ef[1], ef[2], ef[3])
+        effM <- sprintf("ASD, %.2f (%.2f \u2014 %.2f)", ef[1], ef[2], ef[3])
     }
     rdI <- eR-uR; rdI[2:3] <- rdI[2:3][order(abs(rdI[2:3]))]  
     sg <- function(x) sprintf("%.0f %s", abs(x), c("fewer", "more")[as.integer(x>=0)+1])
