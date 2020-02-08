@@ -27,7 +27,7 @@
 include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, stateEvent) {
 
   # List of forest.meta() arguments, excluding some that we don't want the user to touch
-  forest_args <- formalArgs("forest.meta")
+  forest_args <- formalArgs(meta::forest.meta)
   forest_args <- forest_args[!(forest_args %in% 
     c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
 

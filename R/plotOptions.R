@@ -46,7 +46,7 @@ plotOptions <- function(x) {
   res$fileType <- res$width <- res$height <- res$pointsize <- res$res <- NULL
   adv <- parseArguments(res$advParInput)
   res$advParInput <- NULL
-  forest_args <- formalArgs("forest.meta")
+  forest_args <- formalArgs(meta::forest.meta)
   forest_args <- forest_args[!(forest_args %in% 
       c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
   if (class(adv)!="try-error" && length(adv)>0) {
