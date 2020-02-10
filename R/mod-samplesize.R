@@ -8,7 +8,7 @@
 #' @noRd
 samplesize_moduleUI <- function(id) {
   ns <- NS(id)
-  tabPanel("Optimal sample size",
+  tabPanel("Optimal Information Size",
     h4("Sample size calculator, for binary and continuous outcomes"),
     fluidRow(
     column(6,

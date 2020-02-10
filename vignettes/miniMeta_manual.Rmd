@@ -16,7 +16,7 @@ vignette: >
 is a [shiny](https://shiny.rstudio.com/) web application that makes 
 it easy to run meta-analyses, without having any familiarity with R 
 and its console. 
-It is intended for use by non-statistical colleagues, or as educational tool.
+It is intended for use by non-statistical colleagues, or as educational tool. It is also intended to help guideline developers using the GRADE framework (Grading of Recommendations, Assessment, Development and Evaluations) combine evidence and quickly fill their SoF (Summary of Findings) tables.
 
 miniMeta can be run locally from an R installation, or fully online 
 from a shiny server. It provides a "live" web interface where the 
@@ -62,6 +62,16 @@ miniMeta()
 
 This will run miniMeta in a new browser window.
 
+To install in a Shiny server for running over a network, first install the 
+miniMeta R package, and then create an `app.R` file with just the following
+line:
+
+```{r, eval=FALSE, echo=TRUE}
+miniMeta::miniMeta()
+```
+
+Put it in the appropriate place on your webserver (e.g. nginx), and off you go.
+
 
 # Using miniMeta
 
@@ -69,9 +79,8 @@ At the top of the miniMeta window, there are three tabs named "RCT module",
 "Observational studies module" and "Tools" respectively. 
 Click one of the first two if you want to run a meta-analysis of 
 Randomized Controlled Trials (RCTs) or observational studies. 
-In the "Tools" tab there is a suite of small tools
-(currently just one, for making adjusted indirect comparisons) 
-with which to perform various associated calculations.
+In the "Tools" tab there is a suite of small tools with 
+which to perform various associated calculations.
 
 
 ## Randomized Controlled Trials (RCT) module
@@ -256,8 +265,11 @@ applicable to observational studies.
 
 At the "Tools" tab, a suite of small additional tools can be found that are 
 useful when performing a meta-analysis. 
-Currently this contains just one tool that implements the Bucher method for 
-adjusted indirect comparisons.
+Currently this contains just two tools: one that implements the 
+Bucher method for adjusted indirect comparisons, and one that makes 
+optimal information size (OIS) calculations (see the
+[GRADE handbook](https://gdt.gradepro.org/app/handbook/handbook.html#h.ygojbnr1bi5y)
+for details). 
 
 ### Bucher method tool
 
@@ -266,9 +278,23 @@ It utilizes two _pooled_ effect measures, comparing two outcomes against a
 common third outcome (outcome A vs outcome C, and outcome B vs outcome C).
 Then a comparison of A vs B can be performed by taking the _difference_ 
 of the two effect point estimates, and the _sum_ of their variances 
-(squared standard errors). Just fill in the point estimate and 95% CI 
+(squared standard errors). Fill in the point estimate and 95% CI 
 lower/upper limits for the two pooled effect estimates (A vs C, and B vs C), 
 and the results will appear on the right side of the miniMeta window.
+
+### Optimal Information Size calculator
+
+Fill in the appropriate information on the left side, 
+depending on whether the study under 
+consideration uses a binary or a continuous outcome. For a binary outcome,
+one needs to provide anticipated event rates for the control and 
+intervention groups, or a control group event rate and a 
+Relative Risk reduction (RRR, %). 
+For a continuous outcome, the anticipated mean difference and 
+standard deviation must be provided. In both cases, one can adjust the 
+type I error rate (alpha), the power (1 - beta) and the group size ratio;
+defaults are alpha = 0.05, power = 80% and n1/n2 = 1. 
+Results appear on the right side.
 
 
 # Other miniMeta features
@@ -293,4 +319,29 @@ Such a script contains (a) the data, (b) the command to run the meta-analysis,
 and (c) the command to make the forest plot. It allows you to reproduce the 
 meta-analysis, or extend it further into more complex analyses.
 
+
+## Settings storage/retrieval
+
+In the RCT and observational studies module, at the top right corner 
+there is a "Settings" button that shows a dropdown menu when clicked.
+This can be used to store **all** options set 
+(in both modules, both analysis and plot options), 
+so that they can be used again when working with the same computer,
+or so that they can be shared with a colleague who works on the same project.
+
+The settings can be stored in two places; either in the browser, using a 
+cookie (cookies must be enabled for this to work), or in an RDS file.
+Click "Save settings to file" or "Load settings from file" in the menu to 
+save settings into / load settings from and an RDS file. Note that this is 
+not the same RDS file used when exporting/importing a meta-analysis; instead
+of a 'miniMeta' class object, these files contain a list of all the settings.
+
+In similar fashion, click "Save settings to browser" to store the settings
+in a browser cookie. A confirmatory message "Stored miniMeta settings in 
+browser" appears for a few seconds. When launching miniMeta in the future, 
+these settings will automatically be loaded, with a confirmatory message
+"Restored miniMeta settings from browser" appearing again on the top right corner.
+If altered, they can be loaded again manually out of the stored browser cookie by
+clicking "Load settings from browser". Click "Clear settings from browser"
+to remove the cookie from your browser.
 
