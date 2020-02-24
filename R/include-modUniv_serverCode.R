@@ -201,6 +201,10 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
       updateAwesomeCheckbox(session, paste0("plOpt_", n), 
           value = m$plotOptions[[n]])
     }
+    for (n in c("barCol", "sqCol", "diamCol")) {
+      colourpicker::updateColourInput(session, paste0("plOpt_", n), 
+          value = m$plotOptions[[n]])
+    }
     updateTextAreaInput(session, "plOpt_advParInput", value = m$plotOptions$advParInput)
     for (n in except(names(plOpt_downloadOpts), "trigger")) {
       plOpt_downloadOpts[[n]] <- m$plotOptions[[n]]
