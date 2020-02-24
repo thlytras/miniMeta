@@ -15,3 +15,8 @@ is.miniMeta(x)
 \description{
 This function checks whether this is a valid miniMeta object
 }
+\examples{
+is.miniMeta(example_miniMeta_obs) # returns TRUE
+is.miniMeta(example_miniMeta_rct) # returns TRUE
+
+}

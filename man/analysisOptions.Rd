@@ -23,3 +23,9 @@ A named list of arguments corresponding to the arguments of
 This function returns the analytical options stored in a miniMeta object,
 as a named list of arguments, for further processing.
 }
+\examples{
+\donttest{
+analysisOptions(example_miniMeta_rct)
+}
+
+}

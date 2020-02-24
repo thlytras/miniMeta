@@ -2,12 +2,15 @@
 #'
 #' Read a comma-separated list of arguments (as a character string), 
 #' parse them, and return as a named R list. This function is used in
-#' miniMeta to parse arguments for forest.meta() given as a string.
+#' miniMeta to parse arguments for forest.meta() when given as a string.
 #'
 #' @param x A character vector (of length one) containing the arguments.
 #'     All should be named.
 #'
 #' @return A named list of arguments, or an object of class "try-error" on failure.
+#'
+#' @examples
+#' parseArguments('col.diamond="red", sm="RR", comb.fixed=FALSE')
 #'
 #' @export
 parseArguments <- function(x) {

@@ -17,3 +17,8 @@ of Randomized Controlled Trials (RCTs), \code{FALSE} if it is not.
 This function checks whether this is a valid miniMeta object holding a
 a meta-analysis of Randomized Controlled Trials (RCTs).
 }
+\examples{
+is.miniMeta.rct(example_miniMeta_obs) # returns FALSE
+is.miniMeta.rct(example_miniMeta_rct) # returns TRUE
+
+}

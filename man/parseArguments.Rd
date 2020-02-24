@@ -16,5 +16,9 @@ A named list of arguments, or an object of class "try-error" on failure.
 \description{
 Read a comma-separated list of arguments (as a character string), 
 parse them, and return as a named R list. This function is used in
-miniMeta to parse arguments for forest.meta() given as a string.
+miniMeta to parse arguments for forest.meta() when given as a string.
+}
+\examples{
+parseArguments('col.diamond="red", sm="RR", comb.fixed=FALSE')
+
 }

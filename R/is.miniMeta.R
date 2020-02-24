@@ -7,6 +7,10 @@
 #' @return \code{TRUE} if it is a valid miniMeta object, \code{FALSE} if it is not.
 #'
 #' @import meta
+#' 
+#' @examples
+#' is.miniMeta(example_miniMeta_obs) # returns TRUE
+#' is.miniMeta(example_miniMeta_rct) # returns TRUE
 #'
 #' @export
 is.miniMeta <- function(x) {
@@ -29,6 +33,10 @@ is.miniMeta <- function(x) {
 #' of Randomized Controlled Trials (RCTs), \code{FALSE} if it is not.
 #'
 #' @import meta
+#' 
+#' @examples
+#' is.miniMeta.rct(example_miniMeta_obs) # returns FALSE
+#' is.miniMeta.rct(example_miniMeta_rct) # returns TRUE
 #'
 #' @export
 is.miniMeta.rct <- function(x) {
@@ -38,7 +46,7 @@ is.miniMeta.rct <- function(x) {
 }
 
 
-#' Is this a miniMeta object for RCTs?
+#' Is this a miniMeta object for observational studies?
 #'
 #' This function checks whether this is a valid miniMeta object holding a
 #' a meta-analysis of observational studies.
@@ -49,6 +57,10 @@ is.miniMeta.rct <- function(x) {
 #' of observational studies, \code{FALSE} if it is not.
 #'
 #' @import meta
+#' 
+#' @examples
+#' is.miniMeta.obs(example_miniMeta_obs) # returns TRUE
+#' is.miniMeta.obs(example_miniMeta_rct) # returns FALSE
 #'
 #' @export
 is.miniMeta.obs <- function(x) {

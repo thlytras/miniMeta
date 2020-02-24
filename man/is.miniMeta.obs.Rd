@@ -2,7 +2,7 @@
 % Please edit documentation in R/is.miniMeta.R
 \name{is.miniMeta.obs}
 \alias{is.miniMeta.obs}
-\title{Is this a miniMeta object for RCTs?}
+\title{Is this a miniMeta object for observational studies?}
 \usage{
 is.miniMeta.obs(x)
 }
@@ -16,4 +16,9 @@ of observational studies, \code{FALSE} if it is not.
 \description{
 This function checks whether this is a valid miniMeta object holding a
 a meta-analysis of observational studies.
+}
+\examples{
+is.miniMeta.obs(example_miniMeta_obs) # returns TRUE
+is.miniMeta.obs(example_miniMeta_rct) # returns FALSE
+
 }

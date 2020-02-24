@@ -10,13 +10,14 @@ Maintainer: Theodore Lytras <thlytras@gmail.com>
 Imports: shiny, shinyjs, shinyWidgets, colourpicker, 
     rhandsontable, metafor, markdown, WriteXLS, readxl, 
     jsonlite, grDevices, methods, stats
-Depends: meta
+Depends: meta, R (>= 2.10.0)
 Description: Shiny web application to run meta-analyses. 
     Essentially a graphical front-end to package 'meta' for R. 
     Can be useful as an educational tool, and for quickly 
     analyzing and sharing meta-analyses. 
-    Provides output to quickly fill in GRADE summary-of-findings 
-    tables. 
+    Provides output to quickly fill in GRADE (Grading of 
+    Recommendations, Assessment, Development and Evaluations)
+    Summary-of-Findings tables. 
     Importantly, it allows further processing of the results 
     inside R, in case more specific analyses are needed.
 License: GPL (>=2)

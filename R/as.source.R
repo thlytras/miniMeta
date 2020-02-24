@@ -11,6 +11,12 @@
 #' loads the data, runs the meta-analysis, and plots a forest plot. 
 #' You can save this in a text file using \code{\link[base]{writeLines}}.
 #'
+#' @examples
+#' \donttest{
+#' # Writes the miniMeta analysis to an R script named 'my_analysis.R'
+#' writeLines(as.source(example_miniMeta_rct), "my_analysis.R")
+#' }
+#'
 #' @export
 as.source <- function(x) {
   if (!is.miniMeta(x)) stop("`x` should be a miniMeta object")

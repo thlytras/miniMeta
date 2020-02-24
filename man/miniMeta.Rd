@@ -9,3 +9,9 @@ miniMeta()
 \description{
 This function lanuches miniMeta in your browser
 }
+\examples{
+\donttest{
+miniMeta()
+}
+
+}

@@ -20,3 +20,10 @@ This provides a basis for further processing the results exported
 from miniMeta, using R code, in order to perform more elaborate or
 more specific analyses.
 }
+\examples{
+\donttest{
+# Writes the miniMeta analysis to an R script named 'my_analysis.R'
+writeLines(as.source(example_miniMeta_rct), "my_analysis.R")
+}
+
+}

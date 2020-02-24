@@ -16,12 +16,18 @@ A named list of arguments corresponding to the arguments of
 \description{
 This function returns the forest plot options stored in a miniMeta 
 object, as a named list of arguments, for further processing.
+This allows finer control than directly plotting using the 
+\code{\link{forest.miniMeta}} method. See the example below.
 }
 \examples{
 \donttest{
-# m should be a miniMeta object
-fopts <- plotOptions(m)
-do.call(forest, c(x=m, fopts))
+# Extract the plot options from the miniMeta object
+plot_opts <- plotOptions(example_miniMeta_obs)
+# Call directly the forest.meta method, with all plot options
+do.call(forest, c(x=list(example_miniMeta_obs$meta), plot_opts))
+
+# Equivalently, call the forest.miniMeta method directly
+forest(example_miniMeta_obs)
 }
 
 }

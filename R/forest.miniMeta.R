@@ -9,6 +9,11 @@
 #' @return NULL
 #'
 #' @importFrom meta forest.meta
+#'
+#' @examples
+#' \donttest{
+#' forest(example_miniMeta_obs)
+#' }
 #' 
 #' @export
 forest.miniMeta <- function(x, ...) {

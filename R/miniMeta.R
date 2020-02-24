@@ -5,6 +5,11 @@
 #' @import shiny
 #' @import meta
 #'
+#' @examples
+#' \donttest{
+#' miniMeta()
+#' }
+#'
 #' @export
 miniMeta <- function() {
   appDir <- system.file("shiny", "www", package = "miniMeta")
