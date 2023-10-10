@@ -10,7 +10,7 @@ miniMeta()
 This function lanuches miniMeta in your browser
 }
 \examples{
-\donttest{
+\dontrun{
 miniMeta()
 }
 

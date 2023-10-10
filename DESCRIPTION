@@ -1,7 +1,8 @@
 Package: miniMeta
 Type: Package
 Title: Web Application to Run Meta-Analyses
-Version: 0.2
+Version: 0.3
+Date: 2023-10-10
 Authors@R: 
     c(person(given="Theodore", family="Lytras", 
              email="thlytras@gmail.com", role=c("aut","cre"), 
@@ -10,7 +11,7 @@ Maintainer: Theodore Lytras <thlytras@gmail.com>
 Imports: shiny, shinyjs, shinyWidgets, colourpicker, 
     rhandsontable, metafor, markdown, WriteXLS, readxl, 
     jsonlite, grDevices, methods, stats
-Depends: meta, R (>= 2.10.0)
+Depends: meta (>= 7.0-0), R (>= 4.0.0)
 Description: Shiny web application to run meta-analyses. 
     Essentially a graphical front-end to package 'meta' for R. 
     Can be useful as an educational tool, and for quickly 
@@ -23,6 +24,6 @@ Description: Shiny web application to run meta-analyses.
 License: GPL (>=2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.2.3
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

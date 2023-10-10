@@ -5,3 +5,4 @@
 ^inst/shiny/miniMeta/rsconnect$
 ^doc$
 ^Meta$
+roxygen2.R

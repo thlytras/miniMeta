@@ -129,7 +129,7 @@ obsLoadData <- function(input, output, session, dataset = NULL, logMeasure = TRU
     if (is.null(input$obsLoadExcel)) return()
     inFile <- input$obsLoadExcel
     tempDat <- try(as.data.frame(read_excel(inFile$datapath), stringsAsFactors=FALSE), silent=TRUE)
-    if (length(tempDat)==1 && class(tempDat)=="try-error") {
+    if (inherits(tempDat, "try-error")) {
       showModal(modalDialog(title = "Whoops...", 
         "Error while trying to read this file.", br(), "Is it an actual Excel file?", 
         footer = modalButton("OK, got it"), size="s"))

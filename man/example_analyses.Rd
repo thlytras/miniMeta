@@ -6,7 +6,13 @@
 \alias{example_miniMeta_obs}
 \alias{example_miniMeta_rct}
 \title{Example miniMeta analyses}
-\format{Objects of class \code{miniMeta}}
+\format{
+Objects of class \code{miniMeta}
+
+An object of class \code{miniMeta} (inherits from \code{list}) of length 4.
+
+An object of class \code{miniMeta} (inherits from \code{list}) of length 4.
+}
 \usage{
 example_miniMeta_obs
 

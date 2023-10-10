@@ -16,8 +16,6 @@ Draws a forest plot for a miniMeta object using the options
 stored in the object
 }
 \examples{
-\donttest{
 forest(example_miniMeta_obs)
-}
 
 }

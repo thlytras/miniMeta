@@ -20,6 +20,9 @@
 #' @param stateEvent 
 #'
 #' @importFrom methods formalArgs
+#' 
+#' @importFrom meta .forestArgs
+#' 
 #' @import shiny
 #'
 #' @keywords internal
@@ -27,7 +30,7 @@
 include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, stateEvent) {
 
   # List of forest.meta() arguments, excluding some that we don't want the user to touch
-  forest_args <- formalArgs(meta::forest.meta)
+  forest_args <- .forestArgs()
   forest_args <- forest_args[!(forest_args %in% 
     c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
 
@@ -57,7 +60,7 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
       col.study = input$plOpt_barCol,
       col.square = input$plOpt_sqCol
     )
-    if (class(pltAdvOpt())!="try-error" && length(pltAdvOpt())>0) {
+    if (!inherits(pltAdvOpt(), "try-error") && length(pltAdvOpt())>0) {
       plOpts <- rev(c(plOpts, pltAdvOpt()))
       plOpts <- rev(plOpts[!duplicated(names(plOpts))])
     }
@@ -84,14 +87,15 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
   # REACTIVE: parse all advanced plot options
   pltAdvOpt <- reactive({
     res <- parseArguments(input$plOpt_advParInput)
-    if (class(res)!="try-error" && length(res)>0) {
+    if (!inherits(res, "try-error") && length(res)>0) {
       res <- res[names(res) %in% forest_args]
     }
     res
   })
   
   output$plOpt_advParOutput <- renderText({
-    if (class(pltAdvOpt())=="try-error") return(as.character(attr(pltAdvOpt(), "condition")))
+    if (inherits(pltAdvOpt(), "try-error"))
+      return(as.character(attr(pltAdvOpt(), "condition")))
     if (length(pltAdvOpt())==0) return("No extra parameters provided (or parameters unknown to forest.meta())")
     return(gsub("^list\\(|\\)$", "", deparse(pltAdvOpt())))
   })
@@ -159,7 +163,7 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
     inFile <- input$import
     m <- try(readRDS(inFile$datapath), silent=TRUE)
       # Has the file been read successfully?
-    if (length(m)==1 && class(m)=="try-error") {
+    if (inherits(m, "try-error")) {
       showModal(modalDialog(title = "Whoops...", 
         "Error while trying to read this file.", br(), "Is it an actual miniMeta file?", 
         footer = modalButton("OK, got it"), size="s"))

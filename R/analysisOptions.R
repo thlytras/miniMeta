@@ -15,9 +15,7 @@
 #' \code{\link[meta]{metagen}} or \code{\link[meta]{metabin}}.
 #'
 #' @examples
-#' \donttest{
 #' analysisOptions(example_miniMeta_rct)
-#' }
 #'
 #' @export
 analysisOptions <- function(x, data=FALSE) {
