@@ -185,7 +185,7 @@ include_saveState_serverCode <- function(input, output, session, stateEvent) {
     inFile <- input$loadStateFromFile
     state <- try(readRDS(inFile$datapath), silent=TRUE)
       # Has the file been read successfully?
-    if (length(state)==1 && class(state)=="try-error") {
+    if (inherits(state, "try-error")) {
       showModal(modalDialog(title = "Whoops...", 
         "Error while trying to read this file.", br(), "Is it an actual miniMeta file?", 
         footer = modalButton("OK, got it"), size="s"))

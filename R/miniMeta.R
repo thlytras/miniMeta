@@ -4,9 +4,12 @@
 #'
 #' @import shiny
 #' @import meta
+#' 
+#' @importFrom markdown markdownToHTML
+#' @importFrom metafor forest
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' miniMeta()
 #' }
 #'

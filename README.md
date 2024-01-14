@@ -42,8 +42,4 @@ Just open R, load the miniMeta package and launch:
 
 A browser window will open, and you can use miniMeta.
 
-If you want to have a quick look at how it works, try running it from these servers:
-
-* https://thlytras.shinyapps.io/minimeta/
-* http://aspirin.ddns.net/shiny/miniMeta/
-
+If you want to have a quick look at how it works, try running it on [shinyapps.io](https://thlytras.shinyapps.io/minimeta/).

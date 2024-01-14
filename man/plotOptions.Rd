@@ -20,7 +20,7 @@ This allows finer control than directly plotting using the
 \code{\link{forest.miniMeta}} method. See the example below.
 }
 \examples{
-\donttest{
+\dontrun{
 # Extract the plot options from the miniMeta object
 plot_opts <- plotOptions(example_miniMeta_obs)
 # Call directly the forest.meta method, with all plot options

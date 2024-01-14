@@ -8,16 +8,12 @@
 #'
 #' @return NULL
 #'
-#' @importFrom meta forest.meta
-#'
 #' @examples
-#' \donttest{
 #' forest(example_miniMeta_obs)
-#' }
 #' 
 #' @export
 forest.miniMeta <- function(x, ...) {
   if (!is.miniMeta(x)) stop("`x` should be a miniMeta object")
-  do.call(forest.meta, c(list(x=x$meta), plotOptions(x)))
+  do.call(forest, c(list(x=x$meta), plotOptions(x)))
   invisible()
 }

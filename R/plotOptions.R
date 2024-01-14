@@ -13,7 +13,7 @@
 #' @importFrom methods formalArgs
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # Extract the plot options from the miniMeta object
 #' plot_opts <- plotOptions(example_miniMeta_obs)
 #' # Call directly the forest.meta method, with all plot options
@@ -52,10 +52,10 @@ plotOptions <- function(x) {
   res$fileType <- res$width <- res$height <- res$pointsize <- res$res <- NULL
   adv <- parseArguments(res$advParInput)
   res$advParInput <- NULL
-  forest_args <- formalArgs(meta::forest.meta)
+  forest_args <- .forestArgs()
   forest_args <- forest_args[!(forest_args %in% 
       c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
-  if (class(adv)!="try-error" && length(adv)>0) {
+  if (!inherits(adv, "try-error") && length(adv)>0) {
     adv <- adv[names(adv) %in% forest_args]
     res <- rev(c(res,adv))
     res <- rev(res[!duplicated(names(res))])

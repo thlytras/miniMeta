@@ -14,7 +14,7 @@
 #' @import shiny
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' dropdownMenu(label = "Preferences", icon = icon("bars"), 
 #'   menu = list(
 #'     edit = "edit item", 

@@ -17,7 +17,7 @@ parseArguments <- function(x) {
   getArgs <- function(...) return(list(...))
   x <- gsub(";|\n", "", x)
   res <- try(eval(parse(text=sprintf("getArgs(%s)", x))), silent=TRUE)
-  if (class(res)=="try-error") {
+  if (inherits(res, "try-error")) {
     return(res)
   }
   if (length(res)>0 && (is.null(names(res)) || (sum(names(res)=="")>0))) {
