@@ -47,7 +47,7 @@ obs_module <- function(input, output, session, stateEvent) {
       return(with(dat(), 
         metagen(te, abs(seTE), data=dat(), studlab=Study, 
           method.tau=input$opt_methodTau,
-          comb.fixed=input$opt_combFixed, comb.random=input$opt_combRandom,
+          common=input$opt_combFixed, random=input$opt_combRandom,
           byvar=byVar, sm=input$opt_sm, hakn=input$opt_hakn
         )
       ))

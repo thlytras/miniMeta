@@ -32,7 +32,7 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
   # List of forest.meta() arguments, excluding some that we don't want the user to touch
   forest_args <- .forestArgs()
   forest_args <- forest_args[!(forest_args %in% 
-    c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
+    c("...", "x", "random", "common", "layout", "new"))]
 
   values <- reactiveValues(
     importReady = FALSE,

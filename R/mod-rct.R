@@ -66,7 +66,7 @@ rct_module <- function(input, output, session, stateEvent) {
       return(with(dat(), 
         metabin(e.e, n.e, e.c, n.c, data=dat(), studlab=Study, 
           method=input$opt_method, method.tau=input$opt_methodTau,
-          comb.fixed=input$opt_combFixed, comb.random=input$opt_combRandom,
+          common=input$opt_combFixed, random=input$opt_combRandom,
           byvar=byVar, incr=optIncr, sm=input$opt_sm, hakn=input$opt_hakn
         )
       ))

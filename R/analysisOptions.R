@@ -21,7 +21,7 @@
 analysisOptions <- function(x, data=FALSE) {
   if (!is.miniMeta(x)) stop("`x` should be a miniMeta object")
   res <- x$analysisOptions
-  oMat <- c("combFixed" = "comb.fixed", "combRandom" = "comb.random", 
+  oMat <- c("combFixed" = "common", "combRandom" = "random", 
     "methodTau" = "method.tau")
   names(res)[names(res) %in% names(oMat)] <- unname(oMat[names(res)[names(res) %in% names(oMat)]])
   if (("incr" %in% names(res)) && res$incr != "TACC") res$incr <- as.numeric(res$incr)

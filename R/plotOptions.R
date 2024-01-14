@@ -40,8 +40,8 @@ plotOptions <- function(x) {
   }
   res$rightcols <- c("effect", "ci")
   if (res$showWeights) {
-    if (x$meta$comb.fixed) res$rightcols <- c(res$rightcols, "w.fixed")
-    if (x$meta$comb.random) res$rightcols <- c(res$rightcols, "w.random")
+    if (x$meta$common) res$rightcols <- c(res$rightcols, "w.fixed")
+    if (x$meta$random) res$rightcols <- c(res$rightcols, "w.random")
   }
   res$text.fixed <- "Fixed-effects model"
   res$text.random <- "Random-effects model"
@@ -54,7 +54,7 @@ plotOptions <- function(x) {
   res$advParInput <- NULL
   forest_args <- .forestArgs()
   forest_args <- forest_args[!(forest_args %in% 
-      c("...", "x", "comb.random", "comb.fixed", "layout", "new"))]
+      c("...", "x", "random", "common", "layout", "new"))]
   if (!inherits(adv, "try-error") && length(adv)>0) {
     adv <- adv[names(adv) %in% forest_args]
     res <- rev(c(res,adv))

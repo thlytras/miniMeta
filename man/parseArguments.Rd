@@ -19,6 +19,6 @@ parse them, and return as a named R list. This function is used in
 miniMeta to parse arguments for forest.meta() when given as a string.
 }
 \examples{
-parseArguments('col.diamond="red", sm="RR", comb.fixed=FALSE')
+parseArguments('col.diamond="red", sm="RR", common=FALSE')
 
 }

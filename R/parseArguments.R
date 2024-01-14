@@ -10,7 +10,7 @@
 #' @return A named list of arguments, or an object of class "try-error" on failure.
 #'
 #' @examples
-#' parseArguments('col.diamond="red", sm="RR", comb.fixed=FALSE')
+#' parseArguments('col.diamond="red", sm="RR", common=FALSE')
 #'
 #' @export
 parseArguments <- function(x) {
