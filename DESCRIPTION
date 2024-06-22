@@ -27,3 +27,5 @@ LazyData: true
 RoxygenNote: 7.3.1
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/thlytras/miniMeta
+BugReports: https://github.com/thlytras/miniMeta/issues
