@@ -29,7 +29,8 @@ plotOptions <- function(x) {
   res <- x$plotOptions
   oMat <- c("printI2" = "print.I2", "printQ" = "print.Q", 
     "printPval" = "print.pval.Q", "printTau2" = "print.tau2",
-    "diamCol" = "col.diamond", "barCol" = "col.study", "sqCol" = "col.square"
+    "diamCol" = "col.diamond", "barCol" = "col.study", "sqCol" = "col.square",
+    "prediction" = "prediction"
     )
   names(res)[names(res) %in% names(oMat)] <- unname(oMat[names(res)[names(res) %in% names(oMat)]])
   res$leftcols <- "studlab"

@@ -58,7 +58,8 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
       col.diamond = input$plOpt_diamCol,
       col.diamond.lines = input$plOpt_diamCol,
       col.study = input$plOpt_barCol,
-      col.square = input$plOpt_sqCol
+      col.square = input$plOpt_sqCol,
+      prediction = input$plOpt_prediction & input$opt_combRandom
     )
     if (!inherits(pltAdvOpt(), "try-error") && length(pltAdvOpt())>0) {
       plOpts <- rev(c(plOpts, pltAdvOpt()))
@@ -201,7 +202,7 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
       updateAwesomeCheckbox(session, paste0("opt_", n), 
           value = m$analysisOptions[[n]])
     }
-    for (n in c("inclAbsNum", "printI2", "printQ", "printPval", "printTau2")) {
+    for (n in c("inclAbsNum", "printI2", "printQ", "printPval", "printTau2", "prediction")) {
       updateAwesomeCheckbox(session, paste0("plOpt_", n), 
           value = m$plotOptions[[n]])
     }

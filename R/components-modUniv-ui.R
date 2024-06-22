@@ -89,7 +89,8 @@ ui_mainPanel <- function(ns, mtype) {
               column(3, awesomeCheckbox(ns("plOpt_printPval"), "p-value", TRUE)),
               column(3, awesomeCheckbox(ns("plOpt_printTau2"), HTML("\u03c4<sup>2</sup>"), FALSE))
             ),
-            awesomeCheckbox(ns("plOpt_showWeights"), "Show weights", TRUE)
+            awesomeCheckbox(ns("plOpt_showWeights"), "Show weights", TRUE),
+            awesomeCheckbox(ns("plOpt_prediction"), "Plot a prediction interval (only for random-effects model)", TRUE)
           )
         ),
         prettySwitch(ns("plOpt_showFormattingOptions"), "Formatting options", FALSE, status="primary"),

@@ -1,8 +1,8 @@
 Package: miniMeta
 Type: Package
 Title: Web Application to Run Meta-Analyses
-Version: 0.3.1
-Date: 2024-01-14
+Version: 0.3.2
+Date: 2024-06-23
 Authors@R: 
     c(person(given="Theodore", family="Lytras", 
              email="thlytras@gmail.com", role=c("aut","cre"), 
@@ -24,6 +24,6 @@ Description: Shiny web application to run meta-analyses.
 License: GPL (>=2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

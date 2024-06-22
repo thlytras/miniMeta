@@ -48,7 +48,7 @@ include_saveState_serverCode <- function(input, output, session, stateEvent) {
       checkboxes = sapply(c("obsModule-loadData-autoSE", "rctModule-plOpt_inclAbsNum",
         combine(c("obsModule","rctModule"), 
           c("funOpt_showStudlab", paste0("opt_", c("combFixed","combRandom","hakn")),
-            paste0("plOpt_print", c("I2","Pval","Q","Tau2")), "plOpt_showWeights"))),
+            paste0("plOpt_print", c("I2","Pval","Q","Tau2")), "plOpt_showWeights", "plOpt_prediction"))),
         function(x) input[[x]])
     )
     if (encode) state <- URLencode(jsonlite::base64_enc(memCompress(serialize(state, NULL), "gzip")), reserved=TRUE)
