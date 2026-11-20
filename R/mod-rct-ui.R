@@ -24,7 +24,7 @@ rct_moduleUI <- function(id) {
             fluidRow(
               column(6, ui_effectMeasure_select(ns)),
               column(6,
-                awesomeCheckbox(ns("opt_combFixed"), "Use fixed-effects model", value=FALSE),
+                awesomeCheckbox(ns("opt_combFixed"), "Use common-effects model", value=FALSE),
                 awesomeCheckbox(ns("opt_combRandom"), "Use random-effects model", value=TRUE)
               )
             ),

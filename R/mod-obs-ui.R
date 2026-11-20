@@ -26,7 +26,7 @@ obs_moduleUI <- function(id) {
           wellPanel(
             fluidRow(
               column(6, offset=6,
-                awesomeCheckbox(ns("opt_combFixed"), "Use fixed-effects model", value=FALSE),
+                awesomeCheckbox(ns("opt_combFixed"), "Use common-effects model", value=FALSE),
                 awesomeCheckbox(ns("opt_combRandom"), "Use random-effects model", value=TRUE),
                 ui_heterogeneity_select(ns),
                 awesomeCheckbox(ns("opt_hakn"), "Hartung and Knapp correction", value=FALSE)

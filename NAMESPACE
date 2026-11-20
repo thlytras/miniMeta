@@ -17,20 +17,28 @@ import(readxl)
 import(rhandsontable)
 import(shiny)
 import(shinyWidgets)
-importFrom(colourpicker,colourInput)
-importFrom(colourpicker,updateColourInput)
+importFrom(colourpicker,
+  colourInput,
+  updateColourInput
+)
 importFrom(grDevices,dev.off)
-importFrom(jsonlite,base64_dec)
-importFrom(jsonlite,base64_enc)
+importFrom(jsonlite,
+  base64_dec,
+  base64_enc
+)
 importFrom(markdown,markdownToHTML)
 importFrom(meta,.forestArgs)
 importFrom(metafor,forest)
 importFrom(methods,formalArgs)
-importFrom(shinyjs,delay)
-importFrom(shinyjs,extendShinyjs)
-importFrom(shinyjs,js)
-importFrom(shinyjs,runjs)
-importFrom(shinyjs,useShinyjs)
+importFrom(shinyjs,
+  delay,
+  extendShinyjs,
+  js,
+  runjs,
+  useShinyjs
+)
 importFrom(stats,qnorm)
-importFrom(utils,URLdecode)
-importFrom(utils,URLencode)
+importFrom(utils,
+  URLdecode,
+  URLencode
+)

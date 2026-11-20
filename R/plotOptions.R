@@ -41,10 +41,10 @@ plotOptions <- function(x) {
   }
   res$rightcols <- c("effect", "ci")
   if (res$showWeights) {
-    if (x$meta$common) res$rightcols <- c(res$rightcols, "w.fixed")
+    if (x$meta$common) res$rightcols <- c(res$rightcols, "w.common")
     if (x$meta$random) res$rightcols <- c(res$rightcols, "w.random")
   }
-  res$text.fixed <- "Fixed-effects model"
+  res$text.common <- "Common-effects model"
   res$text.random <- "Random-effects model"
   res$col.diamond.lines <- res$col.diamond
   res$fontsize <- res$pointsize

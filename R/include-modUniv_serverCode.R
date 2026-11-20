@@ -14,10 +14,10 @@
 #' @param input Shiny input parameter
 #' @param output Shiny output parameter
 #' @param session Shiny session object
-#' @param mtype 
-#' @param dat 
-#' @param chk 
-#' @param stateEvent 
+#' @param mtype 1 for RCT module, 2 for observational module
+#' @param dat Reactive expression
+#' @param chk Reactive expression
+#' @param stateEvent reactiveVal signalling saving/loading of state
 #'
 #' @importFrom methods formalArgs
 #' 
@@ -45,7 +45,7 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
     if (mtype==1 && input$plOpt_inclAbsNum) lcols <- c(lcols, "event.e", "n.e", "event.c", "n.c")
     rcols <- c("effect","ci")
     if (input$plOpt_showWeights) {
-      if (input$opt_combFixed) rcols <- c(rcols, "w.fixed")
+      if (input$opt_combFixed) rcols <- c(rcols, "w.common")
       if (input$opt_combRandom) rcols <- c(rcols, "w.random")
     }
     plOpts <- list(
@@ -119,9 +119,9 @@ include_modUniv_serverCode <- function(input, output, session, mtype, dat, chk, 
     cilayout("(", " - ")
     pars <- c(list(x=m(), new=new), pltOpt(),
       list(
-        text.fixed = "Fixed-effects model",
+        text.common = "Common-effects model",
         text.random = "Random-effects model",
-        print.byvar = FALSE,
+        print.subgroup.name = FALSE,
         fontsize = pointsize,
         plotwidth = sprintf("%.2fcm", 8*pointsize/12),
         colgap = sprintf("%.2fmm", 2*pointsize/12),

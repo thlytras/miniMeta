@@ -39,16 +39,17 @@ obs_module <- function(input, output, session, stateEvent) {
     if (chk()) {
       grp <- trimws(as.character(dat()$group)); grp[grp==""] <- NA
       if (sum(is.na(grp))==0 & length(unique(grp))>1) {
-        byVar <- factor(grp)
+        subgroup <- factor(grp)
       } else {
-        byVar <- NULL
+        subgroup <- NULL
       }
       te <- if (input$opt_sm %in% c("RR","OR")) log(dat()$TE) else dat()$TE
       return(with(dat(), 
         metagen(te, abs(seTE), data=dat(), studlab=Study, 
           method.tau=input$opt_methodTau,
           common=input$opt_combFixed, random=input$opt_combRandom,
-          byvar=byVar, sm=input$opt_sm, hakn=input$opt_hakn
+          subgroup=subgroup, sm=input$opt_sm, 
+          method.random.ci = ifelse(input$opt_hakn, "HK", "classic")
         )
       ))
     }

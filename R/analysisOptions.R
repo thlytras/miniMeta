@@ -37,7 +37,7 @@ analysisOptions <- function(x, data=FALSE) {
     }
     grp <- trimws(as.character(x$data$group)); grp[grp==""] <- NA
     if (sum(is.na(grp))==0 & length(unique(grp))>1) {
-      res$byVar <- factor(grp)
+      res$subgroup <- factor(grp)
     }
   }
   return(res)

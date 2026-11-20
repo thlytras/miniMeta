@@ -22,7 +22,7 @@ if you don't already have it:
 
       install.packages("devtools")
 
-Then to install FluMoDL, open R and give:
+Then to install miniMeta, open R and give:
 
       devtools::install_github("thlytras/miniMeta")
 
@@ -42,4 +42,4 @@ Just open R, load the miniMeta package and launch:
 
 A browser window will open, and you can use miniMeta.
 
-If you want to have a quick look at how it works, try running it on [shinyapps.io](https://thlytras.shinyapps.io/minimeta/).
+If you want to have a quick look at how it works, try running it on [minimeta.net](https://www.minimeta.net/)

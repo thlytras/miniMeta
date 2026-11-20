@@ -59,15 +59,16 @@ rct_module <- function(input, output, session, stateEvent) {
       optIncr <- input$opt_incr; if (optIncr!="TACC") optIncr <- as.numeric(optIncr)
       grp <- trimws(as.character(dat()$group)); grp[grp==""] <- NA
       if (sum(is.na(grp))==0 & length(unique(grp))>1) {
-        byVar <- factor(grp)
+        subgroup <- factor(grp)
       } else {
-        byVar <- NULL
+        subgroup <- NULL
       }
       return(with(dat(), 
         metabin(e.e, n.e, e.c, n.c, data=dat(), studlab=Study, 
           method=input$opt_method, method.tau=input$opt_methodTau,
           common=input$opt_combFixed, random=input$opt_combRandom,
-          byvar=byVar, incr=optIncr, sm=input$opt_sm, hakn=input$opt_hakn
+          subgroup=subgroup, incr=optIncr, sm=input$opt_sm, 
+          method.random.ci = ifelse(input$opt_hakn, "HK", "classic")
         )
       ))
     }

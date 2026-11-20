@@ -120,7 +120,7 @@ further processed in R.
 By clicking the "Show analysis options" checkbox, a suite of options appear
 that determine how the meta-analysis is conducted (see the [documentation of 
 the metabin() function](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metabin) in package [meta](https://CRAN.R-project.org/package=meta) for full details).
-A fixed-effects or random-effects model can be specified, or both. 
+A common-effects or random-effects model can be specified, or both. 
 There is a choice of different effect measures (Relative Risk, Odds Ratio, 
 Risk Difference and Arcsine Difference), methods for pooling studies 
 (Mantel-Hanszel, Inverse Variance and Peto) and heterogeneity estimators 
@@ -228,7 +228,7 @@ represents the standard error of the *log* Relative Risk or *log* Odds Ratio.
 Click "Show analysis options" to adjust further options for the meta-analysis 
 (see the [documentation of 
 the metagen() function](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metagen) in package [meta](https://CRAN.R-project.org/package=meta) for full details).
-A fixed-effects or random-effects model can be specified, or both. 
+A common-effects or random-effects model can be specified, or both. 
 Different heterogeneity estimators can be chosen for the random-effects model 
 (the default being the standard DerSimonian-Laird estimator), and the 
 Hartung and Knapp correction can be selected as well.

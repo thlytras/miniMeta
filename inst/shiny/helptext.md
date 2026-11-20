@@ -10,7 +10,7 @@ Study data are entered manually in the table, or from an Excel file (whose
 columns should match those on the table).
 Click on the "Show analysis options" switch to adjust all options used for the
 meta-analysis, such as type of effect measure (Relative Risk, Odds Ratio, etc),
-type of model (fixed-effects or random-effects), etc.
+type of model (common-effects or random-effects), etc.
 
 With every change on the left-side input data (study data or analysis options),
 the meta-analysis is automatically re-run and the forest plot updated. 
