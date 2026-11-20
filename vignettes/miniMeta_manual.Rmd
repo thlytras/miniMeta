@@ -2,7 +2,7 @@
 title: "Running meta-analyses with miniMeta"
 author: "Theodore Lytras \\<thlytras@gmail.com\\>"
 date: "`r Sys.Date()`"
-version: 0.1
+version: 0.3.3
 output: pdf_document
 vignette: >
   %\VignetteIndexEntry{miniMeta_manual}
@@ -13,7 +13,7 @@ vignette: >
 # Introduction
 
 [miniMeta](https://github.com/thlytras/miniMeta) 
-is a [shiny](https://shiny.rstudio.com/) web application that makes 
+is a [shiny](https://shiny.posit.co/) web application that makes 
 it easy to run meta-analyses, without having any familiarity with R 
 and its console. 
 It is intended for use by non-statistical colleagues, or as educational tool. It is also intended to help guideline developers using the GRADE framework (Grading of Recommendations, Assessment, Development and Evaluations) combine evidence and quickly fill their SoF (Summary of Findings) tables.
@@ -29,15 +29,13 @@ Under the hood miniMeta relies on the
 [meta](https://CRAN.R-project.org/package=meta) package for R, and can be
 thought of as a graphical front-end for it. 
 Analysis and plotting is done by functions from meta, in particular 
-[`metabin()`](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metabin), 
-[`metagen()`](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metagen) and 
-[`forest.meta()`](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/forest.meta); 
+`metabin()`, `metagen()` and `forest.meta()`; 
 see the associated function documentation for details.
 
 
 # How to install and run locally
 
-Open R, install package [devtools](https://github.com/thlytras/devtools) if 
+Open R, install package `devtools` if 
 you don't already have it, and then use `install_github()` to install the 
 [miniMeta](https://github.com/thlytras/miniMeta) package from GitHub:
 
@@ -118,8 +116,9 @@ meta-analysis object) in an RDS file that can be imported in miniMeta, or
 further processed in R.
 
 By clicking the "Show analysis options" checkbox, a suite of options appear
-that determine how the meta-analysis is conducted (see the [documentation of 
-the metabin() function](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metabin) in package [meta](https://CRAN.R-project.org/package=meta) for full details).
+that determine how the meta-analysis is conducted (see the documentation of 
+the `metabin()` function in package [meta](https://CRAN.R-project.org/package=meta) 
+for full details).
 A common-effects or random-effects model can be specified, or both. 
 There is a choice of different effect measures (Relative Risk, Odds Ratio, 
 Risk Difference and Arcsine Difference), methods for pooling studies 
@@ -159,10 +158,8 @@ forest plot or the funnel plot (see below).
 
 Finally, "Advanced options" provides a powerful interface (for advanced 
 users) to control any aspect of the forest plot, by specifying a 
-comma-separated list of arguments that are passed to the
-[`forest.meta()`](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/forest.meta) 
-method. Any argument listed in the 
-[function documentation](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/forest.meta) 
+comma-separated list of arguments that are passed to the `forest.meta()` 
+method. Any argument listed in the function documentation of `forest.meta()` 
 can be specified in the input box, and these _override_ any other options 
 set in miniMeta. For example, if `col.diamond="red"` is entered in the input
 box, the diamond illustrating the pooled effect measure is painted red. 
@@ -226,8 +223,8 @@ If the effect measure is the Relative Risk or Odds Ratio, then the SE column
 represents the standard error of the *log* Relative Risk or *log* Odds Ratio.
 
 Click "Show analysis options" to adjust further options for the meta-analysis 
-(see the [documentation of 
-the metagen() function](https://www.rdocumentation.org/packages/meta/versions/4.9-7/topics/metagen) in package [meta](https://CRAN.R-project.org/package=meta) for full details).
+(see the documentation of 
+the `metagen()` function in package [meta](https://CRAN.R-project.org/package=meta) for full details).
 A common-effects or random-effects model can be specified, or both. 
 Different heterogeneity estimators can be chosen for the random-effects model 
 (the default being the standard DerSimonian-Laird estimator), and the 
